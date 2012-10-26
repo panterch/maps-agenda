@@ -1,0 +1,55 @@
+#main {
+}
+
+#menu {
+  width: 200px;
+  height: 100%;
+  background-color: #b0c4de;
+  padding: 20px;
+  padding-right: 0px;
+  float: left;
+  border-radius: 15px;
+}
+
+#content {
+  float: left;
+  height: 100%;
+  background-color: #d0c49e;
+}
+
+.menu_item {
+  width: 185px;
+  height: 20px;
+  padding: 5px;
+  margin: 5px;
+  position: relative; /* for z-index */
+  z-index: 100;
+  cursor: pointer;
+}
+
+#menu_selector {
+  background-color: #A0B49e;
+  position: absolute;
+  z-index: 50;
+  -webkit-transition-property: top;
+  -webkit-transition-duration: 0.3s;
+  -webkit-transition-timing-function: ease;
+  -webkit-transition-delay: 0s;
+  -moz-transition-property: top;
+  -moz-transition-duration: 0.3s;
+  -moz-transition-timing-function: ease;
+  -moz-transition-delay: 0s;
+  -o-transition-property: top;
+  -o-transition-duration: 0.3s;
+  -o-transition-timing-function: ease;
+  -o-transition-delay: 0s;
+  -ms-transition-property: top;
+  -ms-transition-duration: 0.3s;
+  -ms-transition-timing-function: ease;
+  -ms-transition-delay: 0s;
+  transition-property: top;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+}
+
