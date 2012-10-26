@@ -8,13 +8,6 @@ function AttachEvent(element, type, handler) {
 
 // When the page is loaded, make the menu work.
 function onLoadAdmin() {
-  // Set the size of the content area.
-  var main = document.getElementById("main");
-  var menu = document.getElementById("menu");
-  var content = document.getElementById("content");
-  var space = 10;
-  content.style.marginLeft = space;
-  content.style.width = main.offsetWidth - menu.offsetWidth - space;
 
   // Attach the onClick handlers to the menu items.
   var elements = document.getElementsByClassName("menu_item");
