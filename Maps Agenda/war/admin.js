@@ -8,7 +8,6 @@ function AttachEvent(element, type, handler) {
 
 // When the page is loaded, make the menu work.
 function onLoadAdmin() {
-
   // Attach the onClick handlers to the menu items.
   var elements = document.getElementsByClassName("menu_item");
   for (var i = 0; i < elements.length; i++) {
@@ -33,6 +32,7 @@ function itemClick(item) {
   selector.style.top = item.offsetTop;
   selector.style.left = item.offsetLeft;
 
+  // Example on how to update the content area.
   document.getElementById("content").innerHTML = item.id;
 
   return false;
