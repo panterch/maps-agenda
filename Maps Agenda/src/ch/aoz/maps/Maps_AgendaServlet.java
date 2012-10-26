@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 @SuppressWarnings("serial")
 public class Maps_AgendaServlet extends HttpServlet {
+    @Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		resp.setContentType("text/plain");
