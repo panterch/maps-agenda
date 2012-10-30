@@ -7,7 +7,7 @@
 }
 
 #menu {
-  width: 200px;
+  width: 210px;
   height: 90%;
   background-color: #bcd;
   padding: 20px;
@@ -20,12 +20,12 @@
   height: 90%;
   background-color: #d0c49e;
   padding: 20px;
-  margin-left: 230px;
+  margin-left: 240px;
   border-radius: 15px;
 }
 
 .menu_item {
-  width: 185px;
+  width: 195px;
   height: 20px;
   padding: 5px;
   margin: 5px;

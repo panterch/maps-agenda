@@ -8,8 +8,15 @@
 		<url-pattern>/maps_agenda</url-pattern>
 	</servlet-mapping>
 
-
-  
+  <security-constraint>
+     <web-resource-collection>
+       <url-pattern>/admin/*</url-pattern>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>admin</role-name>
+     </auth-constraint>
+  </security-constraint>
+    
   <welcome-file-list>
 		<welcome-file>index.html</welcome-file>
     <welcome-file>admin.html</welcome-file>
