@@ -24,19 +24,17 @@ function itemClickHandler(e) {
   return itemClick(e.target || e.srcElement);
 }
 
-// item of the menu has been clicked. Move the selector.
+// An item of the menu has been clicked.
 function itemClick(item) {
+  // Move the selector.
   var selector = document.getElementById("menu_selector");
   selector.style.width = item.offsetWidth;
   selector.style.height = item.offsetHeight;
   selector.style.top = item.offsetTop;
   selector.style.left = item.offsetLeft;
 
-  // Example on how to update the content area.
-  document.getElementById("content").innerHTML = item.id;
+  // Make the iframe point to the actual JSP.
+  document.getElementById('content-frame').src = "/admin/" + item.id + ".jsp";
 
   return false;
 }
-
-
-

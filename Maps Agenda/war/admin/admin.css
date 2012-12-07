@@ -4,6 +4,15 @@
   padding: 20px;
   margin-bottom: 10px;
   border-radius: 15px;
+  height: 30px;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
 }
 
 #menu {

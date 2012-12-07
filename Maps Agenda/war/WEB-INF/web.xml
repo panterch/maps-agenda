@@ -19,7 +19,7 @@
     
   <welcome-file-list>
 		<welcome-file>index.html</welcome-file>
-    <welcome-file>admin.html</welcome-file>
+    <welcome-file>admin.jsp</welcome-file>
   </welcome-file-list>
  <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>
