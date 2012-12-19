@@ -36,7 +36,7 @@
         <div class="menu_item" id="newsletter">Send newsletter</div>
       </div>
       <div id="content">
-        <iframe id="content-frame" seamless src=""></iframe>
+        <iframe id="content-frame" name="content-frame" src=""></iframe>
       </div>
     </div>
   </body>
