@@ -93,7 +93,7 @@ public class Translator {
   public static boolean AddTranslator(Translator t) {
     if (!t.isOk())
       return false;
-    Entity e = new Entity(entityKind);
+    Entity e = new Entity(entityKind, t.getEmail());
     e.setProperty(emailProperty, t.getEmail());
     e.setProperty(nameProperty, t.getName());    
     e.setProperty(languagesProperty, t.getLanguages());

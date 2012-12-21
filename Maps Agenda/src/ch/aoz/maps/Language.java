@@ -148,7 +148,7 @@ public class Language {
   public static boolean AddLanguage(Language lang) {
     if (!lang.isOk())
       return false;
-    Entity e = new Entity(entityKind);
+    Entity e = new Entity(entityKind, lang.getCode());
     e.setProperty(codeProperty, lang.getCode());
     e.setProperty(nameProperty, lang.getName());
     e.setProperty(germanNameProperty, lang.getGermanName());
