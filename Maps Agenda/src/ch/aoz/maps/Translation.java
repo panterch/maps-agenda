@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.Key;
  * Translations for a certain MAPS event.
  */
 public class Translation {
+  public static final String entityKind = "Translation";
 
   public Translation(Key parentKey,
       String lang,
@@ -77,7 +78,7 @@ public class Translation {
    * @return an Entity with the properties of this Translation.
    */
   public Entity toEntity() {
-    Entity result = new Entity("Translation", lang, eventID);
+    Entity result = new Entity(entityKind, lang, eventID);
     result.setProperty("lang", lang);
     result.setProperty("title", title);
     result.setProperty("desc", desc);
@@ -109,19 +110,19 @@ public class Translation {
    * Outputs the XML representation of this translation.
    *
    * @param year
-   * @param month may be 0 for year-long events
-   * @param day may be 0 for month-long events
+   * @param month
+   * @param day
    * @return a string containing this XML representation.
    */
-  public String toXML(Long year, Long month, Long day) {
+  public String toXML(int year, int month, int day) {
     if (!ok) {
       return new String("");
     }
 
     String result = new String();
     result += "<event>\n";
-    if (day == 0L) {
-      if (month == 0L) {
+    if (day == 0) {
+      if (month == 0) {
         result += "<date>" + String.format("%4d", year) + "</date>\n";
       } else {
         result += "<date>" + String.format("%02d.%4d", month, year) + "</date>\n";

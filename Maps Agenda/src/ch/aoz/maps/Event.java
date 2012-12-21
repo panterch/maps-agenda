@@ -20,57 +20,56 @@ import java.util.List;
  * A MAPS event.
  */
 public class Event {
+  public static final String entityKind = "Event";
+  
   /**
    * Create a new Event with the specified parameters.
    *
    * @param year
-   * @param month may be 0 for year-long events.
-   * @param day may be 0 for month-long events.
-   * @param index is the index of the event, starting with 0.
+   * @param month
+   * @param day
+   * @param title the German title of the event
    */
-  public Event(Long year, Long month, Long day, Long index) {
+  public Event(int year, int month, int day, String title) {
     this.year = year;
     this.month = month;
     this.day = day;
-    this.index = index;
-    this.key = KeyFactory.createKey("Event", CreateKey(year, month, day, index));
+    this.title = title;
     this.ok = true;
   }
 
   /**
-   * Parse an Entity Longo a new Event. Check isOk() if all fields could be populated.
+   * Parse an Entity into a new Event. Check isOk() if all fields could be populated.
    *
    * @param entity the entity to parse
    */
   public Event(Entity entity) {
     ok = true;
     if (entity.hasProperty("year")) {
-      year = (Long) entity.getProperty("year");
+      year = ((Long) entity.getProperty("year")).intValue();
     } else {
-      year = 1900L;
+      year = 1900;
       ok = false;
     }
 
     if (entity.hasProperty("month")) {
-      month = (Long) entity.getProperty("month");
+      month = ((Long) entity.getProperty("month")).intValue();
     } else {
-      month = 0L;
+      month = 0;
     }
 
     if (entity.hasProperty("day")) {
-      day = (Long) entity.getProperty("day");
+      day = ((Long) entity.getProperty("day")).intValue();
     } else {
-      day = 0L;
+      day = 0;
     }
 
-    if (entity.hasProperty("index")) {
-      index = (Long) entity.getProperty("index");
+    if (entity.hasProperty("title")) {
+      title = (String) entity.getProperty("title");
     } else {
-      index = 0L;
+      title = "";
       ok = false;
     }
-
-    key = entity.getKey();
   }
 
   public boolean addToStore() {
@@ -93,7 +92,7 @@ public class Event {
    * @return the generated Entity.
    */
   public Entity toEntity() {
-    Entity result = new Entity("Event", key);
+    Entity result = new Entity(entityKind, CreateKey(year, month, day, title));
     result.setProperty("year", year);
     if (month > 0) {
       result.setProperty("month", month);
@@ -101,7 +100,7 @@ public class Event {
     if (day > 0) {
       result.setProperty("day", day);
     }
-    result.setProperty("index", index);
+    result.setProperty("title", title);
     return result;
   }
 
@@ -110,18 +109,18 @@ public class Event {
    *
    * @return the generated XML tag without headers.
    */
-  public static String getXML(Long yearFrom,
-      Long monthFrom,
-      Long dayFrom,
-      Long yearTo,
-      Long monthTo,
-      Long dayTo) {
+  public static String getXML(int yearFrom,
+      int monthFrom,
+      int dayFrom,
+      int yearTo,
+      int monthTo,
+      int dayTo) {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     // Set up the range filter.
-    Key smallest = KeyFactory.createKey("Event", CreateKey(yearFrom, monthFrom, dayFrom, 0L));
+    Key smallest = KeyFactory.createKey(entityKind, CreateKey(yearFrom, monthFrom, dayFrom, ""));
     Key largest =
-        KeyFactory.createKey("Event", Event.CreateKey(yearTo, monthTo, dayTo, Long.MAX_VALUE));
+        KeyFactory.createKey(entityKind, Event.CreateKey(yearTo, monthTo, dayTo + 1, ""));
     Filter minimumFilter = new FilterPredicate(
         Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, smallest);
     Filter maximumFilter =
@@ -138,39 +137,33 @@ public class Event {
 
     // Generate the XML.
     String xml = new String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    Long year = 0L;
-    Long month = 0L;
-    Long day = 0L;
-    Long index = 0L;
-    Key eventID = null;
+    int year = 0;
+    int month = 0;
+    int day = 0;
+    int index = 0;
     Iterator<Entity> iterator = items.iterator();
     while (iterator.hasNext()) {
       // Detect the entity type, and perform the appropriate actions.
       Entity entity = iterator.next();
       
-      if (entity.getKey().getKind().equals("Event")) {
+      if (entity.getKey().getKind().equals(Event.entityKind)) {
         Event event = new Event(entity);
         year = event.getYear();
         month = event.getMonth();
         day = event.getDay();
-        eventID = entity.getKey();
         continue;
       }
 
-      if (entity.getKey().getKind().equals("Translation")) {
+      if (entity.getKey().getKind().equals(Translation.entityKind)) {
         Translation translation = new Translation(entity);
-        // Check that the translation has the right eventID.
-        if (translation.getEventID() != eventID) {
-          //continue;
-        }
         xml += "\n" + translation.toXML(year, month, day);
       }
     }
     return xml;
   }
 
-  public static String getXMLForMonth(Long year, Long month) {
-    return getXML(year, month, 0L, year, month + 1L, 0L);
+  public static String getXMLForMonth(int year, int month) {
+    return getXML(year, month, 0, year, month + 1, 0);
   }
 
   /**
@@ -179,122 +172,67 @@ public class Event {
    * @param year the year to use
    * @param month the month to use, or 0 if full-year event
    * @param day the day to use, or 0 if full-month event
-   * @param index the index of the event within the day
+   * @param title the German title of the event
    * @return the generated key
    */
-  public static String CreateKey(Long year, Long month, Long day, Long index) {
-    String key = Long.toString(year);
-    if (month > 0) {
-      key += String.format("-%02d", month);
-      if (day > 0) {
-        key += String.format("-%02d", day);
-      }
-    }
-    // The index always starts with 0 to ensure that these entries are output before the monthly or
-    // yearly results if they are sorted by key.
-    key += String.format("-0%05d", index);
-    return key;
-  }
-
-  /**
-   * Returns the next free index for a particular date that is not set.
-   *
-   * @param year
-   * @param month may be 0 for year-long events
-   * @param day may be 0 for month-long events
-   * @return the last free index
-   */
-  public static Long GetNextFreeIndex(Long year, Long month, Long day) {
-    // TODO handle race condition (read - modify - write) between here and addToStore.
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key smallest = KeyFactory.createKey("Event", CreateKey(year, month, day, 0L));
-    Key largest = KeyFactory.createKey("Event", CreateKey(year, month, day, Long.MAX_VALUE));
-
-    Filter minimum = new FilterPredicate(
-        Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, smallest);
-    Filter maximum =
-        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.LESS_THAN, largest);
-    Filter range = CompositeFilterOperator.and(minimum, maximum);
-
-    Query query = new Query("Event").setFilter(range)
-        .addSort(Entity.KEY_RESERVED_PROPERTY, SortDirection.ASCENDING);
-    List<Entity> events = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-
-    if (events.size() > 0) {
-      return (new Event(events.get(events.size() - 1)).getIndex());
-    } else {
-      return 0L;
-    }
+  public static String CreateKey(int year, int month, int day, String title) {
+    return String.format("%04d-%02d-%02d:%s", year, month, day, title);
   }
 
   /**
    * @return the year
    */
-  public Long getYear() {
+  public int getYear() {
     return year;
   }
 
   /**
    * @param year the year to set
    */
-  public void setYear(Long year) {
+  public void setYear(int year) {
     this.year = year;
   }
 
   /**
    * @return the month
    */
-  public Long getMonth() {
+  public int getMonth() {
     return month;
   }
 
   /**
    * @param month the month to set
    */
-  public void setMonth(Long month) {
+  public void setMonth(int month) {
     this.month = month;
   }
 
   /**
    * @return the day
    */
-  public Long getDay() {
+  public int getDay() {
     return day;
   }
 
   /**
    * @param day the day to set
    */
-  public void setDay(Long day) {
+  public void setDay(int day) {
     this.day = day;
   }
-
+  
   /**
-   * @return the index
+   * @return the title
    */
-  public Long getIndex() {
-    return index;
+  public String getTitle() {
+    return title;
   }
 
   /**
-   * @param index the index to set
+   * @param title the title to set
    */
-  public void setIndex(Long index) {
-    this.index = index;
-  }
-
-  /**
-   * @return the key
-   */
-  public Key getKey() {
-    return key;
-  }
-
-  /**
-   * @param key the key to set
-   */
-  public void setKey(Key key) {
-    this.key = key;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   /**
@@ -320,6 +258,7 @@ public class Event {
    */
   public List<String> getLanguages() {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key = KeyFactory.createKey(entityKind, CreateKey(year, month, day, title));
     Query translationQuery = new Query().setAncestor(key).setFilter(
         new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.GREATER_THAN, key))
         .setKeysOnly();
@@ -335,10 +274,9 @@ public class Event {
     return languages;
   }
 
-  private Long year;
-  private Long month;
-  private Long day;
-  private Long index;
-  private Key key;
+  private String title;
+  private int year;
+  private int month;
+  private int day;
   private boolean ok;
 }

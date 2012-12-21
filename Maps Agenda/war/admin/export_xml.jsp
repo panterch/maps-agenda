@@ -18,12 +18,12 @@
 %><%@ page import="com.google.appengine.api.datastore.Query.FilterOperator"
 %><%@ page import="com.google.appengine.api.datastore.Query.SortDirection"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%
-      Long year = new Long(request.getParameter("year"));
-      Long month;
+      int year = new Integer(request.getParameter("year"));
+      Integer month;
       if (request.getParameter("month") != null) {
-        month = new Long(request.getParameter("month"));
+        month = new Integer(request.getParameter("month"));
       } else {
-        month = 0L;
+        month = 0;
       }
 
       // Offer this as a downloadable file rather than as a displayable page.
@@ -32,17 +32,17 @@
 
       // TODO One-off
       /*
-      Event event = new Event(2012L, 12L, 0L, 0L);
+      Event event = new Event(2012, 12, 0, "hallo");
       event.addToStore();
 
-      Translation en = new Translation(event.getKey(),
+      Translation en = new Translation(event.toEntity().getKey(),
           "en",
           "hello",
           "hello world",
           "worldwide",
           "http://maps.google.com");
       en.addToStore();
-      Translation de = new Translation(event.getKey(),
+      Translation de = new Translation(event.toEntity().getKey(),
           "de",
           "hallo",
           "Hallo Welt",
