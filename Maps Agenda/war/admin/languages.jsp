@@ -5,15 +5,53 @@
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<%!
+public static String createLanguageForm(String formName, Language l) {
+  StringBuilder form = new StringBuilder();
+  if (l == null) {
+    form.append("<div id='lang-new' class='langdiv'>");
+    form.append("<div class='title'>Add a new language ");
+    form.append("<a onclick=\"hide('lang-new'); show('new-lang-link')\" href='javascript:void(0);''>(hide)</a></div>");
+  } else {
+    form.append("<div id='lang-" + l.getCode() + "' class='langdiv'>");
+    form.append("<div class='title'>Update " + l.getGermanName() + " ");
+    form.append("<a onclick=\"hide('lang-" + l.getCode() + "')\" href='javascript:void(0);''>(hide)</a></div>");
+  }
+  form.append("<form name='" + formName + "' method='POST' target='content-frame'");
+  form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
+  if (l == null) {
+    form.append("<p>Language code: <input type='text' name='code' maxlength='2'></p>");
+  } else {
+    form.append("<input type='hidden' name='code' value='" + l.getCode() + "'></p>");    
+  }
+  form.append("<p>Original name: <input type='text' name='name' value='" + (l == null ? "" : l.getName()) + "'></p>");
+  form.append("<p>German name: <input type='text' name='gname' value='" + (l == null ? "" : l.getGermanName()) + "'></p>");
+  form.append("<p><input type='checkbox' name='rtl' value='true'" + (l != null && l.isRightToLeft()? " checked" : "") + ">Is right to left?</p>");
+  form.append("<p><input type='checkbox' name='isIn' value='true'" + (l != null && l.isInAgenda()? " checked" : "") + ">Is in the Agenda?</p>");
+  form.append("<p><input type='checkbox' name='format' value='true'" + (l != null && l.hasSpecificFormat()? " checked" : "") + ">Requires specific formatting in the agenda?</p>");
+  form.append("<p>Abbreviations for the days of the week</p>");
+  form.append("<table><tr><td>Sonntag</td><td>Montag</td><td>Dienstag</td>");
+  form.append("<td>Mittwoch</td><td>Donnerstag</td><td>Freitag</td><td>Samstag</td>");
+  form.append("</tr><tr><td><input type='text' name='sun' value='" + (l == null ? "" : l.getDayOfTheWeek(0)) + "'></td>");
+  form.append("<td><input type='text' name='mon' value='" + (l == null ? "" : l.getDayOfTheWeek(1)) + "'></td><td><input type='text' name='tue' value='" + (l == null ? "" : l.getDayOfTheWeek(2)) + "'></td>");
+  form.append("<td><input type='text' name='wed' value='" + (l == null ? "" : l.getDayOfTheWeek(3)) + "'></td><td><input type='text' name='thu' value='" + (l == null ? "" : l.getDayOfTheWeek(4)) + "'></td>");
+  form.append("<td><input type='text' name='fri' value='" + (l == null ? "" : l.getDayOfTheWeek(5)) + "'></td><td><input type='text' name='sat' value='" + (l == null ? "" : l.getDayOfTheWeek(6)) + "'></td>");
+  form.append("</tr></table>");
+  form.append("<p><input type='submit' value='" + (l == null ? "Add": "Update") + " language'></p>");
+  form.append("</form></div>");
+  return form.toString();
+}
+%>
 <html>
 <head>
 <style type="text/css">
-#new-lang {
-  margin-top: 30px;
-}
-#new-lang p {
+form p {
   padding: 0px;
   margin: 2px;
+}
+.langdiv {
+  margin-top: 30px;
+  display: none;
 }
 .msg-red {
   background-color: #a00;
@@ -37,6 +75,7 @@
 table {
   border-collapse: collapse;
   border: 1px solid black;
+  margin-bottom: 20px;
 }
 th, td {
   border: 1px solid black;
@@ -44,59 +83,70 @@ th, td {
 }
 </style>
 <script>
-function validateForm() {
-    if(document.newLang.code.value.length != 2) {
-      alert("Please fill in the language code.");
-      document.newLang.code.focus();
-      return false;
-    }
-    if(document.newLang.name.value == "") {
-      alert("Please fill in the original name.");
-      document.newLang.name.focus();
-      return false;
-    }
-    if(document.newLang.gname.value == "") {
-      alert("Please fill in the german name.");
-      document.newLang.gname.focus();
-      return false;
-    }
-    if(document.newLang.sun.value == "") {
-      alert("Please fill in the abbreviation for Sunday.");
-      document.newLang.sun.focus();
-      return false;
-    }
-    if(document.newLang.mon.value == "") {
-      alert("Please fill in the abbreviation for Monday.");
-      document.newLang.mon.focus();
-      return false;
-    }
-    if(document.newLang.tue.value == "") {
-      alert("Please fill in the abbreviation for Tuesday.");
-      document.newLang.tue.focus();
-      return false;
-    }
-    if(document.newLang.wed.value == "") {
-      alert("Please fill in the abbreviation for Wednesday.");
-      document.newLang.wed.focus();
-      return false;
-    }
-    if(document.newLang.thu.value == "") {
-      alert("Please fill in the abbreviation for Thursday.");
-      document.newLang.thu.focus();
-      return false;
-    }
-    if(document.newLang.fri.value == "") {
-      alert("Please fill in the abbreviation for Friday.");
-      document.newLang.fri.focus();
-      return false;
-    }
-    if(document.newLang.sat.value == "") {
-      alert("Please fill in the abbreviation for Saturday.");
-      document.newLang.sat.focus();
-      return false;
-    }
-    // Send the form
-    return true;
+function validateForm(formName) {
+  var form = document.forms[formName];
+  if(form.code.value.length != 2) {
+    alert("Please fill in the language code.");
+    form.code.focus();
+    return false;
+  }
+  if(form.name.value == "") {
+    alert("Please fill in the original name.");
+    form.name.focus();
+    return false;
+  }
+  if(form.gname.value == "") {
+    alert("Please fill in the german name.");
+    form.gname.focus();
+    return false;
+  }
+  if(form.sun.value == "") {
+    alert("Please fill in the abbreviation for Sunday.");
+    form.sun.focus();
+    return false;
+  }
+  if(form.mon.value == "") {
+    alert("Please fill in the abbreviation for Monday.");
+    form.mon.focus();
+    return false;
+  }
+  if(form.tue.value == "") {
+    alert("Please fill in the abbreviation for Tuesday.");
+    form.tue.focus();
+    return false;
+  }
+  if(form.wed.value == "") {
+    alert("Please fill in the abbreviation for Wednesday.");
+    form.wed.focus();
+    return false;
+  }
+  if(form.thu.value == "") {
+    alert("Please fill in the abbreviation for Thursday.");
+    form.thu.focus();
+    return false;
+  }
+  if(form.fri.value == "") {
+    alert("Please fill in the abbreviation for Friday.");
+    form.fri.focus();
+    return false;
+  }
+  if(form.sat.value == "") {
+    alert("Please fill in the abbreviation for Saturday.");
+    form.sat.focus();
+    return false;
+  }
+  // Send the form
+  return true;
+}
+
+function show(elemId) {
+  var elem = document.getElementById(elemId);
+  elem.style.display = 'inline';
+}
+
+function hide(elemId) {
+  var elem = document.getElementById(elemId);
+  elem.style.display = 'none';
 }
 </script>
 </head>
@@ -121,15 +171,12 @@ if (request.getParameter("code") != null) {
       request.getParameter("rtl") != null, 
       request.getParameter("isIn") != null, 
       request.getParameter("format") != null);
-  if (languages.containsKey(lang.getCode())) {
-    out.println("<div class='msg-red'><p>There already exists a language with the code '" 
-                + lang.getCode() + "'</p></div>");
-  } else if (!lang.isOk()) {
+  if (!lang.isOk()) {
     out.println("<div class='msg-red'><p>The language is not valid. Please verify your input.</p></div>");
   } else if (!Language.AddLanguage(lang)){
     out.println("<div class='msg-red'><p>A problem occurred when trying to store the new language. Try later?</p></div>");
   } else {
-    out.println("<div class='msg-green'><p>New language correctly stored.</p></div>");
+    out.println("<div class='msg-green'><p>Language correctly stored.</p></div>");
     languages.put(lang.getCode(), lang);
   }
 }
@@ -155,6 +202,7 @@ if (languages.isEmpty()) {
         <th>RTL?</th>
         <th>In Agenda?</th>
         <th>Spec format?</th>
+        <th></th>
       </tr>
 <% for (Language l : languages.values()) { %> 
       <tr>
@@ -171,49 +219,18 @@ if (languages.isEmpty()) {
         <td><% out.println(l.isRightToLeft() ? "&#10003;" : "&#10007;"); %></td>
         <td><% out.println(l.isInAgenda()  ? "&#10003;" : "&#10007;"); %></td>
         <td><% out.println(l.hasSpecificFormat() ? "&#10003;" : "&#10007;"); %></td>
+        <td><a id="lang-<% out.print(l.getCode()); %>-link" onclick="show('lang-<% out.print(l.getCode()); %>')" href="javascript:void(0);">edit</a></td>
       </tr>
 <% } %>
     </table>
   </div>
 <%
+} 
+for (Language l : languages.values()) {
+  out.println(createLanguageForm("form-" + l.getCode(), l));
 }
+out.println(createLanguageForm("newLang", null));
 %>
-  <div id="new-lang">
-    <div class="title">Add a new language</div>
-    <form name="newLang" 
-          method="POST" 
-          action="" 
-          onSubmit="return validateForm()"
-          target="content-frame">
-      <p>Language code: <input type="text" name="code" maxlength="2"></p>
-      <p>Original name: <input type="text" name="name"></p>
-      <p>German name: <input type="text" name="gname"></p>
-      <p><input type="checkbox" name="rtl" value="true">Is right to left?</p>
-      <p><input type="checkbox" name="isIn" value="true">Is in the Agenda?</p>
-      <p><input type="checkbox" name="format" value="true">Requires specific formatting in the agenda?</p>
-      <p>Abbreviations for the days of the week</p>
-      <table>
-        <tr>
-          <td>Sunday</td>
-          <td>Monday</td>
-          <td>Tuesday</td>
-          <td>Wednesday</td>
-          <td>Thursday</td>
-          <td>Friday</td>
-          <td>Saturday</td>
-        </tr>
-        <tr>
-          <td><input type="text" name="sun"></td>
-          <td><input type="text" name="mon"></td>
-          <td><input type="text" name="tue"></td>
-          <td><input type="text" name="wed"></td>
-          <td><input type="text" name="thu"></td>
-          <td><input type="text" name="fri"></td>
-          <td><input type="text" name="sat"></td>
-        </tr>
-      </table>    
-      <p><input type="submit" value="Add language"></p>
-    </form>
-  </div>
+<div id="new-lang-link"><a onclick="show('lang-new'); hide('new-lang-link');" href="javascript:void(0);">Add a new language</a></div>
 </body>
 </html>
