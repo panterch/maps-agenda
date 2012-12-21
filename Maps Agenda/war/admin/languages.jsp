@@ -21,8 +21,10 @@ public static String createLanguageForm(String formName, Language l) {
   form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
   if (l == null) {
     form.append("<p>Language code: <input type='text' name='code' maxlength='2'></p>");
+    form.append("<input type='hidden' name='new' value='true'></p>");    
   } else {
     form.append("<input type='hidden' name='code' value='" + l.getCode() + "'></p>");    
+    form.append("<input type='hidden' name='new' value='false'></p>");    
   }
   form.append("<p>Original name: <input type='text' name='name' value='" + (l == null ? "" : l.getName()) + "'></p>");
   form.append("<p>German name: <input type='text' name='gname' value='" + (l == null ? "" : l.getGermanName()) + "'></p>");
@@ -54,14 +56,14 @@ form p {
   display: none;
 }
 .msg-red {
-  background-color: #a00;
+  background-color: #f33;
   border-radius: 5px;
   height: 50px;
   padding: 5px;
   margin-bottom: 20px;
 }
 .msg-green {
-  background-color: #0a0;
+  background-color: #5a5;
   border-radius: 5px;
   height: 50px;
   padding: 5px;
@@ -69,6 +71,8 @@ form p {
 }
 .title {
   font-size: x-large;
+  border-radius: 5px;
+  padding: 5px;
   background-color: #ba7;
   margin-bottom: 10px;
 }
@@ -171,7 +175,11 @@ if (request.getParameter("code") != null) {
       request.getParameter("rtl") != null, 
       request.getParameter("isIn") != null, 
       request.getParameter("format") != null);
-  if (!lang.isOk()) {
+  boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
+  if (isNew && languages.containsKey(lang.getCode())) {
+    out.println("<div class='msg-red'><p>Language " + lang.getGermanName() 
+              + " is already defined.</p></div>");
+  } else if (!lang.isOk()) {
     out.println("<div class='msg-red'><p>The language is not valid. Please verify your input.</p></div>");
   } else if (!Language.AddLanguage(lang)){
     out.println("<div class='msg-red'><p>A problem occurred when trying to store the new language. Try later?</p></div>");
