@@ -11,11 +11,11 @@ public static String createLanguageForm(String formName, Language l) {
   if (l == null) {
     form.append("<div id='lang-new' class='langdiv'>");
     form.append("<div class='title'>Add a new language ");
-    form.append("<a onclick=\"hide('lang-new'); show('new-lang-link')\" href='javascript:void(0);''>(hide)</a></div>");
+    form.append("<a onclick=\"hide_box('lang-new'); show('new-lang-link')\" href='javascript:void(0);''>(hide)</a></div>");
   } else {
     form.append("<div id='lang-" + l.getCode() + "' class='langdiv'>");
     form.append("<div class='title'>Update " + l.getGermanName() + " ");
-    form.append("<a onclick=\"hide('lang-" + l.getCode() + "')\" href='javascript:void(0);''>(hide)</a></div>");
+    form.append("<a onclick=\"hide_box('lang-" + l.getCode() + "')\" href='javascript:void(0);''>(hide)</a></div>");
   }
   form.append("<form name='" + formName + "' method='POST' target='content-frame'");
   form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
@@ -51,8 +51,10 @@ form p {
   padding: 0px;
   margin: 2px;
 }
+#new-lang-link {
+  margin-bottom: 10px;
+}
 .langdiv {
-  margin-top: 30px;
   display: none;
 }
 .msg-red {
@@ -79,7 +81,7 @@ form p {
 table {
   border-collapse: collapse;
   border: 1px solid black;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 th, td {
   border: 1px solid black;
@@ -143,6 +145,23 @@ function validateForm(formName) {
   return true;
 }
 
+shown_elem = null;
+
+function show_box(elemId) {
+  console.log("Showing: " + elemId);
+  if (shown_elem != null) {
+    hide(shown_elem);
+  }
+  show(elemId);
+  shown_elem = elemId;
+}
+
+function hide_box(elemId) {
+  console.log("Hiding: " + elemId);
+  hide(elemId);
+  shown_elem = null;
+}
+
 function show(elemId) {
   var elem = document.getElementById(elemId);
   elem.style.display = 'inline';
@@ -189,6 +208,11 @@ if (request.getParameter("code") != null) {
   }
 }
 
+for (Language l : languages.values()) {
+  out.println(createLanguageForm("form-" + l.getCode(), l));
+}
+out.println(createLanguageForm("newLang", null));
+
 if (languages.isEmpty()) {
   out.println("No language is yet defined.");
 } else {
@@ -227,18 +251,12 @@ if (languages.isEmpty()) {
         <td><% out.println(l.isRightToLeft() ? "&#10003;" : "&#10007;"); %></td>
         <td><% out.println(l.isInAgenda()  ? "&#10003;" : "&#10007;"); %></td>
         <td><% out.println(l.hasSpecificFormat() ? "&#10003;" : "&#10007;"); %></td>
-        <td><a id="lang-<% out.print(l.getCode()); %>-link" onclick="show('lang-<% out.print(l.getCode()); %>')" href="javascript:void(0);">edit</a></td>
+        <td><a id="lang-<% out.print(l.getCode()); %>-link" onclick="show_box('lang-<% out.print(l.getCode()); %>')" href="javascript:void(0);">edit</a></td>
       </tr>
 <% } %>
     </table>
   </div>
-<%
-} 
-for (Language l : languages.values()) {
-  out.println(createLanguageForm("form-" + l.getCode(), l));
-}
-out.println(createLanguageForm("newLang", null));
-%>
-<div id="new-lang-link"><a onclick="show('lang-new'); hide('new-lang-link');" href="javascript:void(0);">Add a new language</a></div>
+  <div id="new-lang-link"><a onclick="show_box('lang-new');" href="javascript:void(0);">Add a new language</a></div>
+<% } %>
 </body>
 </html>
