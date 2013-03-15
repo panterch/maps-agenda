@@ -5,15 +5,16 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,19 +24,31 @@ public class Event {
   public static final String entityKind = "Event";
   
   /**
-   * Create a new Event with the specified parameters.
+   * Create a new Event with the specified parameters and key.
    *
-   * @param year
-   * @param month
-   * @param day
+   * @param date day at which the event takes place
    * @param title the German title of the event
    */
-  public Event(int year, int month, int day, String title) {
-    this.year = year;
-    this.month = month;
-    this.day = day;
+  public Event(Date date, String title, long key) {
+    this.date = date;
     this.title = title;
-    this.ok = true;
+    this.key = key;
+    this.ok = (date != null && title != null && title.length() > 0);
+    hasKey = true;
+  }
+
+  /**
+   * Create a new Event with the specified parameters.
+   *
+   * @param date day at which the event takes place
+   * @param title the German title of the event
+   */
+  public Event(Date date, String title) {
+    this.date = date;
+    this.title = title;
+    this.ok = (date != null && title != null && title.length() > 0);
+    this.key = 0;
+    hasKey = false;
   }
 
   /**
@@ -44,24 +57,18 @@ public class Event {
    * @param entity the entity to parse
    */
   public Event(Entity entity) {
+    key = entity.getKey().getId();
+    hasKey = true; 
+    
     ok = true;
-    if (entity.hasProperty("year")) {
-      year = ((Long) entity.getProperty("year")).intValue();
+    if (entity.hasProperty("date")) {
+      date = (Date) entity.getProperty("date");
     } else {
-      year = 1900;
+      Calendar.getInstance();
+      try {
+        date = new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
+      } catch (Exception e) {}
       ok = false;
-    }
-
-    if (entity.hasProperty("month")) {
-      month = ((Long) entity.getProperty("month")).intValue();
-    } else {
-      month = 0;
-    }
-
-    if (entity.hasProperty("day")) {
-      day = ((Long) entity.getProperty("day")).intValue();
-    } else {
-      day = 0;
     }
 
     if (entity.hasProperty("title")) {
@@ -70,6 +77,7 @@ public class Event {
       title = "";
       ok = false;
     }
+    
   }
 
   public boolean addToStore() {
@@ -79,7 +87,11 @@ public class Event {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     try {
-      datastore.put(this.toEntity());
+      Key key = datastore.put(this.toEntity());
+      if (!hasKey()) {
+        this.key = key.getId();
+        hasKey = true;
+      }
     } catch (Exception ex) {
       return false;
     }
@@ -92,24 +104,64 @@ public class Event {
    * @return the generated Entity.
    */
   public Entity toEntity() {
-    Entity result = new Entity(entityKind, CreateKey(year, month, day, title));
-    result.setProperty("year", year);
-    if (month > 0) {
-      result.setProperty("month", month);
-    }
-    if (day > 0) {
-      result.setProperty("day", day);
-    }
+    Entity result = null;
+    if (hasKey())
+      result = new Entity(entityKind, getKey());
+    else
+      result = new Entity(entityKind);
+
+    result.setProperty("date", date);
     result.setProperty("title", title);
     return result;
   }
 
+  public static List<Event> GetAllEvents() {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    Query query = new Query(entityKind).addSort("date", SortDirection.ASCENDING);
+    List<Entity> items = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+    
+    ArrayList<Event> events = new ArrayList<Event>();
+    for (Entity item : items) {
+      events.add(new Event(item));
+    }
+    return events;
+  }
+
+  public static List<Event> GetEventListForMonth(int year, int month) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    // Set up the range filter.
+    Calendar c = Calendar.getInstance();
+    c.set(year, month, 1);
+    Filter minimumFilter = new FilterPredicate(
+        "date", Query.FilterOperator.GREATER_THAN_OR_EQUAL, c.getTime());
+
+    c.add(month, 1);
+    Filter maximumFilter = new FilterPredicate(
+        "date", Query.FilterOperator.LESS_THAN, c.getTime());
+    
+    Filter rangeFilter = CompositeFilterOperator.and(minimumFilter, maximumFilter);
+
+    Query query = new Query(entityKind).setFilter(rangeFilter)
+        .addSort("date", SortDirection.ASCENDING);
+    List<Entity> items = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+    
+    ArrayList<Event> events = new ArrayList<Event>();
+    for (Entity item : items) {
+      events.add(new Event(item));
+    }
+    return events;
+  }
+  
   /**
    * Render this Event into an XML tag.
    *
    * @return the generated XML tag without headers.
    */
-  public static String getXML(int yearFrom,
+  /*
+  public static String getXML(
+      int yearFrom,
       int monthFrom,
       int dayFrom,
       int yearTo,
@@ -161,64 +213,38 @@ public class Event {
     }
     return xml;
   }
-
+  
   public static String getXMLForMonth(int year, int month) {
     return getXML(year, month, 0, year, month + 1, 0);
   }
+  */
 
   /**
-   * Generate a datastore key from given dates.
-   *
-   * @param year the year to use
-   * @param month the month to use, or 0 if full-year event
-   * @param day the day to use, or 0 if full-month event
-   * @param title the German title of the event
-   * @return the generated key
+   * @return the date
    */
-  public static String CreateKey(int year, int month, int day, String title) {
-    return String.format("%04d-%02d-%02d:%s", year, month, day, title);
+  public Date getDate() {
+    return date;
   }
 
   /**
-   * @return the year
+   * @param date the date of this event
    */
-  public int getYear() {
-    return year;
+  public void setDate(Date date) {
+    this.date = date;
   }
 
   /**
-   * @param year the year to set
+   * @return the key
    */
-  public void setYear(int year) {
-    this.year = year;
+  public long getKey() {
+    return key;
   }
 
   /**
-   * @return the month
+   * @return If true, this entity already has a key. 
    */
-  public int getMonth() {
-    return month;
-  }
-
-  /**
-   * @param month the month to set
-   */
-  public void setMonth(int month) {
-    this.month = month;
-  }
-
-  /**
-   * @return the day
-   */
-  public int getDay() {
-    return day;
-  }
-
-  /**
-   * @param day the day to set
-   */
-  public void setDay(int day) {
-    this.day = day;
+  public boolean hasKey() {
+    return hasKey;
   }
   
   /**
@@ -256,6 +282,7 @@ public class Event {
    *
    * @return a list with language identifiers.
    */
+  /*
   public List<String> getLanguages() {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Key key = KeyFactory.createKey(entityKind, CreateKey(year, month, day, title));
@@ -273,10 +300,11 @@ public class Event {
     }
     return languages;
   }
-
+  */
+  
+  private boolean hasKey;
+  private long key;
   private String title;
-  private int year;
-  private int month;
-  private int day;
+  private Date date;
   private boolean ok;
 }
