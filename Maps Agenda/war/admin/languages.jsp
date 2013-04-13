@@ -256,7 +256,7 @@ if (languages.isEmpty()) {
 <% } %>
     </table>
   </div>
-  <div id="new-lang-link"><a onclick="show_box('lang-new');" href="javascript:void(0);">Add a new language</a></div>
 <% } %>
+<div id="new-lang-link"><a onclick="show_box('lang-new');" href="javascript:void(0);">Add a new language</a></div>
 </body>
 </html>
