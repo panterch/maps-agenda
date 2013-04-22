@@ -3,6 +3,7 @@ package ch.aoz.maps;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
@@ -22,18 +23,22 @@ import java.util.List;
  */
 public class Event {
   public static final String entityKind = "Event";
+  private boolean hasKey;
+  private long key;
+  private Date date;
+  private Translation germanTranslation;
+  private boolean ok;
   
   /**
    * Create a new Event with the specified parameters and key.
    *
    * @param date day at which the event takes place
-   * @param title the German title of the event
    */
-  public Event(Date date, String title, long key) {
+  public Event(Date date, Translation germanTranslation, long key) {
     this.date = date;
-    this.title = title;
+    this.germanTranslation = germanTranslation;
     this.key = key;
-    this.ok = (date != null && title != null && title.length() > 0);
+    this.ok = (date != null);
     hasKey = true;
   }
 
@@ -43,10 +48,10 @@ public class Event {
    * @param date day at which the event takes place
    * @param title the German title of the event
    */
-  public Event(Date date, String title) {
+  public Event(Date date, Translation germanTranslation) {
     this.date = date;
-    this.title = title;
-    this.ok = (date != null && title != null && title.length() > 0);
+    this.germanTranslation = germanTranslation;
+    this.ok = (date != null);
     this.key = 0;
     hasKey = false;
   }
@@ -70,24 +75,24 @@ public class Event {
       } catch (Exception e) {}
       ok = false;
     }
-
-    if (entity.hasProperty("title")) {
-      title = (String) entity.getProperty("title");
-    } else {
-      title = "";
+    
+    try {
+      germanTranslation = Translation.getGermanTranslationForEvent(this);
+    } catch (EntityNotFoundException e) {
+      germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
       ok = false;
     }
-    
   }
 
   public boolean addToStore() {
-    if (!this.isOk()) {
+    if (!this.isOk() || !this.germanTranslation.isOk()) {
       return false;
     }
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key;
     try {
-      Key key = datastore.put(this.toEntity());
+      key = datastore.put(this.toEntity());
       if (!hasKey()) {
         this.key = key.getId();
         hasKey = true;
@@ -95,7 +100,10 @@ public class Event {
     } catch (Exception ex) {
       return false;
     }
-    return true;
+
+    if (germanTranslation.getEventID() == null)
+      germanTranslation.setEventID(key);
+    return germanTranslation.addToStore();
   }
 
   /**
@@ -111,7 +119,6 @@ public class Event {
       result = new Entity(entityKind);
 
     result.setProperty("date", date);
-    result.setProperty("title", title);
     return result;
   }
 
@@ -248,20 +255,6 @@ public class Event {
   }
   
   /**
-   * @return the title
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * @param title the title to set
-   */
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  /**
    * @return the validation status of this Event
    */
   public boolean isOk() {
@@ -277,6 +270,14 @@ public class Event {
     this.ok = ok;
   }
 
+  public Translation getGermanTranslation() {
+    return germanTranslation;
+  }
+
+  public void setGermanTranslation(Translation germanTranslation) {
+    this.germanTranslation = germanTranslation;
+  }
+  
   /**
    * Queries the store for a comprehensive list of translations of this event.
    *
@@ -301,10 +302,4 @@ public class Event {
     return languages;
   }
   */
-  
-  private boolean hasKey;
-  private long key;
-  private String title;
-  private Date date;
-  private boolean ok;
 }
