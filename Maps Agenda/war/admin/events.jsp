@@ -17,10 +17,10 @@ public static String createEventDiv(Event e) {
   div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey() + "');\" href='javascript:void(0);'>Edit</a></div>");
   div.append("<div class='edate'>" + new SimpleDateFormat("yyyy-MMM-dd").format(e.getDate()) + "</div>");
   div.append("<div class='ebody'>");
-  div.append("<div class='etitle'>" + de.getTitle() + "</div>");
+  div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
   div.append("<div class='edesc'>" + de.getDesc() + "</div>");
-  div.append("<div class='eloc'>" + de.getLocation() + "</div>");
-  div.append("<div class='eurl'><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
+  div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
+  div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
   div.append("</div></div>");
   return div.toString();
 }
@@ -82,10 +82,26 @@ form p {
   display: none;
 }
 .event {
+  background-color: #eee;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.eedit {
+  float: right;
+  width: 30px;
+}
+.ebody {
+  margin-left: 20px;
   background-color: #ddd;
   border-radius: 5px;
   padding: 5px;
-  margin-bottom: 20px;
+}
+.etitle {
+  font-size: large;
+}
+.edesc {
+  border-bottom: 1px solid #888;
 }
 .msg-red {
   background-color: #f33;
