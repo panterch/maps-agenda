@@ -3,15 +3,25 @@ package ch.aoz.maps;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * Translations for a certain MAPS event.
  */
 public class Translation {
   public static final String entityKind = "Translation";
+  private Key eventID;
+  private String lang;
+  private String title;
+  private String desc;
+  private String location;
+  private String url;
+  private boolean ok;
 
-  public Translation(Key parentKey,
+  public Translation(
+      Key parentKey,
       String lang,
       String title,
       String desc,
@@ -25,6 +35,21 @@ public class Translation {
     this.url = url;
     this.ok = true;
   }
+
+  public Translation(
+          String lang,
+          String title,
+          String desc,
+          String location,
+          String url) {
+        this.eventID = null;
+        this.lang = lang;
+        this.title = title;
+        this.desc = desc;
+        this.location = location;
+        this.url = url;
+        this.ok = true;
+      }
 
   /**
    * Creates a Translation out of its Entity representation.
@@ -93,7 +118,7 @@ public class Translation {
    * @return if this operation succeeded.
    */
   public boolean addToStore() {
-    if (!this.isOk()) {
+    if (!this.isOk() || this.eventID == null) {
       return false;
     }
 
@@ -106,6 +131,20 @@ public class Translation {
     return true;
   }
 
+  /**
+   * Fetches the German translation for the provided event. 
+   * @param e An event
+   * @return the German translation.
+   * @throws EntityNotFoundException 
+   */
+  public static Translation getGermanTranslationForEvent(Event e) throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
+        .addChild(Translation.entityKind, "de").getKey();
+    Entity germanEntity = datastore.get(key);
+    return new Translation(germanEntity);
+  }
+  
   /**
    * Outputs the XML representation of this translation.
    *
@@ -236,12 +275,4 @@ public class Translation {
   public void setOk(boolean ok) {
     this.ok = ok;
   }
-
-  private Key eventID;
-  private String lang;
-  private String title;
-  private String desc;
-  private String location;
-  private String url;
-  private boolean ok;
 }
