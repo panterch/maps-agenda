@@ -7,6 +7,21 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+// TODO everywhere: We need to sanitize the text (this was part of the XML output, but I think this should go everywhere). PHP code for this:
+/*
+ * function edittext($text,$sprache){
+ * $text=trim($text);
+ * $text=str_replace("\n", "", $text);
+ * if($sprache=="ta"){
+ *   $text=str_replace("&#160;", "", $text);
+ * } else {
+ *   $text=str_replace("&#160;", " ", $text);
+ * }
+ * $text=strip_tags($text);
+ * return $text;
+ * }
+ */
+
 /**
  * Translations for a certain MAPS event.
  */

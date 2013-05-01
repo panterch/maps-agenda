@@ -2,6 +2,7 @@
 %><%@ page import="ch.aoz.maps.Event"
 %><%@ page import="ch.aoz.maps.Translation"
 %><%@ page import="java.util.Calendar"
+%><%@ page import="java.util.Date"
 %><%@ page import="java.util.Iterator"
 %><%@ page import="java.util.List"
 %><%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory"
@@ -17,8 +18,7 @@
 %><%@ page import="com.google.appengine.api.datastore.Query.FilterPredicate"
 %><%@ page import="com.google.appengine.api.datastore.Query.FilterOperator"
 %><%@ page import="com.google.appengine.api.datastore.Query.SortDirection"
-%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%
-      int year = new Integer(request.getParameter("year"));
+%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%int year = new Integer(request.getParameter("year"));
       Integer month;
       if (request.getParameter("month") != null) {
         month = new Integer(request.getParameter("month"));
@@ -30,26 +30,15 @@
       response.setHeader("Content-Disposition", "attachment; filename="
           + String.format("%04d", year) + "-" + String.format("%02d", month) + ".xml");
 
-      // TODO One-off
+      
+      // TODO One-off for testing only.
       /*
-      Event event = new Event(2012, 12, 0, "hallo");
+      Translation de = new Translation("de", "hallo", "Hallo Welt", "weltweit", "http://maps.google.com");
+      Calendar date = Calendar.getInstance();
+      date.clear();
+      date.set(2012, Calendar.DECEMBER, 1); 
+      Event event = new Event(date.getTime(), de);
       event.addToStore();
-
-      Translation en = new Translation(event.toEntity().getKey(),
-          "en",
-          "hello",
-          "hello world",
-          "worldwide",
-          "http://maps.google.com");
-      en.addToStore();
-      Translation de = new Translation(event.toEntity().getKey(),
-          "de",
-          "hallo",
-          "Hallo Welt",
-          "weltweit",
-          "http://maps.google.com");
-      de.addToStore();
       */
       
-      out.print(Event.getXMLForMonth(year, month));
-%>
+      out.print(Event.getXML(2012, Calendar.DECEMBER, 1, 2013, Calendar.JANUARY, 1));%>
