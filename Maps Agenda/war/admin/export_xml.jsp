@@ -30,11 +30,14 @@
       response.setHeader("Content-Disposition", "attachment; filename="
           + String.format("%04d", year) + "-" + String.format("%02d", month) + ".xml");
 
-      // TODO Testing only.
-      Translation de =
-          new Translation("de", "hallo", "Hallo Welt", "weltweit", "http://maps.google.com");
-      de.addToStore();
-      Event event = new Event(new Date(2012, 12, 0), de, 0);
+      
+      // TODO One-off for testing only.
+      /*
+      Translation de = new Translation("de", "hallo", "Hallo Welt", "weltweit", "http://maps.google.com");
+      Calendar date = Calendar.getInstance();
+      date.set(2012, 12, 1);
+      Event event = new Event(date.getTime(), de);
       event.addToStore();
-
-      out.print(Event.GetXML(2012, 12, 0, 2012, 12, 0));%>
+      */
+      
+      out.print(Event.GetXML(2012, 11, 30, 2012, 12, 1));%>
