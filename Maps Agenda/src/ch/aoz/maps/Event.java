@@ -221,6 +221,11 @@ public class Event {
 			 * // }
 			 */
 
+			// Log the date to detect when the day changes.
+			Calendar currentDay = Calendar.getInstance();
+			currentDay.clear();
+			currentDay.set(yearFrom - 1, monthFrom - 1, dayFrom - 1); 
+
 			// Each entry.
 			for (Event event : GetEventListForTimespan(from, to)) {
 				Translation translation;
@@ -233,10 +238,25 @@ public class Event {
 					continue;
 				}
 
-				xml += getXMLEntry(translation, event, language);
+				// Find out if the date changed between events.
+				Calendar newDay = Calendar.getInstance();
+				newDay.clear();
+				newDay.setTime(event.getDate());
+				boolean dateChanged = newDay.get(Calendar.DAY_OF_MONTH) != currentDay
+						.get(Calendar.DAY_OF_MONTH)
+						|| newDay.get(Calendar.MONTH) != currentDay
+								.get(Calendar.MONTH)
+						|| newDay.get(Calendar.YEAR) != currentDay
+								.get(Calendar.YEAR);
+						
+				// Add the entry for this event.
+				xml += getXMLEntry(translation, event, language, dateChanged);
+				
+				// Log the new date.
+				currentDay.setTime(newDay.getTime());
 
 				// Add image title if desired.
-				if (true) { // TODO Pass in, or retrieve. May already be populated at top.
+				if (true) { // TODO Pass in, or retrieve.
 					String image_title = new String(
 							"            <b_titel aid:cstyle=\"bildtitel"
 									+ language.getXMLFormatSupplement() + "\">"
@@ -298,21 +318,20 @@ public class Event {
 	}
 
 	private static String getXMLEntry(Translation translation, Event event,
-			Language language) {
+			Language language, boolean dateChanged) {
 		String xml = new String();
 
-		boolean date_changed = true; // TODO Compute.
 		boolean enlarge = true; // TODO Pass in, or retrieve.
 
 		if (!enlarge) {
 			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
 			if (!language.isRightToLeft()) {
 				xml += getXMLDayOfWeek(translation, event, language, enlarge);
-				xml += getXMLDate(translation, event, enlarge, date_changed);
+				xml += getXMLDate(translation, event, enlarge, dateChanged);
 				xml += getXMLSmallContents(translation, language, 358);
 			} else {
 				xml += getXMLSmallContents(translation, language, 374);
-				xml += getXMLDate(translation, event, enlarge, date_changed);
+				xml += getXMLDate(translation, event, enlarge, dateChanged);
 				xml += getXMLDayOfWeek(translation, event, language, enlarge);
 			}
 		} else {
