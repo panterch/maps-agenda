@@ -206,20 +206,21 @@ public class Event {
 
 		Map<String, Language> languages = Language.getAllLanguages();
 		Map<Event, String> image_text = new HashMap<Event, String>();
+		List<Event> topicOfMonth = new ArrayList<Event>(); // TODO pass in, or retrieve.
 
 		for (Language language : languages.values()) {
 			xml += "    <" + language.getCode() + ">\n";
 			xml += "      <inh>\n";
 
-			// TODO add.
-			/*
-			 * // Topic of the month. if (topic_of_month.size() > 0) {
-			 * // PHP VERSION: ----
-			 * // foreach($_POST[monatsthema] as $value) {
-			 * // if(file_exists($datapfad.str_replace ( "de" , $spr, $value))){
-			 * // eintrag(str_replace ( "de" , $spr, $value),2,$spr); }
-			 * // }
-			 */
+			for (Event event : topicOfMonth) {
+				Translation translation;
+				try {
+					translation = getTranslation(event, language);
+				} catch (EntityNotFoundException e) {
+					continue;
+				}
+				xml += getXMLEntry(translation, event, language, true, true, false);
+			}
 
 			// Log the date to detect when the day changes.
 			Calendar currentDay = Calendar.getInstance();
@@ -230,10 +231,7 @@ public class Event {
 			for (Event event : GetEventListForTimespan(from, to)) {
 				Translation translation;
 				try {
-					// TODO assign the translation of this event to the given
-					// language.
-					translation = Translation
-							.getGermanTranslationForEvent(event);
+					translation = getTranslation(event, language);
 				} catch (EntityNotFoundException e) {
 					continue;
 				}
@@ -248,9 +246,11 @@ public class Event {
 								.get(Calendar.MONTH)
 						|| newDay.get(Calendar.YEAR) != currentDay
 								.get(Calendar.YEAR);
+
+				boolean enlarge = true; // TODO Pass in, or retrieve.
 						
 				// Add the entry for this event.
-				xml += getXMLEntry(translation, event, language, dateChanged);
+				xml += getXMLEntry(translation, event, language, dateChanged, enlarge, true);
 				
 				// Log the new date.
 				currentDay.setTime(newDay.getTime());
@@ -302,6 +302,15 @@ public class Event {
 		return xml;
 	}
 
+	private static Translation getTranslation(Event event, Language language)
+			throws EntityNotFoundException {
+		Translation translation;
+		// TODO assign the translation of this event to the given
+		// language.
+		translation = Translation.getGermanTranslationForEvent(event);
+		return translation;
+	}
+	
 	private static String getXMLImageTag(String day, String month,
 			String bTitelTag) {
 		String xml = new String();
@@ -318,32 +327,30 @@ public class Event {
 	}
 
 	private static String getXMLEntry(Translation translation, Event event,
-			Language language, boolean dateChanged) {
+			Language language, boolean dateChanged, boolean enlarge, boolean printDay) {
 		String xml = new String();
-
-		boolean enlarge = true; // TODO Pass in, or retrieve.
 
 		if (!enlarge) {
 			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
 			if (!language.isRightToLeft()) {
-				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge, printDay);
 				xml += getXMLDate(translation, event, enlarge, dateChanged);
 				xml += getXMLSmallContents(translation, language, 358);
 			} else {
 				xml += getXMLSmallContents(translation, language, 374);
 				xml += getXMLDate(translation, event, enlarge, dateChanged);
-				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge, printDay);
 			}
 		} else {
 			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">\n";
 			if (!language.isRightToLeft()) {
-				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge, printDay);
 				xml += getXMLDate(translation, event, enlarge, false);
 				xml += getXMLTitle(translation, language, 303);
 			} else {
 				xml += getXMLTitle(translation, language, 374);
 				xml += getXMLDate(translation, event, enlarge, false);
-				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge, printDay);
 			}
 			xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">\n";
 			xml += "    <Inhalttag aid:pstyle=\"inhalt_gross"
@@ -376,7 +383,7 @@ public class Event {
 	}
 
 	private static String getXMLDayOfWeek(Translation translation, Event event,
-			Language language, Boolean enlarge) {
+			Language language, boolean enlarge, boolean printDay) {
 		String xml = new String();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(event.getDate());
@@ -387,10 +394,11 @@ public class Event {
 				+ "\" aid:pstyle=\"wochentag"
 				+ language.getXMLFormatSupplement() + "\">\n";
 		xml += "    <Wochentag>\n";
-		xml += "      "
-				+ language
-						.getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK) - 1)
-				+ "\n";
+		if (printDay) {
+			xml += "      "
+					+ language.getDayOfTheWeek(calendar
+							.get(Calendar.DAY_OF_WEEK) - 1) + "\n";
+		}
 		xml += "    </Wochentag>\n";
 		xml += "  </Tag_inside>\n";
 		return xml;
