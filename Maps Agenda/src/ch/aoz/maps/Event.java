@@ -49,7 +49,6 @@ public class Event {
    * Create a new Event with the specified parameters.
    *
    * @param date day at which the event takes place
-   * @param title the German title of the event
    */
   public Event(Date date, Translation germanTranslation) {
     this.date = date;
@@ -176,7 +175,7 @@ public class Event {
    *
    * @return the generated XML tag without headers.
    */
-  public String GetXML(
+  public static String GetXML(
       int yearFrom,
       int monthFrom,
       int dayFrom,
@@ -199,15 +198,16 @@ public class Event {
       xml += "    <" + language.getCode() + ">\n";
       xml += "      <inh>\n";
       
+      /*
       // Topic of the month.
       if (topic_of_month.size() > 0) {
-        /*
-         foreach($_POST[monatsthema] as $value){
-    if(file_exists($datapfad.str_replace ( "de" , $spr,  $value))){
-            eintrag(str_replace ( "de" , $spr,  $value),2,$spr);
+         // PHP VERSION: ----
+         //foreach($_POST[monatsthema] as $value) {
+         //  if(file_exists($datapfad.str_replace ( "de" , $spr,  $value))){
+         //    eintrag(str_replace ( "de" , $spr,  $value),2,$spr);
         }
-         */
       }
+      */
       
       // Each entry.
       for (Event event : GetEventListForTimespan(from, to)) {
@@ -218,14 +218,22 @@ public class Event {
     }
     xml += "  </Tag1>\n";
     
-    // TODO 'bildtexte'.
+    // TODO images.
+    
     xml += "</Root>\n";
+    
+    return xml;
   }
   
-  public String GetXMLEntry(Event event, Language language) {
+  private static String GetXMLEntry(Event event, Language language) {
     String xml = new String();
     
-    Translation translation; // TODO assign the translation of this event to the given language.
+    Translation translation;
+    try {
+      translation = Translation.getGermanTranslationForEvent(event); // TODO assign the translation of this event to the given language.
+    } catch (EntityNotFoundException e) {
+      return xml;
+    }
     // TODO implement the stuff below:
     /*
          // SOLL AUS DEM EINTRAG EINE BILDUNTERSCHRIFT GENERIERT WERDEN?
@@ -271,6 +279,7 @@ public class Event {
       }
 */
     
+    boolean date_changed = true;      // TODO Compute.
     boolean enlarge = true;           // TODO Pass in, or retrieve.
     String dayOfWeek = new String();  // TODO Day of week in the particular language. 
     
@@ -309,6 +318,7 @@ public class Event {
       xml += "  </Tag_inside>\n";
     }
     xml += "</Table_inside>";
+    return xml;
   }
 
   private static String GetXMLSmallContents(
@@ -327,6 +337,7 @@ public class Event {
   }
 
   private static String GetXMLDayOfWeek(Translation translation, String formatSupplement, Boolean enlarge, Boolean rtl) {
+    String dayOfWeek = new String();  // TODO Get out of translation or retrieve otherwise.
     String xml = new String();
     xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + (rtl ? "45" : "52") + "\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"wochentag" + formatSupplement + "\">\n";
     xml += "    <Wochentag>\n";
