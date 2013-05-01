@@ -72,28 +72,24 @@ public class Translation {
       title = (String) entity.getProperty("title");
     } else {
       title = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("desc")) {
       desc = (String) entity.getProperty("desc");
     } else {
       desc = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("location")) {
       location = (String) entity.getProperty("location");
     } else {
       location = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("url")) {
       url = (String) entity.getProperty("url");
     } else {
       url = new String("");
-      ok = false;
     }
   }
 
@@ -138,13 +134,23 @@ public class Translation {
    * @throws EntityNotFoundException 
    */
   public static Translation getGermanTranslationForEvent(Event e) throws EntityNotFoundException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
-        .addChild(Translation.entityKind, "de").getKey();
-    Entity germanEntity = datastore.get(key);
-    return new Translation(germanEntity);
+    return getTranslationForEvent(e, "de");
   }
   
+  /**
+   * Fetches the German translation for the provided event. 
+   * @param e An event
+   * @return the German translation.
+   * @throws EntityNotFoundException 
+   */
+  public static Translation getTranslationForEvent(Event e, String lang) throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
+        .addChild(Translation.entityKind, lang).getKey();
+    Entity entity = datastore.get(key);
+    return new Translation(entity);
+  }
+
   /**
    * Outputs the XML representation of this translation.
    *

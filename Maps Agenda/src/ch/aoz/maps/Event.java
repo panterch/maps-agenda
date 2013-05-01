@@ -144,9 +144,11 @@ public class Event {
     Filter minimumFilter = new FilterPredicate(
         "date", Query.FilterOperator.GREATER_THAN_OR_EQUAL, c.getTime());
 
-    c.add(month, 1);
+    System.out.println(new SimpleDateFormat("yyyy-MMM-dd").format(c.getTime()));
+    c.add(Calendar.MONTH, 1);
     Filter maximumFilter = new FilterPredicate(
         "date", Query.FilterOperator.LESS_THAN, c.getTime());
+    System.out.println(new SimpleDateFormat("yyyy-MMM-dd").format(c.getTime()));
     
     Filter rangeFilter = CompositeFilterOperator.and(minimumFilter, maximumFilter);
 

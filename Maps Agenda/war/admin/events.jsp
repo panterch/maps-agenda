@@ -25,7 +25,7 @@ public static String createEventDiv(Event e) {
   return div.toString();
 }
 
-public static String createEventForm(String formName, Event e) {
+public static String createEventForm(String formName, Event e, Calendar selected_month) {
   Translation de = null;
   StringBuilder form = new StringBuilder();
   if (e == null) {
@@ -40,11 +40,17 @@ public static String createEventForm(String formName, Event e) {
   }
   form.append("<form name='" + formName + "' method='POST' target='content-frame'");
   form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
+  if (selected_month != null) {
+    form.append("<input type='hidden' name='eyear' value='" + selected_month.get(Calendar.YEAR) + "'></p>");    
+    form.append("<input type='hidden' name='emonth' value='" + selected_month.get(Calendar.MONTH) + "'></p>");
+  } else {
+    selected_month = Calendar.getInstance();
+  }
   if (e == null) {
     form.append("<input type='hidden' name='key' value=''></p>");    
     form.append("<input type='hidden' name='new' value='true'></p>");    
-    form.append("<p>Year-Month-Day: <input type='text' name='year' value='' maxlength='4' size='4'>");
-    form.append("-<input type='text' name='month' value='' maxlength='2' size='2'>");
+    form.append("<p>Year-Month-Day: <input type='text' name='year' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
+    form.append("-<input type='text' name='month' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
     form.append("-<input type='text' name='day' value='' maxlength='2' size='2'></p>");
     form.append("<p>Title: <input type='text' name='title' value=''></p>");
     form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'></textarea>");
@@ -67,6 +73,35 @@ public static String createEventForm(String formName, Event e) {
   form.append("</form></div>");
   return form.toString();
 }
+
+public static String createXMLForm() {
+  StringBuilder form = new StringBuilder();
+  form.append("<div id='event-xml' class='eventdiv'>");
+  form.append("<div class='title'>Import an event ");
+  form.append("<a onclick=\"hide_box('event-xml');\" href='javascript:void(0);''>(hide)</a></div>");
+  form.append("<form name='xml' method='POST' target='content-frame' enctype='multipart/form-data'");
+  form.append(" action='' onSubmit=\"return validateXMLForm()\">");
+  form.append("<p><input type='file' name='file'></p>");
+  form.append("<p><input type='submit' value='Import event'></p>");
+  form.append("</form></div>");
+  return form.toString();
+}
+
+public static String createSelectForm(Calendar selected_month) {
+  if (selected_month == null) {
+    selected_month = Calendar.getInstance();
+  }
+  StringBuilder form = new StringBuilder();
+  form.append("<div id='event-date'>");
+  form.append("<div class='title'>Select month to display</div>");
+  form.append("<form name='date' method='GET' target='content-frame'>");
+  form.append("<p>Year-Month: <input type='text' name='eyear' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
+  form.append("-<input type='text' name='emonth' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
+  form.append("<p><input type='submit' value='Show'></form>");
+  form.append("<form name='date_all' method='GET' target='content-frame'><input type='submit' value='Show all'>");
+  form.append("</form></p></div>");
+  return form.toString();
+}
 %>
 <html>
 <head>
@@ -82,10 +117,15 @@ form p {
   display: none;
 }
 .event {
-  background-color: #eee;
+  background-color: #fff;
   border-radius: 5px;
   padding: 5px;
   margin-bottom: 10px;
+}
+.edate {
+  float: left;
+  overflow: auto;
+  width: 100px;
 }
 .eedit {
   float: right;
@@ -95,6 +135,7 @@ form p {
   margin-left: 20px;
   background-color: #ddd;
   border-radius: 5px;
+  overflow: auto;
   padding: 5px;
 }
 .etitle {
@@ -135,6 +176,16 @@ th, td {
 }
 </style>
 <script>
+function validateXMLForm() {
+  var form = document.forms["xml"];
+  var reader = new FileReader();
+  reader.onload = (function(f) { alert(f); });
+  reader.readAsText(form.file);
+}
+function test(f) {
+  alert(f);
+}
+
 function validateForm(formName) {
   var intRegex = /^\d+$/;
 
@@ -181,24 +232,6 @@ function validateForm(formName) {
     form.title.focus();
     return false;
   }
-
-  if(form.desc.value == "") {
-    alert("Please fill in the description of the event.");
-    form.desc.focus();
-    return false;
-  }
-
-  if(form.loc.value == "") {
-    alert("Please fill in the location of the event.");
-    form.location.focus();
-    return false;
-  }
-  
-  if(form.url.value == "") {
-    alert("Please fill in the url of the event.");
-    form.url.focus();
-    return false;
-  }
   // Send the form
   return true;
 }
@@ -233,8 +266,17 @@ function hide(elemId) {
 </head>
 <body>
 <%
-//List<Event> events = Event.GetEventListForMonth(2013, Calendar.APRIL);
-List<Event> events = Event.GetAllEvents();
+List<Event> events;
+Calendar selected_month = Calendar.getInstance();
+if (request.getParameter("eyear") != null) {
+  int year = Integer.parseInt(request.getParameter("eyear")); 
+  int month = Integer.parseInt(request.getParameter("emonth"));
+  events = Event.GetEventListForMonth(year, month);
+  selected_month.set(year, month, 1);
+} else {
+  events = Event.GetAllEvents();
+  selected_month = null;
+}
 if (request.getParameter("new") != null) {
   // An event is to be submitted.
   boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
@@ -278,10 +320,12 @@ if (request.getParameter("new") != null) {
   }
 }
 
+out.println(createSelectForm(selected_month));
 for (Event e : events) {
-  out.println(createEventForm("form-" + e.getKey(), e));
+  out.println(createEventForm("form-" + e.getKey(), e, selected_month));
 }
-out.println(createEventForm("newEvent", null));
+out.println(createEventForm("newEvent", null, selected_month));
+out.println(createXMLForm());
 
 if (events.isEmpty()) {
   out.println("No event is yet defined.");
@@ -293,5 +337,6 @@ if (events.isEmpty()) {
      out.println(createEventDiv(e)); 
    } }%>
 <div id="new-event-link"><a onclick="show_box('event-new');" href="javascript:void(0);">Add a new event</a></div>
+<div><a onclick="show_box('event-xml');" href="javascript:void(0);">Import an event</a></div>
 </body>
 </html>
