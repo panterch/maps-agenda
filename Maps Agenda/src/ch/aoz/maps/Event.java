@@ -13,10 +13,12 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ch.aoz.maps.Language;
 
@@ -24,502 +26,491 @@ import ch.aoz.maps.Language;
  * A MAPS event.
  */
 public class Event {
-  public static final String entityKind = "Event";
-  private boolean hasKey;
-  private long key;
-  private Date date;
-  private Translation germanTranslation;
-  private boolean ok;
-  
-  /**
-   * Create a new Event with the specified parameters and key.
-   *
-   * @param date day at which the event takes place
-   */
-  public Event(Date date, Translation germanTranslation, long key) {
-    this.date = date;
-    this.germanTranslation = germanTranslation;
-    this.key = key;
-    this.ok = (date != null);
-    hasKey = true;
-  }
+	public static final String entityKind = "Event";
+	private boolean hasKey;
+	private long key;
+	private Date date;
+	private Translation germanTranslation;
+	private boolean ok;
 
-  /**
-   * Create a new Event with the specified parameters.
-   *
-   * @param date day at which the event takes place
-   */
-  public Event(Date date, Translation germanTranslation) {
-    this.date = date;
-    this.germanTranslation = germanTranslation;
-    this.ok = (date != null);
-    this.key = 0;
-    hasKey = false;
-  }
+	/**
+	 * Create a new Event with the specified parameters and key.
+	 * 
+	 * @param date
+	 *            day at which the event takes place
+	 */
+	public Event(Date date, Translation germanTranslation, long key) {
+		this.date = date;
+		this.germanTranslation = germanTranslation;
+		this.key = key;
+		this.ok = (date != null);
+		hasKey = true;
+	}
 
-  /**
-   * Parse an Entity into a new Event. Check isOk() if all fields could be populated.
-   *
-   * @param entity the entity to parse
-   */
-  public Event(Entity entity) {
-    key = entity.getKey().getId();
-    hasKey = true; 
-    
-    ok = true;
-    if (entity.hasProperty("date")) {
-      date = (Date) entity.getProperty("date");
-    } else {
-      Calendar calendar = Calendar.getInstance();
-      calendar.clear();
-      calendar.set(1900, Calendar.JANUARY, 1);
-      date = calendar.getTime();
-      ok = false;
-    }
-    
-    try {
-      germanTranslation = Translation.getGermanTranslationForEvent(this);
-    } catch (EntityNotFoundException e) {
-      germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
-      ok = false;
-    }
-  }
+	/**
+	 * Create a new Event with the specified parameters.
+	 * 
+	 * @param date
+	 *            day at which the event takes place
+	 */
+	public Event(Date date, Translation germanTranslation) {
+		this.date = date;
+		this.germanTranslation = germanTranslation;
+		this.ok = (date != null);
+		this.key = 0;
+		hasKey = false;
+	}
 
-  public boolean addToStore() {
-    if (!this.isOk() || !this.germanTranslation.isOk()) {
-      return false;
-    }
+	/**
+	 * Parse an Entity into a new Event. Check isOk() if all fields could be
+	 * populated.
+	 * 
+	 * @param entity
+	 *            the entity to parse
+	 */
+	public Event(Entity entity) {
+		key = entity.getKey().getId();
+		hasKey = true;
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key key;
-    try {
-      key = datastore.put(this.toEntity());
-      if (!hasKey()) {
-        this.key = key.getId();
-        hasKey = true;
-      }
-    } catch (Exception ex) {
-      return false;
-    }
+		ok = true;
+		if (entity.hasProperty("date")) {
+			date = (Date) entity.getProperty("date");
+		} else {
+			Calendar calendar = Calendar.getInstance();
+			calendar.clear();
+			calendar.set(1900, Calendar.JANUARY, 1);
+			date = calendar.getTime();
+			ok = false;
+		}
 
-    if (germanTranslation.getEventID() == null)
-      germanTranslation.setEventID(key);
-    return germanTranslation.addToStore();
-  }
+		try {
+			germanTranslation = Translation.getGermanTranslationForEvent(this);
+		} catch (EntityNotFoundException e) {
+			germanTranslation = new Translation(entity.getKey(), "de", "", "",
+					"", "");
+			ok = false;
+		}
+	}
 
-  /**
-   * Export this Event into an Entity.
-   *
-   * @return the generated Entity.
-   */
-  public Entity toEntity() {
-    Entity result = null;
-    if (hasKey())
-      result = new Entity(entityKind, getKey());
-    else
-      result = new Entity(entityKind);
+	public boolean addToStore() {
+		if (!this.isOk() || !this.germanTranslation.isOk()) {
+			return false;
+		}
 
-    result.setProperty("date", date);
-    return result;
-  }
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Key key;
+		try {
+			key = datastore.put(this.toEntity());
+			if (!hasKey()) {
+				this.key = key.getId();
+				hasKey = true;
+			}
+		} catch (Exception ex) {
+			return false;
+		}
 
-  public static List<Event> GetAllEvents() {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		if (germanTranslation.getEventID() == null)
+			germanTranslation.setEventID(key);
+		return germanTranslation.addToStore();
+	}
 
-    Query query = new Query(entityKind).addSort("date", SortDirection.ASCENDING);
-    List<Entity> items = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-    
-    ArrayList<Event> events = new ArrayList<Event>();
-    for (Entity item : items) {
-      events.add(new Event(item));
-    }
-    return events;
-  }
+	/**
+	 * Export this Event into an Entity.
+	 * 
+	 * @return the generated Entity.
+	 */
+	public Entity toEntity() {
+		Entity result = null;
+		if (hasKey())
+			result = new Entity(entityKind, getKey());
+		else
+			result = new Entity(entityKind);
 
-  public static List<Event> GetEventListForTimespan(
-      Calendar from, Calendar to) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		result.setProperty("date", date);
+		return result;
+	}
 
-    // Set up the range filter.
-    Filter minimumFilter = new FilterPredicate(
-        "date", Query.FilterOperator.GREATER_THAN_OR_EQUAL, from.getTime());
-    Filter maximumFilter = new FilterPredicate(
-        "date", Query.FilterOperator.LESS_THAN, to.getTime());
-    Filter rangeFilter = CompositeFilterOperator.and(minimumFilter, maximumFilter);
+	public static List<Event> GetAllEvents() {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 
-    Query query = new Query(entityKind).setFilter(rangeFilter)
-        .addSort("date", SortDirection.ASCENDING);
-    List<Entity> items = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-    
-    ArrayList<Event> events = new ArrayList<Event>();
-    for (Entity item : items) {
-      events.add(new Event(item));
-    }
-    return events;
-  }
-  
-  public static List<Event> GetEventListForMonth(int year, int month) {
-    Calendar from = Calendar.getInstance();
-    from.clear();
-    from.set(year, month, 1);
-    
-    Calendar to = Calendar.getInstance();
-    to.clear();
-    to.setTime(from.getTime());
-    to.add(month, 1);
-    
-    return GetEventListForTimespan(from, to);
-  }
-  
-  /**
-   * Render this Event into an XML tag.
-   *
-   * @return the generated XML tag without headers.
-   */
-  public static String getXML(
-      int yearFrom,
-      int monthFrom,
-      int dayFrom,
-      int yearTo,
-      int monthTo,
-      int dayTo) {
-    // Set up range to export.
-    Calendar from = Calendar.getInstance();
-    from.clear();
-    from.set(yearFrom, monthFrom, dayFrom);
-    Calendar to = Calendar.getInstance();
-    to.clear();
-    to.set(yearTo, monthTo, dayTo);
-   
-    // Header.
-    String xml = new String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    xml += "<Root>\n";
-    xml += "  <Tag1>\n";
-    
-    Map<String, Language> languages = Language.getAllLanguages();
-    for (Language language : languages.values()) {
-      xml += "    <" + language.getCode() + ">\n";
-      xml += "      <inh>\n";
-      
-      /*
-      // Topic of the month.
-      if (topic_of_month.size() > 0) {
-         // PHP VERSION: ----
-         //foreach($_POST[monatsthema] as $value) {
-         //  if(file_exists($datapfad.str_replace ( "de" , $spr,  $value))){
-         //    eintrag(str_replace ( "de" , $spr,  $value),2,$spr);
-        }
-      }
-      */
-      
-      // Each entry.
-      for (Event event : GetEventListForTimespan(from, to)) {
-        xml += getXMLEntry(event, language);
-      }
-      xml += "      </inh>\n";
-      xml += "    </" + language.getCode() + ">\n";
-    }
-    xml += "  </Tag1>\n";
-    
-    // TODO images.
-    
-    xml += "</Root>\n";
-    
-    return xml;
-  }
-  
-  private static String getXMLEntry(Event event, Language language) {
-    String xml = new String();
-    
-    Translation translation;
-    try {
-      translation = Translation.getGermanTranslationForEvent(event); // TODO assign the translation of this event to the given language.
-    } catch (EntityNotFoundException e) {
-      return xml;
-    }
-    // TODO implement the stuff below:
-    /*
-         // SOLL AUS DEM EINTRAG EINE BILDUNTERSCHRIFT GENERIERT WERDEN?
-         if(count($_POST["bildtexte"])>0){
-         foreach($_POST["bildtexte"] as $value_b){
+		Query query = new Query(entityKind).addSort("date",
+				SortDirection.ASCENDING);
+		List<Entity> items = datastore.prepare(query).asList(
+				FetchOptions.Builder.withDefaults());
 
-             if($value==$value_b){
+		ArrayList<Event> events = new ArrayList<Event>();
+		for (Entity item : items) {
+			events.add(new Event(item));
+		}
+		return events;
+	}
 
-             if(!array_key_exists($value, $bildtext_array)){
+	public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 
-             $bildtext_array[$value]=array();
-         //  array_push($bildtext_array,array( $value => array()));
-             } 
-             
-             if(file_exists($datapfad.str_replace ( "de" , $spr,  $value))){
-             $getxml = simplexml_load_file($datapfad.str_replace ( "de" , $spr,  $value));
-             $titel_spr=$getxml->title[0];
+		// Set up the range filter.
+		Filter minimumFilter = new FilterPredicate("date",
+				Query.FilterOperator.GREATER_THAN_OR_EQUAL, from.getTime());
+		Filter maximumFilter = new FilterPredicate("date",
+				Query.FilterOperator.LESS_THAN, to.getTime());
+		Filter rangeFilter = CompositeFilterOperator.and(minimumFilter,
+				maximumFilter);
 
-             array_push  ($bildtext_array[$value], array($spr,$titel_spr));
-             }
+		Query query = new Query(entityKind).setFilter(rangeFilter).addSort(
+				"date", SortDirection.ASCENDING);
+		List<Entity> items = datastore.prepare(query).asList(
+				FetchOptions.Builder.withDefaults());
 
+		ArrayList<Event> events = new ArrayList<Event>();
+		for (Entity item : items) {
+			events.add(new Event(item));
+		}
+		return events;
+	}
 
-             }
-         }
+	public static List<Event> GetEventListForMonth(int year, int month) {
+		Calendar from = Calendar.getInstance();
+		from.clear();
+		from.set(year, month, 1);
 
-         }
-*/
-    
-    // TODO everywhere:
-    /*
-    function edittext($text,$sprache){
-      $text=trim($text);
-      $text=str_replace("\n", "", $text);
-      if($sprache=="ta"){
-      $text=str_replace("&#160;", "", $text);
-      }else{
-      $text=str_replace("&#160;", " ", $text);
-      }
-      $text=strip_tags($text);
+		Calendar to = Calendar.getInstance();
+		to.clear();
+		to.setTime(from.getTime());
+		to.add(month, 1);
 
+		return GetEventListForTimespan(from, to);
+	}
 
-      return $text;
-      }
-*/
-    
-    boolean date_changed = true;      // TODO Compute.
-    boolean enlarge = true;           // TODO Pass in, or retrieve.
+	/**
+	 * Render this Event into an XML tag.
+	 * 
+	 * @return the generated XML tag without headers.
+	 */
+	public static String getXML(int yearFrom, int monthFrom, int dayFrom,
+			int yearTo, int monthTo, int dayTo) {
+		// Set up range to export.
+		Calendar from = Calendar.getInstance();
+		from.clear();
+		from.set(yearFrom, monthFrom, dayFrom);
+		Calendar to = Calendar.getInstance();
+		to.clear();
+		to.set(yearTo, monthTo, dayTo);
 
-    if (!enlarge) {
-      xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
-      if (!language.isRightToLeft()) {
-        xml += getXMLDayOfWeek(translation, event, language, enlarge);
-        xml += getXMLDate(translation, event, enlarge, date_changed);
-        xml += getXMLSmallContents(translation, language, 358);
-      } else {
-        xml += getXMLSmallContents(translation, language, 374);
-        xml += getXMLDate(translation, event, enlarge, date_changed);
-        xml += getXMLDayOfWeek(translation, event, language, enlarge);
-      }
-    } else {
-      xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">\n";
-      if (!language.isRightToLeft()) {
-        xml += getXMLDayOfWeek(translation, event, language, enlarge);
-        xml += getXMLDate(translation, event, enlarge, false);
-        xml += getXMLTitle(translation, language, 303);
-      } else {
-        xml += getXMLTitle(translation, language, 374);
-        xml += getXMLDate(translation, event, enlarge, false);
-        xml += getXMLDayOfWeek(translation, event, language, enlarge);
-      }
-      xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">\n";
-      xml += "    <Inhalttag aid:pstyle=\"inhalt_gross" + language.getXMLFormatSupplement() + "\">\n";
-      xml += "      " + translation.getDesc();
-      xml += "    </Inhalttag>\n";
-      xml += getXMLLocation(translation, language, enlarge);
-      xml += "  </Tag_inside>\n";
-    }
-    xml += "</Table_inside>";
-    return xml;
-  }
+		// Header.
+		String xml = new String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		xml += "<Root>\n";
+		xml += "  <Tag1>\n";
 
-  private static String getXMLSmallContents(
-      Translation translation, Language language, int width) {
-    String xml = new String();
-    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">\n";
-    xml += "    <title aid:pstyle=\"titel" + language.getXMLFormatSupplement() + "\">\n";
-    xml += "      " + translation.getTitle() + "\n";
-    xml += "    </title>\n";
-    xml += "    <Inhalttag aid:pstyle=\"inhalt" + language.getXMLFormatSupplement() + "\">\n";
-    xml += "      " + translation.getDesc();
-    xml += "    </Inhalttag>\n";
-    xml += getXMLLocation(translation, language, false);
-    xml += "  </Tag_inside>\n";
-    return xml;
-  }
+		Map<String, Language> languages = Language.getAllLanguages();
+		Map<Event, String> image_text = new HashMap<Event, String>();
 
-  private static String getXMLDayOfWeek(Translation translation, Event event, Language language, Boolean enlarge) {
-    String xml = new String();
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(event.getDate());
-    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + (language.isRightToLeft() ? "45" : "52") + "\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"wochentag" + language.getXMLFormatSupplement() + "\">\n";
-    xml += "    <Wochentag>\n";
-    xml += "      " + language.getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK) - 1) + "\n";
-    xml += "    </Wochentag>\n";
-    xml += "  </Tag_inside>\n";
-    return xml;
-  }
+		for (Language language : languages.values()) {
+			xml += "    <" + language.getCode() + ">\n";
+			xml += "      <inh>\n";
 
-  private static String getXMLDate(Translation translation, Event event, Boolean enlarge, Boolean date_changed) {
-    String xml = new String();
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(event.getDate());
-    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"40\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"datum\">\n";
-    if (!enlarge || date_changed) {
-      xml += "    " + Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)) + "." + Integer.toString(calendar.get(Calendar.MONTH)) + ".\n";
-    }
-    xml += "  </Tag_inside>\n";
-    return xml;
-  }
-  
-  private static String getXMLTitle(Translation translation, Language language, int width) {
-    String xml = new String();
-    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + Integer.toString(width) + "\" aid5:cellstyle=\"cs_titel_gross\">\n";
-    xml += "    <title aid:pstyle=\"titel" + language.getXMLFormatSupplement() + "\">\n";
-    xml += "      " + translation.getTitle() + "\n";
-    xml += "    </title>\n";
-    xml += "  </Tag_inside>\n";
-    return xml;
-  }
-  
-  private static String getXMLLocation(Translation translation, Language language, Boolean enlarge) {
-    String xml = new String();
-    if (translation.getLocation() != "") {
-      if (enlarge) {
-        xml += "    <Orttag aid:pstyle=\"ort_gross";
-      } else {
-        if (language.isRightToLeft()) {
-          xml += "    <Orttag aid:pstyle=\"ort";
-        } else {
-          xml += "    <Orttag aid:pstyle=\"ort_rtl";        
-        }
-      }
-      // TODO remove special hack for _ru.
-      xml += (language.getXMLFormatSupplement() == "_ru" ? language.getXMLFormatSupplement() : "") + "\">\n";
-      xml += "      " + translation.getLocation() + "\n";
+			// TODO add.
+			/*
+			 * // Topic of the month. if (topic_of_month.size() > 0) {
+			 * // PHP VERSION: ----
+			 * // foreach($_POST[monatsthema] as $value) {
+			 * // if(file_exists($datapfad.str_replace ( "de" , $spr, $value))){
+			 * // eintrag(str_replace ( "de" , $spr, $value),2,$spr); }
+			 * // }
+			 */
 
-      if (translation.getUrl() != "") {
-        // TODO remove this replacement hack.
-        xml += "      " + translation.getUrl().replace("www", "http://www") + "\n";
-      }
-      xml += "    </Orttag>\n";
-    }
-    return xml;
-  }
-  
-  /*
+			// Each entry.
+			for (Event event : GetEventListForTimespan(from, to)) {
+				Translation translation;
+				try {
+					// TODO assign the translation of this event to the given
+					// language.
+					translation = Translation
+							.getGermanTranslationForEvent(event);
+				} catch (EntityNotFoundException e) {
+					continue;
+				}
 
-<bildtexte>
-<?
- foreach ($bildtext_array as $value => $titel_spr){
+				xml += getXMLEntry(translation, event, language);
 
+				// Add image title if desired.
+				if (true) { // TODO Pass in, or retrieve. May already be populated at top.
+					String image_title = new String(
+							"            <b_titel aid:cstyle=\"bildtitel"
+									+ language.getXMLFormatSupplement() + "\">"
+									+ translation.getDesc() + "</b_titel>\n");
+					if (image_text.containsKey(event)) {
+						image_text
+								.put(event,
+										image_text.get(event)
+												+ "            <space aid:cstyle=\"space\" > </space>"
+												+ image_title);
+					} else {
+						image_text.put(event, image_title);
+					}
+				}
+			}
+			xml += "      </inh>\n";
+			xml += "    </" + language.getCode() + ">\n";
+		}
+		xml += "  </Tag1>\n";
 
+		if (image_text.size() > 0) {
+			xml += "  <bildtexte>\n";
+			for (Entry<Event, String> image : image_text.entrySet()) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(image.getKey().getDate());
+				String day = String.format("%02d",
+						calendar.get(Calendar.DAY_OF_MONTH));
+				String month = String.format("%02d",
+						calendar.get(Calendar.MONTH));
+				xml += "    <bild_" + day + "_" + month + ">\n";
+				xml += getXMLImageTag(day, month, image.getValue());
+				xml += "    </bild_" + day + "_" + month + ">\n";
+			}
 
-?>
-<<? echo "bild_".substr($value,8,2)."_". substr($value,5,2) ?>>
-<Table_main xmlns:aid5="http://ns.adobe.com/AdobeInDesign/5.0/" aid5:tablestyle="ts_main" xmlns:aid="http://ns.adobe.com/AdobeInDesign/4.0/" aid:table="table" aid:trows="1" aid:tcols="1"><?
-?><Tag_main aid:table="cell" aid:crows="1" aid:ccols="1" aid:ccolwidth="450" aid5:cellstyle="cs_bildtitel"><bilddatum  aid:pstyle="bilddatum"> <? echo substr($value,8,2).".". substr($value,5,2)."." ?> </bilddatum>
-<p_titel  aid:pstyle="bildtitel" ><?
-if(is_array($titel_spr)){
-     foreach ($titel_spr as $value2 => $titel)
-        {
+			xml += "    <individuell>\n";
+			xml += getXMLImageTag("03", "12", "Text text text...");
+			xml += "    </individuell>\n";
+			xml += "    </bildtexte>\n";
+		}
 
+		xml += "</Root>\n";
 
-?><b_titel  aid:cstyle="bildtitel<? echo $formatzusatz ?>" ><?
+		return xml;
+	}
 
-//echo " ".str_replace(" ",chr(160),$titel[1])." "; 
-echo " ".$titel[1]." ";
+	private static String getXMLImageTag(String day, String month,
+			String bTitelTag) {
+		String xml = new String();
+		xml += "      <Table_main xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_main\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"1\">\n";
+		xml += "        <Tag_main aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"450\" aid5:cellstyle=\"cs_bildtitel\">\n";
+		xml += "          <bilddatum aid:pstyle=\"bilddatum\"> " + day + "."
+				+ month + ". </bilddatum>\n";
+		xml += "          <p_titel  aid:pstyle=\"bildtitel\">\n";
+		xml += bTitelTag;
+		xml += "          </p_titel>\n";
+		xml += "        </Tag_main>\n";
+		xml += "      </Table_main>\n";
+		return xml;
+	}
 
-?></b_titel><space  aid:cstyle="space" > </space><?
-    } 
-}
-?>
+	private static String getXMLEntry(Translation translation, Event event,
+			Language language) {
+		String xml = new String();
 
-</p_titel></Tag_main>
-</Table_main>
-</<? echo "bild_".substr($value,8,2)."_". substr($value,5,2) ?>>
+		boolean date_changed = true; // TODO Compute.
+		boolean enlarge = true; // TODO Pass in, or retrieve.
 
+		if (!enlarge) {
+			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
+			if (!language.isRightToLeft()) {
+				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDate(translation, event, enlarge, date_changed);
+				xml += getXMLSmallContents(translation, language, 358);
+			} else {
+				xml += getXMLSmallContents(translation, language, 374);
+				xml += getXMLDate(translation, event, enlarge, date_changed);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+			}
+		} else {
+			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">\n";
+			if (!language.isRightToLeft()) {
+				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+				xml += getXMLDate(translation, event, enlarge, false);
+				xml += getXMLTitle(translation, language, 303);
+			} else {
+				xml += getXMLTitle(translation, language, 374);
+				xml += getXMLDate(translation, event, enlarge, false);
+				xml += getXMLDayOfWeek(translation, event, language, enlarge);
+			}
+			xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">\n";
+			xml += "    <Inhalttag aid:pstyle=\"inhalt_gross"
+					+ language.getXMLFormatSupplement() + "\">\n";
+			xml += "      " + translation.getDesc();
+			xml += "    </Inhalttag>\n";
+			xml += getXMLLocation(translation, language, enlarge);
+			xml += "  </Tag_inside>\n";
+		}
 
+		xml += "</Table_inside>";
+		return xml;
+	}
 
-<?
+	private static String getXMLSmallContents(Translation translation,
+			Language language, int width) {
+		String xml = new String();
+		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">\n";
+		xml += "    <title aid:pstyle=\"titel"
+				+ language.getXMLFormatSupplement() + "\">\n";
+		xml += "      " + translation.getTitle() + "\n";
+		xml += "    </title>\n";
+		xml += "    <Inhalttag aid:pstyle=\"inhalt"
+				+ language.getXMLFormatSupplement() + "\">\n";
+		xml += "      " + translation.getDesc();
+		xml += "    </Inhalttag>\n";
+		xml += getXMLLocation(translation, language, false);
+		xml += "  </Tag_inside>\n";
+		return xml;
+	}
 
-}
+	private static String getXMLDayOfWeek(Translation translation, Event event,
+			Language language, Boolean enlarge) {
+		String xml = new String();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(event.getDate());
+		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
+				+ (language.isRightToLeft() ? "45" : "52")
+				+ "\" aid5:cellstyle=\""
+				+ (enlarge ? "cs_gross" : "cs_datum")
+				+ "\" aid:pstyle=\"wochentag"
+				+ language.getXMLFormatSupplement() + "\">\n";
+		xml += "    <Wochentag>\n";
+		xml += "      "
+				+ language
+						.getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK) - 1)
+				+ "\n";
+		xml += "    </Wochentag>\n";
+		xml += "  </Tag_inside>\n";
+		return xml;
+	}
 
-?>
+	private static String getXMLDate(Translation translation, Event event,
+			Boolean enlarge, Boolean date_changed) {
+		String xml = new String();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(event.getDate());
+		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"40\" aid5:cellstyle=\""
+				+ (enlarge ? "cs_gross" : "cs_datum")
+				+ "\" aid:pstyle=\"datum\">\n";
+		if (!enlarge || date_changed) {
+			xml += "    "
+					+ String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
+					+ "." + String.format("%02d", calendar.get(Calendar.MONTH))
+					+ ".\n";
+		}
+		xml += "  </Tag_inside>\n";
+		return xml;
+	}
 
+	private static String getXMLTitle(Translation translation,
+			Language language, int width) {
+		String xml = new String();
+		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
+				+ Integer.toString(width)
+				+ "\" aid5:cellstyle=\"cs_titel_gross\">\n";
+		xml += "    <title aid:pstyle=\"titel"
+				+ language.getXMLFormatSupplement() + "\">\n";
+		xml += "      " + translation.getTitle() + "\n";
+		xml += "    </title>\n";
+		xml += "  </Tag_inside>\n";
+		return xml;
+	}
 
-<individuell>
-<Table_main xmlns:aid5="http://ns.adobe.com/AdobeInDesign/5.0/" aid5:tablestyle="ts_main" xmlns:aid="http://ns.adobe.com/AdobeInDesign/4.0/" aid:table="table" aid:trows="1" aid:tcols="1"><Tag_main aid:table="cell" aid:crows="1" aid:ccols="1" aid:ccolwidth="450" aid5:cellstyle="cs_bildtitel"><bilddatum  aid:pstyle="bilddatum"> 03.12. </bilddatum>
-<p_titel  aid:pstyle="bildtitel" ><b_titel  aid:cstyle="bildtitel" > Text text text... </b_titel>
-</p_titel></Tag_main>
-</Table_main></individuell></bildtexte></Root>
-  /// XXX
-  
-  
-  public static String getXMLForMonth(int year, int month) {
-    return getXML(year, month, 0, year, month + 1, 0);
-  }
-  */
+	private static String getXMLLocation(Translation translation,
+			Language language, Boolean enlarge) {
+		String xml = new String();
+		if (translation.getLocation() != "") {
+			if (enlarge) {
+				xml += "    <Orttag aid:pstyle=\"ort_gross";
+			} else {
+				if (language.isRightToLeft()) {
+					xml += "    <Orttag aid:pstyle=\"ort";
+				} else {
+					xml += "    <Orttag aid:pstyle=\"ort_rtl";
+				}
+			}
+			// TODO remove special hack for _ru.
+			xml += (language.getXMLFormatSupplement() == "_ru" ? language
+					.getXMLFormatSupplement() : "") + "\">\n";
+			xml += "      " + translation.getLocation() + "\n";
 
-  /**
-   * @return the date
-   */
-  public Date getDate() {
-    return date;
-  }
+			if (translation.getUrl() != "") {
+				// TODO remove this replacement hack.
+				xml += "      "
+						+ translation.getUrl().replace("www", "http://www")
+						+ "\n";
+			}
+			xml += "    </Orttag>\n";
+		}
+		return xml;
+	}
 
-  /**
-   * @param date the date of this event
-   */
-  public void setDate(Date date) {
-    this.date = date;
-  }
+	/**
+	 * @return the date
+	 */
+	public Date getDate() {
+		return date;
+	}
 
-  /**
-   * @return the key
-   */
-  public long getKey() {
-    return key;
-  }
+	/**
+	 * @param date
+	 *            the date of this event
+	 */
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-  /**
-   * @return If true, this entity already has a key. 
-   */
-  public boolean hasKey() {
-    return hasKey;
-  }
-  
-  /**
-   * @return the validation status of this Event
-   */
-  public boolean isOk() {
-    return ok;
-  }
+	/**
+	 * @return the key
+	 */
+	public long getKey() {
+		return key;
+	}
 
-  /**
-   * Validates or invalidates an Event.
-   *
-   * @param ok the validation status to set
-   */
-  public void setOk(boolean ok) {
-    this.ok = ok;
-  }
+	/**
+	 * @return If true, this entity already has a key.
+	 */
+	public boolean hasKey() {
+		return hasKey;
+	}
 
-  public Translation getGermanTranslation() {
-    return germanTranslation;
-  }
+	/**
+	 * @return the validation status of this Event
+	 */
+	public boolean isOk() {
+		return ok;
+	}
 
-  public void setGermanTranslation(Translation germanTranslation) {
-    this.germanTranslation = germanTranslation;
-  }
-  
-  /**
-   * Queries the store for a comprehensive list of translations of this event.
-   *
-   * @returns a list with language identifiers.
-   */
-  /*
-  public List<String> GetLanguages() {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key key = KeyFactory.createKey(entityKind, CreateKey(year, month, day, title));
-    Query translationQuery = new Query().setAncestor(key).setFilter(
-        new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.GREATER_THAN, key))
-        .setKeysOnly();
-    List<Entity> translations =
-        datastore.prepare(translationQuery).asList(FetchOptions.Builder.withDefaults());
+	/**
+	 * Validates or invalidates an Event.
+	 * 
+	 * @param ok
+	 *            the validation status to set
+	 */
+	public void setOk(boolean ok) {
+		this.ok = ok;
+	}
 
-    // Extract the languages.
-    Iterator<Entity> iterator = translations.iterator();
-    List<String> languages = new ArrayList<String>();
-    while (iterator.hasNext()) {
-      languages.add(iterator.next().getKey().getName());
-    }
-    return languages;
-  }
-  */
+	public Translation getGermanTranslation() {
+		return germanTranslation;
+	}
+
+	public void setGermanTranslation(Translation germanTranslation) {
+		this.germanTranslation = germanTranslation;
+	}
+
+	/**
+	 * Queries the store for a comprehensive list of translations of this event.
+	 * 
+	 * @returns a list with language identifiers.
+	 */
+	/*
+	 * public List<String> GetLanguages() { DatastoreService datastore =
+	 * DatastoreServiceFactory.getDatastoreService(); Key key =
+	 * KeyFactory.createKey(entityKind, CreateKey(year, month, day, title));
+	 * Query translationQuery = new Query().setAncestor(key).setFilter( new
+	 * FilterPredicate(Entity.KEY_RESERVED_PROPERTY,
+	 * Query.FilterOperator.GREATER_THAN, key)) .setKeysOnly(); List<Entity>
+	 * translations =
+	 * datastore.prepare(translationQuery).asList(FetchOptions.Builder
+	 * .withDefaults());
+	 * 
+	 * // Extract the languages. Iterator<Entity> iterator =
+	 * translations.iterator(); List<String> languages = new
+	 * ArrayList<String>(); while (iterator.hasNext()) {
+	 * languages.add(iterator.next().getKey().getName()); } return languages; }
+	 */
 }
