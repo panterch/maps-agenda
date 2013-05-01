@@ -12,7 +12,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,10 +70,10 @@ public class Event {
     if (entity.hasProperty("date")) {
       date = (Date) entity.getProperty("date");
     } else {
-      Calendar.getInstance();
-      try {
-        date = new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
-      } catch (Exception e) {}
+      Calendar calendar = Calendar.getInstance();
+      calendar.clear();
+      calendar.set(1900, Calendar.JANUARY, 1);
+      date = calendar.getTime();
       ok = false;
     }
     
@@ -161,9 +160,11 @@ public class Event {
   
   public static List<Event> GetEventListForMonth(int year, int month) {
     Calendar from = Calendar.getInstance();
+    from.clear();
     from.set(year, month, 1);
     
     Calendar to = Calendar.getInstance();
+    to.clear();
     to.setTime(from.getTime());
     to.add(month, 1);
     
@@ -175,7 +176,7 @@ public class Event {
    *
    * @return the generated XML tag without headers.
    */
-  public static String GetXML(
+  public static String getXML(
       int yearFrom,
       int monthFrom,
       int dayFrom,
@@ -184,8 +185,10 @@ public class Event {
       int dayTo) {
     // Set up range to export.
     Calendar from = Calendar.getInstance();
+    from.clear();
     from.set(yearFrom, monthFrom, dayFrom);
     Calendar to = Calendar.getInstance();
+    to.clear();
     to.set(yearTo, monthTo, dayTo);
    
     // Header.
@@ -211,7 +214,7 @@ public class Event {
       
       // Each entry.
       for (Event event : GetEventListForTimespan(from, to)) {
-        xml += GetXMLEntry(event, language);
+        xml += getXMLEntry(event, language);
       }
       xml += "      </inh>\n";
       xml += "    </" + language.getCode() + ">\n";
@@ -225,7 +228,7 @@ public class Event {
     return xml;
   }
   
-  private static String GetXMLEntry(Event event, Language language) {
+  private static String getXMLEntry(Event event, Language language) {
     String xml = new String();
     
     Translation translation;
@@ -281,107 +284,103 @@ public class Event {
     
     boolean date_changed = true;      // TODO Compute.
     boolean enlarge = true;           // TODO Pass in, or retrieve.
-    String dayOfWeek = new String();  // TODO Day of week in the particular language. 
-    
-    String formatSupplement = new String();
-    if (language.hasSpecificFormat()) {
-      formatSupplement = "_" + language.getCode();
-    }
-  
+
     if (!enlarge) {
       xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
       if (!language.isRightToLeft()) {
-        xml += GetXMLDayOfWeek(translation, formatSupplement, enlarge, false);
-        xml += GetXMLDate(translation, event, enlarge, date_changed);
-        xml += GetXMLSmallContents(translation, 358, formatSupplement, false);
+        xml += getXMLDayOfWeek(translation, event, language, enlarge);
+        xml += getXMLDate(translation, event, enlarge, date_changed);
+        xml += getXMLSmallContents(translation, language, 358);
       } else {
-        xml += GetXMLSmallContents(translation, 374, formatSupplement, true);
-        xml += GetXMLDate(translation, event, enlarge, date_changed);
-        xml += GetXMLDayOfWeek(translation, formatSupplement, enlarge, true);
+        xml += getXMLSmallContents(translation, language, 374);
+        xml += getXMLDate(translation, event, enlarge, date_changed);
+        xml += getXMLDayOfWeek(translation, event, language, enlarge);
       }
     } else {
       xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">\n";
       if (!language.isRightToLeft()) {
-        xml += GetXMLDayOfWeek(translation, formatSupplement, enlarge, false);
-        xml += GetXMLDate(translation, event, enlarge, false);
-        xml += GetXMLTitle(translation, 303, formatSupplement);
+        xml += getXMLDayOfWeek(translation, event, language, enlarge);
+        xml += getXMLDate(translation, event, enlarge, false);
+        xml += getXMLTitle(translation, language, 303);
       } else {
-        xml += GetXMLTitle(translation, 374, formatSupplement);
-        xml += GetXMLDate(translation, event, enlarge, false);
-        xml += GetXMLDayOfWeek(translation, formatSupplement, enlarge, true);
+        xml += getXMLTitle(translation, language, 374);
+        xml += getXMLDate(translation, event, enlarge, false);
+        xml += getXMLDayOfWeek(translation, event, language, enlarge);
       }
       xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">\n";
-      xml += "    <Inhalttag aid:pstyle=\"inhalt_gross" + formatSupplement + "\">\n";
+      xml += "    <Inhalttag aid:pstyle=\"inhalt_gross" + language.getXMLFormatSupplement() + "\">\n";
       xml += "      " + translation.getDesc();
       xml += "    </Inhalttag>\n";
-      xml += GetXMLLocation(translation, formatSupplement, enlarge, language.isRightToLeft());
+      xml += getXMLLocation(translation, language, enlarge);
       xml += "  </Tag_inside>\n";
     }
     xml += "</Table_inside>";
     return xml;
   }
 
-  private static String GetXMLSmallContents(
-      Translation translation, int width, String formatSupplement, Boolean rtl) {
+  private static String getXMLSmallContents(
+      Translation translation, Language language, int width) {
     String xml = new String();
     xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">\n";
-    xml += "    <title aid:pstyle=\"titel" + formatSupplement + "\">\n";
+    xml += "    <title aid:pstyle=\"titel" + language.getXMLFormatSupplement() + "\">\n";
     xml += "      " + translation.getTitle() + "\n";
     xml += "    </title>\n";
-    xml += "    <Inhalttag aid:pstyle=\"inhalt" + formatSupplement + "\">\n";
+    xml += "    <Inhalttag aid:pstyle=\"inhalt" + language.getXMLFormatSupplement() + "\">\n";
     xml += "      " + translation.getDesc();
     xml += "    </Inhalttag>\n";
-    xml += GetXMLLocation(translation, formatSupplement, false, rtl);
+    xml += getXMLLocation(translation, language, false);
     xml += "  </Tag_inside>\n";
     return xml;
   }
 
-  private static String GetXMLDayOfWeek(Translation translation, String formatSupplement, Boolean enlarge, Boolean rtl) {
-    String dayOfWeek = new String();  // TODO Get out of translation or retrieve otherwise.
+  private static String getXMLDayOfWeek(Translation translation, Event event, Language language, Boolean enlarge) {
     String xml = new String();
-    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + (rtl ? "45" : "52") + "\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"wochentag" + formatSupplement + "\">\n";
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(event.getDate());
+    xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + (language.isRightToLeft() ? "45" : "52") + "\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"wochentag" + language.getXMLFormatSupplement() + "\">\n";
     xml += "    <Wochentag>\n";
-    xml += "      " + dayOfWeek + "\n";
+    xml += "      " + language.getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK) - 1) + "\n";
     xml += "    </Wochentag>\n";
     xml += "  </Tag_inside>\n";
     return xml;
   }
 
-  private static String GetXMLDate(Translation translation, Event event, Boolean enlarge, Boolean date_changed) {
+  private static String getXMLDate(Translation translation, Event event, Boolean enlarge, Boolean date_changed) {
     String xml = new String();
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(event.getDate());
     xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"40\" aid5:cellstyle=\"" + (enlarge ? "cs_gross" : "cs_datum") + "\" aid:pstyle=\"datum\">\n";
     if (!enlarge || date_changed) {
-      // TODO get rid of the deprecated functions.
-      xml += "    " + Integer.toString(event.getDate().getDay()) + "." + Integer.toString(event.getDate().getMonth()) + ".\n";
+      xml += "    " + Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)) + "." + Integer.toString(calendar.get(Calendar.MONTH)) + ".\n";
     }
     xml += "  </Tag_inside>\n";
     return xml;
   }
   
-  private static String GetXMLTitle(Translation translation, int width, String formatSupplement) {
+  private static String getXMLTitle(Translation translation, Language language, int width) {
     String xml = new String();
     xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + Integer.toString(width) + "\" aid5:cellstyle=\"cs_titel_gross\">\n";
-    xml += "    <title aid:pstyle=\"titel" + formatSupplement + "\">\n";
+    xml += "    <title aid:pstyle=\"titel" + language.getXMLFormatSupplement() + "\">\n";
     xml += "      " + translation.getTitle() + "\n";
     xml += "    </title>\n";
     xml += "  </Tag_inside>\n";
     return xml;
   }
   
-  private static String GetXMLLocation(Translation translation, String formatSupplement, Boolean enlarge, Boolean rtl) {
+  private static String getXMLLocation(Translation translation, Language language, Boolean enlarge) {
     String xml = new String();
     if (translation.getLocation() != "") {
       if (enlarge) {
         xml += "    <Orttag aid:pstyle=\"ort_gross";
       } else {
-        if (rtl) {
+        if (language.isRightToLeft()) {
           xml += "    <Orttag aid:pstyle=\"ort";
         } else {
           xml += "    <Orttag aid:pstyle=\"ort_rtl";        
         }
       }
       // TODO remove special hack for _ru.
-      xml += (formatSupplement == "_ru" ? formatSupplement : "") + "\">\n";
+      xml += (language.getXMLFormatSupplement() == "_ru" ? language.getXMLFormatSupplement() : "") + "\">\n";
       xml += "      " + translation.getLocation() + "\n";
 
       if (translation.getUrl() != "") {

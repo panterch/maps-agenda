@@ -35,9 +35,10 @@
       /*
       Translation de = new Translation("de", "hallo", "Hallo Welt", "weltweit", "http://maps.google.com");
       Calendar date = Calendar.getInstance();
-      date.set(2012, 12, 1);
+      date.clear();
+      date.set(2012, Calendar.DECEMBER, 1); 
       Event event = new Event(date.getTime(), de);
       event.addToStore();
       */
       
-      out.print(Event.GetXML(2012, 11, 30, 2012, 12, 1));%>
+      out.print(Event.getXML(2012, Calendar.DECEMBER, 1, 2013, Calendar.JANUARY, 1));%>
