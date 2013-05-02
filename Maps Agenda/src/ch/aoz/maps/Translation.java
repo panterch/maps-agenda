@@ -3,15 +3,40 @@ package ch.aoz.maps;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
+// TODO everywhere: We need to sanitize the text (this was part of the XML output, but I think this should go everywhere). PHP code for this:
+/*
+ * function edittext($text,$sprache){
+ * $text=trim($text);
+ * $text=str_replace("\n", "", $text);
+ * if($sprache=="ta"){
+ *   $text=str_replace("&#160;", "", $text);
+ * } else {
+ *   $text=str_replace("&#160;", " ", $text);
+ * }
+ * $text=strip_tags($text);
+ * return $text;
+ * }
+ */
 
 /**
  * Translations for a certain MAPS event.
  */
 public class Translation {
   public static final String entityKind = "Translation";
+  private Key eventID;
+  private String lang;
+  private String title;
+  private String desc;
+  private String location;
+  private String url;
+  private boolean ok;
 
-  public Translation(Key parentKey,
+  public Translation(
+      Key parentKey,
       String lang,
       String title,
       String desc,
@@ -25,6 +50,21 @@ public class Translation {
     this.url = url;
     this.ok = true;
   }
+
+  public Translation(
+          String lang,
+          String title,
+          String desc,
+          String location,
+          String url) {
+        this.eventID = null;
+        this.lang = lang;
+        this.title = title;
+        this.desc = desc;
+        this.location = location;
+        this.url = url;
+        this.ok = true;
+      }
 
   /**
    * Creates a Translation out of its Entity representation.
@@ -47,28 +87,24 @@ public class Translation {
       title = (String) entity.getProperty("title");
     } else {
       title = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("desc")) {
       desc = (String) entity.getProperty("desc");
     } else {
       desc = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("location")) {
       location = (String) entity.getProperty("location");
     } else {
       location = new String("");
-      ok = false;
     }
 
     if (entity.hasProperty("url")) {
       url = (String) entity.getProperty("url");
     } else {
       url = new String("");
-      ok = false;
     }
   }
 
@@ -93,7 +129,7 @@ public class Translation {
    * @return if this operation succeeded.
    */
   public boolean addToStore() {
-    if (!this.isOk()) {
+    if (!this.isOk() || this.eventID == null) {
       return false;
     }
 
@@ -104,6 +140,30 @@ public class Translation {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Fetches the German translation for the provided event. 
+   * @param e An event
+   * @return the German translation.
+   * @throws EntityNotFoundException 
+   */
+  public static Translation getGermanTranslationForEvent(Event e) throws EntityNotFoundException {
+    return getTranslationForEvent(e, "de");
+  }
+  
+  /**
+   * Fetches the German translation for the provided event. 
+   * @param e An event
+   * @return the German translation.
+   * @throws EntityNotFoundException 
+   */
+  public static Translation getTranslationForEvent(Event e, String lang) throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
+        .addChild(Translation.entityKind, lang).getKey();
+    Entity entity = datastore.get(key);
+    return new Translation(entity);
   }
 
   /**
@@ -236,12 +296,4 @@ public class Translation {
   public void setOk(boolean ok) {
     this.ok = ok;
   }
-
-  private Key eventID;
-  private String lang;
-  private String title;
-  private String desc;
-  private String location;
-  private String url;
-  private boolean ok;
 }
