@@ -181,7 +181,11 @@ public class Event {
 		to.clear();
 		to.set(yearTo, monthTo, dayTo);
 
-		return new XMLExport(GetEventListForTimespan(from, to)).getXML();
+		XMLExport export = new XMLExport(GetEventListForTimespan(from, to));
+		export.setImageList(GetEventListForTimespan(from, to));
+		export.setTopicOfMonth(GetEventListForTimespan(from, to));
+		//export.setHighlighted(GetEventListForTimespan(from, to));
+		return export.getXML();
 	}
   
 	/**
