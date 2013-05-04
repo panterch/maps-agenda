@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -26,164 +27,155 @@ import ch.aoz.maps.Language;
  * A MAPS event.
  */
 public class Event {
-	public static final String entityKind = "Event";
-	private boolean hasKey;
-	private long key;
-	private Date date;
-	private Translation germanTranslation;
-	private boolean ok;
+  public static final String entityKind = "Event";
+  private boolean hasKey;
+  private long key;
+  private Date date;
+  private Translation germanTranslation;
+  private boolean ok;
+  
+  /**
+   * Create a new Event with the specified parameters and key.
+   *
+   * @param date day at which the event takes place
+   */
+  public Event(Date date, Translation germanTranslation, long key) {
+    this.date = date;
+    this.germanTranslation = germanTranslation;
+    this.key = key;
+    this.ok = (date != null);
+    hasKey = true;
+  }
 
-	/**
-	 * Create a new Event with the specified parameters and key.
-	 * 
-	 * @param date
-	 *            day at which the event takes place
-	 */
-	public Event(Date date, Translation germanTranslation, long key) {
-		this.date = date;
-		this.germanTranslation = germanTranslation;
-		this.key = key;
-		this.ok = (date != null);
-		hasKey = true;
-	}
+  /**
+   * Create a new Event with the specified parameters.
+   *
+   * @param date day at which the event takes place
+   * @param title the German title of the event
+   */
+  public Event(Date date, Translation germanTranslation) {
+    this.date = date;
+    this.germanTranslation = germanTranslation;
+    this.ok = (date != null);
+    this.key = 0;
+    hasKey = false;
+  }
 
-	/**
-	 * Create a new Event with the specified parameters.
-	 * 
-	 * @param date
-	 *            day at which the event takes place
-	 */
-	public Event(Date date, Translation germanTranslation) {
-		this.date = date;
-		this.germanTranslation = germanTranslation;
-		this.ok = (date != null);
-		this.key = 0;
-		hasKey = false;
-	}
+  /**
+   * Parse an Entity into a new Event. Check isOk() if all fields could be populated.
+   *
+   * @param entity the entity to parse
+   */
+  public Event(Entity entity) {
+    key = entity.getKey().getId();
+    hasKey = true; 
+    
+    ok = true;
+    if (entity.hasProperty("date")) {
+      date = (Date) entity.getProperty("date");
+    } else {
+      try {
+        date = new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
+      } catch (Exception e) {}
+      ok = false;
+    }
+    
+    try {
+      germanTranslation = Translation.getGermanTranslationForEvent(this);
+    } catch (EntityNotFoundException e) {
+      germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
+      ok = false;
+    }
+  }
 
-	/**
-	 * Parse an Entity into a new Event. Check isOk() if all fields could be
-	 * populated.
-	 * 
-	 * @param entity
-	 *            the entity to parse
-	 */
-	public Event(Entity entity) {
-		key = entity.getKey().getId();
-		hasKey = true;
+  public boolean addToStore() {
+    if (!this.isOk() || !this.germanTranslation.isOk()) {
+      return false;
+    }
 
-		ok = true;
-		if (entity.hasProperty("date")) {
-			date = (Date) entity.getProperty("date");
-		} else {
-			Calendar calendar = Calendar.getInstance();
-			calendar.clear();
-			calendar.set(1900, Calendar.JANUARY, 1);
-			date = calendar.getTime();
-			ok = false;
-		}
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Key key;
+    try {
+      key = datastore.put(this.toEntity());
+      if (!hasKey()) {
+        this.key = key.getId();
+        hasKey = true;
+      }
+    } catch (Exception ex) {
+      return false;
+    }
 
-		try {
-			germanTranslation = Translation.getGermanTranslationForEvent(this);
-		} catch (EntityNotFoundException e) {
-			germanTranslation = new Translation(entity.getKey(), "de", "", "",
-					"", "");
-			ok = false;
-		}
-	}
+    if (germanTranslation.getEventID() == null)
+      germanTranslation.setEventID(key);
+    return germanTranslation.addToStore();
+  }
 
-	public boolean addToStore() {
-		if (!this.isOk() || !this.germanTranslation.isOk()) {
-			return false;
-		}
+  /**
+   * Export this Event into an Entity.
+   *
+   * @return the generated Entity.
+   */
+  public Entity toEntity() {
+    Entity result = null;
+    if (hasKey())
+      result = new Entity(entityKind, getKey());
+    else
+      result = new Entity(entityKind);
 
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
-		Key key;
-		try {
-			key = datastore.put(this.toEntity());
-			if (!hasKey()) {
-				this.key = key.getId();
-				hasKey = true;
-			}
-		} catch (Exception ex) {
-			return false;
-		}
+    result.setProperty("date", date);
+    return result;
+  }
 
-		if (germanTranslation.getEventID() == null)
-			germanTranslation.setEventID(key);
-		return germanTranslation.addToStore();
-	}
+  public static List<Event> GetAllEvents() {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-	/**
-	 * Export this Event into an Entity.
-	 * 
-	 * @return the generated Entity.
-	 */
-	public Entity toEntity() {
-		Entity result = null;
-		if (hasKey())
-			result = new Entity(entityKind, getKey());
-		else
-			result = new Entity(entityKind);
+    Query query = new Query(entityKind).addSort("date", SortDirection.ASCENDING);
+    List<Entity> items = datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+    
+    ArrayList<Event> events = new ArrayList<Event>();
+    for (Entity item : items) {
+      events.add(new Event(item));
+    }
+    return events;
+  }
 
-		result.setProperty("date", date);
-		return result;
-	}
+  public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
 
-	public static List<Event> GetAllEvents() {
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
+    // Set up the range filter.
+    Filter minimumFilter = new FilterPredicate("date",
+        Query.FilterOperator.GREATER_THAN_OR_EQUAL, from.getTime());
+    Filter maximumFilter = new FilterPredicate("date",
+        Query.FilterOperator.LESS_THAN, to.getTime());
+    Filter rangeFilter = CompositeFilterOperator.and(minimumFilter,
+        maximumFilter);
 
-		Query query = new Query(entityKind).addSort("date",
-				SortDirection.ASCENDING);
-		List<Entity> items = datastore.prepare(query).asList(
-				FetchOptions.Builder.withDefaults());
+    Query query = new Query(entityKind).setFilter(rangeFilter).addSort(
+        "date", SortDirection.ASCENDING);
+    List<Entity> items = datastore.prepare(query).asList(
+        FetchOptions.Builder.withDefaults());
 
-		ArrayList<Event> events = new ArrayList<Event>();
-		for (Entity item : items) {
-			events.add(new Event(item));
-		}
-		return events;
-	}
+    ArrayList<Event> events = new ArrayList<Event>();
+    for (Entity item : items) {
+      events.add(new Event(item));
+    }
+    return events;
+  }
 
-	public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
+  public static List<Event> GetEventListForMonth(int year, int month) {
+    Calendar from = Calendar.getInstance();
+    from.clear();
+    from.set(year, month, 1);
 
-		// Set up the range filter.
-		Filter minimumFilter = new FilterPredicate("date",
-				Query.FilterOperator.GREATER_THAN_OR_EQUAL, from.getTime());
-		Filter maximumFilter = new FilterPredicate("date",
-				Query.FilterOperator.LESS_THAN, to.getTime());
-		Filter rangeFilter = CompositeFilterOperator.and(minimumFilter,
-				maximumFilter);
+    Calendar to = Calendar.getInstance();
+    to.clear();
+    to.setTime(from.getTime());
+    to.add(Calendar.MONTH, 1);
 
-		Query query = new Query(entityKind).setFilter(rangeFilter).addSort(
-				"date", SortDirection.ASCENDING);
-		List<Entity> items = datastore.prepare(query).asList(
-				FetchOptions.Builder.withDefaults());
-
-		ArrayList<Event> events = new ArrayList<Event>();
-		for (Entity item : items) {
-			events.add(new Event(item));
-		}
-		return events;
-	}
-
-	public static List<Event> GetEventListForMonth(int year, int month) {
-		Calendar from = Calendar.getInstance();
-		from.clear();
-		from.set(year, month, 1);
-
-		Calendar to = Calendar.getInstance();
-		to.clear();
-		to.setTime(from.getTime());
-		to.add(month, 1);
-
-		return GetEventListForTimespan(from, to);
-	}
-
+    return GetEventListForTimespan(from, to);
+  } 
+  
 	/**
 	 * Render this Event into an XML tag.
 	 * 
