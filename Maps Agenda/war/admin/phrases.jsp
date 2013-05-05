@@ -13,7 +13,7 @@ public static String createLanguageForm(Map<String, Language> languages) {
   form.append("<div id='lang-form'>");
   form.append("<div class='title'>Select language to display</div>");
   form.append("<form name='lang' method='GET' target='content-frame'>");
-  form.append("<p><select>");
+  form.append("<p><select name='lang'>");
   for (Language l : languages.values()) {
     form.append("<option value='" + l.getCode() + "'>" + l.getGermanName() + "</option>");
   }
