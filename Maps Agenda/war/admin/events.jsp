@@ -10,6 +10,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
+
+public static String[] months_de = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"};
 public static String createEventDiv(Event e) {
   Translation de = e.getGermanTranslation();
   StringBuilder div = new StringBuilder();
@@ -47,9 +49,15 @@ public static String createEventForm(String formName, Event e, Calendar selected
     selected_month = Calendar.getInstance();
   }
   if (e == null) {
+    int month = selected_month.get(Calendar.MONTH);
     form.append("<input type='hidden' name='key' value=''></p>");    
     form.append("<input type='hidden' name='new' value='true'></p>");    
     form.append("<p>Year-Month-Day: <input type='text' name='year' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
+    form.append("-<select name='month'>");
+    for (int i = 0; i < 12; ++i) {
+      form.append("<option value='" + i + (i == month? "' selected>" : "'>") + months_de[i] + "</option>");
+    }
+    form.append("</select>");
     form.append("-<input type='text' name='month' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
     form.append("-<input type='text' name='day' value='' maxlength='2' size='2'></p>");
     form.append("<p>Title: <input type='text' name='title' value=''></p>");
@@ -59,10 +67,15 @@ public static String createEventForm(String formName, Event e, Calendar selected
   } else {
     Calendar c = Calendar.getInstance();
     c.setTime(e.getDate());
+    int month = c.get(Calendar.MONTH);
     form.append("<input type='hidden' name='key' value='" + e.getKey() + "'></p>");    
     form.append("<input type='hidden' name='new' value='false'></p>");    
     form.append("<p>Year-Month-Day: <input type='text' name='year' value='" + c.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
-    form.append("-<input type='text' name='month' value='" + c.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
+    form.append("-<select name='month'>");
+    for (int i = 0; i < 12; ++i) {
+      form.append("<option value='" + i + (i == month? "' selected>" : "'>") + months_de[i] + "</option>");
+    }
+    form.append("</select>");
     form.append("-<input type='text' name='day' value='" + c.get(Calendar.DAY_OF_MONTH) + "' maxlength='2' size='2'></p>");
     form.append("<p>Title: <input type='text' name='title' value='" + de.getTitle() + "'></p>");
     form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'>" + de.getDesc() + "</textarea>");
@@ -91,12 +104,17 @@ public static String createSelectForm(Calendar selected_month) {
   if (selected_month == null) {
     selected_month = Calendar.getInstance();
   }
+  int month = selected_month.get(Calendar.MONTH);
   StringBuilder form = new StringBuilder();
   form.append("<div id='event-date'>");
   form.append("<div class='title'>Select month to display</div>");
   form.append("<form name='date' method='GET' target='content-frame'>");
   form.append("<p>Year-Month: <input type='text' name='eyear' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
-  form.append("-<input type='text' name='emonth' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
+  form.append("-<select name='emonth'>");
+  for (int i = 0; i < 12; ++i) {
+    form.append("<option value='" + i + (i == month? "' selected>" : "'>") + months_de[i] + "</option>");
+  }
+  form.append("</select>");
   form.append("<p><input type='submit' value='Show'></form>");
   form.append("<form name='date_all' method='GET' target='content-frame'><input type='submit' value='Show all'>");
   form.append("</form></p></div>");

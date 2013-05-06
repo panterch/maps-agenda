@@ -8,14 +8,17 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
-public static String createLanguageForm(Map<String, Language> languages) {
+public static String createLanguageForm(Map<String, Language> languages, String selected) {
   StringBuilder form = new StringBuilder();
   form.append("<div id='lang-form'>");
   form.append("<div class='title'>Select language to display</div>");
   form.append("<form name='lang' method='GET' target='content-frame'>");
-  form.append("<p><select>");
+  form.append("<p><select name='lang'>");
   for (Language l : languages.values()) {
-    form.append("<option value='" + l.getCode() + "'>" + l.getGermanName() + "</option>");
+    if (l.getCode() == selected) {
+      form.append(l.getCode());
+    }
+    form.append("<option value='" + l.getCode() + (l.getCode().equals(selected) ? "' selected>" : "'>") + l.getGermanName() + "</option>");
   }
   form.append("</select></p><p><input type='submit' value='Show'></p></form>");
   return form.toString();
@@ -29,6 +32,37 @@ public static Map<String, Phrase> getPhrasesForLang(String lang) {
   }
   return phrasesMap;
 }
+
+public static String createPhraseForm(String formName, Language lang, Phrase p_de, Phrase p_ln) {
+  StringBuilder form = new StringBuilder();
+  if (p_de == null) {
+    form.append("<div id='p-new' class='pdiv'>");
+    form.append("<div class='title'>Add a new translation ");
+    form.append("<a onclick=\"hide_box('p-new'); show('new-p-link')\" href='javascript:void(0);''>(hide)</a></div>");
+  } else {
+    form.append("<div id='p-" + p_de.getKey() + "' class='pdiv'>");
+    form.append("<div class='title'>Update " + p_de.getKey() + " ");
+    form.append("<a onclick=\"hide_box('p-" + p_de.getKey() + "')\" href='javascript:void(0);''>(hide)</a></div>");
+  }
+  form.append("<form name='" + formName + "' method='POST' target='content-frame'");
+  form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
+  if (p_de == null) {
+    form.append("<p>Translation key: <input type='text' name='key'></p>");
+    form.append("<input type='hidden' name='new' value='true'></p>");    
+  } else {
+    form.append("<p>Key: " + p_de.getKey() + "<input type='hidden' name='key' value='" + p_de.getKey() + "'></p>");    
+    form.append("<input type='hidden' name='new' value='false'></p>");    
+  }
+  form.append("<p>de: <input type='text' name='p_de' value='" + (p_de == null ? "" : p_de.getPhrase()) + "'></p>");
+  if (p_ln != null && p_ln.getLang() != p_de.getLang()) {
+    form.append("<p>" + lang.getCode() + ": <input type='text' name='p_ln' value='" + p_ln.getPhrase() + "'></p>");
+  }
+  form.append("<p><input type='checkbox' name='tag' value='true'" + (p_de != null && p_de.isTag()? " checked" : "") + ">Is Tag?</p>");
+  form.append("<input type='hidden' name='lang' value='" + lang.getCode() + "'></p>");    
+  form.append("<p><input type='submit' value='" + (p_de == null ? "Add": "Update") + " translation'></p>");
+  form.append("</form></div>");
+  return form.toString();
+}
 %>
 <html>
 <head>
@@ -37,39 +71,11 @@ form p {
   padding: 0px;
   margin: 2px;
 }
-#new-event-link {
+#new-p-link {
   margin-bottom: 10px;
 }
-.eventdiv {
+.pdiv {
   display: none;
-}
-.event {
-  background-color: #fff;
-  border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 10px;
-}
-.edate {
-  float: left;
-  overflow: auto;
-  width: 100px;
-}
-.eedit {
-  float: right;
-  width: 30px;
-}
-.ebody {
-  margin-left: 20px;
-  background-color: #ddd;
-  border-radius: 5px;
-  overflow: auto;
-  padding: 5px;
-}
-.etitle {
-  font-size: large;
-}
-.edesc {
-  border-bottom: 1px solid #888;
 }
 .msg-red {
   background-color: #f33;
@@ -194,7 +200,8 @@ if (lang == null) {
   phrasesOther = getPhrasesForLang(lang);
 }
 
-out.println(createLanguageForm(languages));
+out.println(createLanguageForm(languages, lang));
+out.println(createPhraseForm("newPhrase", languages.get(lang), null, null));
 
 if (phrasesDE.isEmpty()) {
   out.println("No phrase is yet defined.");
@@ -212,6 +219,7 @@ if (phrasesDE.isEmpty()) {
       </tr>
 <% for (Phrase p : phrasesDE.values()) {
      Phrase p2 = phrasesOther.get(p.getKey()); 
+     out.println(createPhraseForm("form-" + p.getKey(), languages.get(lang), p, p2));
 %>
       <tr>
         <td><% out.println(p.getKey()); %></td>
@@ -220,6 +228,6 @@ if (phrasesDE.isEmpty()) {
         <td><% out.println(p.isTag() ? "&#10003;" : "&#10007;"); %></td>
       </tr>
 <% } }%>
-<div id="new-phrase-link"><a onclick="show_box('phrase-new');" href="javascript:void(0);">Add a new phrase</a></div>
+<div id="new-p-link"><a onclick="show_box('p-new');" href="javascript:void(0);">Add a new phrase</a></div>
 </body>
 </html>
