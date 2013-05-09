@@ -155,7 +155,7 @@ public class XMLExport {
 				String day = String.format("%02d",
 						calendar.get(Calendar.DAY_OF_MONTH));
 				String month = String.format("%02d",
-						calendar.get(Calendar.MONTH));
+						calendar.get(Calendar.MONTH) + 1);
 				xml += "<bild_" + day + "_" + month + ">";
 
 				String imageText = new String();

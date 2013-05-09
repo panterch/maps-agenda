@@ -23,21 +23,44 @@
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%
 
 	  // Read POST arguments.
-      String[] paramEventKeys = request.getParameterValues("event");
+      String[] paramEventKeys = request.getParameterValues("XMLExports");
       ArrayList<Key> eventKeys = new ArrayList<Key>();
       if (paramEventKeys != null) {
         for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeys.add( KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+          eventKeys.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+        }
+      }
+
+      paramEventKeys = request.getParameterValues("XMLExportsLarge");
+      ArrayList<Key> eventKeysLarge = new ArrayList<Key>();
+      if (paramEventKeys != null) {
+        for (int i = 0; i < paramEventKeys.length; i++) {
+          eventKeysLarge.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+        }
+      }
+
+      paramEventKeys = request.getParameterValues("XMLExportsTopicOfMonth");
+      ArrayList<Key> eventKeysTopicOfMonth = new ArrayList<Key>();
+      if (paramEventKeys != null) {
+        for (int i = 0; i < paramEventKeys.length; i++) {
+          eventKeysTopicOfMonth.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+        }
+      }
+      
+      paramEventKeys = request.getParameterValues("XMLExportsImage");
+      ArrayList<Key> eventKeysImage = new ArrayList<Key>();
+      if (paramEventKeys != null) {
+        for (int i = 0; i < paramEventKeys.length; i++) {
+          eventKeysImage.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
         }
       }
 
       // Offer this as a downloadable file rather than as a displayable page.
       response.setHeader("Content-Disposition", "attachment; filename=MAPS_agenda.xml");
 
-      final List<Event> events = Event.GetEventListFromKeyList(eventKeys);
-	  XMLExport export = new XMLExport(events);
-	  //export.setImageList(GetEventListForTimespan(from, to));
-	  //export.setTopicOfMonth(GetEventListForTimespan(from, to));
-	  //export.setHighlighted(GetEventListForTimespan(from, to));
+	  XMLExport export = new XMLExport(Event.GetEventListFromKeyList(eventKeys));
+	  export.setImageList(Event.GetEventListFromKeyList(eventKeysImage));
+	  export.setTopicOfMonth(Event.GetEventListFromKeyList(eventKeysTopicOfMonth));
+	  export.setHighlighted(Event.GetEventListFromKeyList(eventKeysLarge));
 
       out.print(export.getXML());%>

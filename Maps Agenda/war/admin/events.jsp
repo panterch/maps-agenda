@@ -23,8 +23,13 @@ public static String createEventDiv(Event e) {
   div.append("<div class='edesc'>" + de.getDesc() + "</div>");
   div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
   div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
+  div.append("<div class='eexport'>" +
+	  		"<input type='checkbox' name='XMLExports' value='" + e.getKey() + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
+	  		"<input type='checkbox' name='XMLExportsLarge' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
+	  		"<input type='checkbox' name='XMLExportsTopicOfMonth' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F31F;" +
+	  		"<input type='checkbox' name='XMLExportsImage' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
+	  				"</div>");
   div.append("</div>");
-  div.append("<div class='eexport'>&#x2398;<input type='checkbox' name='event' value='" + e.getKey() + "' checked form='export' /></div>");
   div.append("</div>");
   return div.toString();
 }
@@ -212,6 +217,32 @@ function validateXMLForm() {
 }
 function test(f) {
   alert(f);
+}
+
+function uncheckXMLOtherButtons(checkbox, event) {
+  if (checkbox.checked) {
+	  return;
+  }
+  tickXMLButton("XMLExportsLarge", event, false);
+  tickXMLButton("XMLExportsTopicOfMonth", event, false);
+  tickXMLButton("XMLExportsImage", event, false);
+}
+
+function checkXMLButton(checkbox, event) {
+  if (!checkbox.checked) {
+	  return;
+  }
+  tickXMLButton("XMLExports", event, true);
+}
+
+function tickXMLButton(eventName, event, value) {
+  var events = document.getElementsByName(eventName);
+  for (e = 0; e < events.length; e++) {
+	if (events[e].value == event) {
+	  events[e].checked = value;
+	  return;
+	}
+  }
 }
 
 function validateForm(formName) {

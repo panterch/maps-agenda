@@ -125,7 +125,7 @@ public class XMLExportEntry {
 				+ "\" aid:pstyle=\"datum\">";
 		if (!enlarge || dateChanged) {
 			xml += String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
-					+ "." + String.format("%02d", calendar.get(Calendar.MONTH))
+					+ "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1)
 					+ ".";
 		}
 		xml += "</Tag_inside>";
