@@ -145,8 +145,8 @@ public class XMLExport {
 	 */
 	private String getXMLImages() {
 		String xml = new String();
+		xml += "<bildtexte>";
 		if (getImages().size() > 0) {
-			xml += "<bildtexte>";
 			for (Event event : getImages()) {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(event.getDate());
@@ -176,12 +176,12 @@ public class XMLExport {
 				xml += getXMLImageTag(day, month, imageText);
 				xml += "</bild_" + day + "_" + month + ">";
 			}
-
-			xml += "<individuell>";
-			xml += getXMLImageTag("03", "12", "Text text text...");
-			xml += "</individuell>";
-			xml += "</bildtexte>";
 		}
+
+		xml += "<individuell>";
+		xml += getXMLImageTag("03", "12", "Text text text...");
+		xml += "</individuell>";
+		xml += "</bildtexte>";
 		return xml;
 	}
 
