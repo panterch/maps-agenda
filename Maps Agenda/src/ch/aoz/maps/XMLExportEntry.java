@@ -46,7 +46,7 @@ public class XMLExportEntry {
 		String xml = new String();
 
 		if (!enlarge) {
-			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">\n";
+			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"3\">";
 			if (!language.isRightToLeft()) {
 				xml += getXMLDayOfWeek();
 				xml += getXMLDate();
@@ -57,7 +57,7 @@ public class XMLExportEntry {
 				xml += getXMLDayOfWeek();
 			}
 		} else {
-			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">\n";
+			xml += "<Table_inside xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_inside\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"2\" aid:tcols=\"3\">";
 			if (!language.isRightToLeft()) {
 				xml += getXMLDayOfWeek();
 				xml += getXMLDate();
@@ -67,13 +67,13 @@ public class XMLExportEntry {
 				xml += getXMLDate();
 				xml += getXMLDayOfWeek();
 			}
-			xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">\n";
-			xml += "    <Inhalttag aid:pstyle=\"inhalt_gross"
-					+ language.getXMLFormatSupplement() + "\">\n";
-			xml += "      " + translation.getDesc();
-			xml += "    </Inhalttag>\n";
+			xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">";
+			xml += "<Inhalttag aid:pstyle=\"inhalt_gross"
+					+ language.getXMLFormatSupplement() + "\">";
+			xml += translation.getDesc();
+			xml += "</Inhalttag>";
 			xml += getXMLLocation();
-			xml += "  </Tag_inside>\n";
+			xml += "</Tag_inside>";
 		}
 
 		xml += "</Table_inside>";
@@ -82,17 +82,17 @@ public class XMLExportEntry {
 
 	private String getXMLSmallContents(int width) {
 		String xml = new String();
-		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">\n";
-		xml += "    <title aid:pstyle=\"titel"
-				+ language.getXMLFormatSupplement() + "\">\n";
-		xml += "      " + translation.getTitle() + "\n";
-		xml += "    </title>\n";
-		xml += "    <Inhalttag aid:pstyle=\"inhalt"
-				+ language.getXMLFormatSupplement() + "\">\n";
-		xml += "      " + translation.getDesc();
-		xml += "    </Inhalttag>\n";
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">";
+		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
+				+ "\">";
+		xml += translation.getTitle();
+		xml += "</title>";
+		xml += "<Inhalttag aid:pstyle=\"inhalt"
+				+ language.getXMLFormatSupplement() + "\">";
+		xml += translation.getDesc();
+		xml += "</Inhalttag>";
 		xml += getXMLLocation();
-		xml += "  </Tag_inside>\n";
+		xml += "</Tag_inside>";
 		return xml;
 	}
 
@@ -100,20 +100,19 @@ public class XMLExportEntry {
 		String xml = new String();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(event.getDate());
-		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
 				+ (language.isRightToLeft() ? "45" : "52")
 				+ "\" aid5:cellstyle=\""
 				+ (enlarge ? "cs_gross" : "cs_datum")
 				+ "\" aid:pstyle=\"wochentag"
-				+ language.getXMLFormatSupplement() + "\">\n";
-		xml += "    <Wochentag>\n";
+				+ language.getXMLFormatSupplement() + "\">";
+		xml += "<Wochentag>";
 		if (topicOfMonth) {
-			xml += "      "
-					+ language.getDayOfTheWeek(calendar
-							.get(Calendar.DAY_OF_WEEK) - 1) + "\n";
+			xml += language
+					.getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK) - 1);
 		}
-		xml += "    </Wochentag>\n";
-		xml += "  </Tag_inside>\n";
+		xml += "</Wochentag>";
+		xml += "</Tag_inside>";
 		return xml;
 	}
 
@@ -121,29 +120,28 @@ public class XMLExportEntry {
 		String xml = new String();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(event.getDate());
-		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"40\" aid5:cellstyle=\""
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"40\" aid5:cellstyle=\""
 				+ (enlarge ? "cs_gross" : "cs_datum")
-				+ "\" aid:pstyle=\"datum\">\n";
+				+ "\" aid:pstyle=\"datum\">";
 		if (!enlarge || dateChanged) {
-			xml += "    "
-					+ String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
+			xml += String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
 					+ "." + String.format("%02d", calendar.get(Calendar.MONTH))
-					+ ".\n";
+					+ ".";
 		}
-		xml += "  </Tag_inside>\n";
+		xml += "</Tag_inside>";
 		return xml;
 	}
 
 	private String getXMLTitle(int width) {
 		String xml = new String();
-		xml += "  <Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\""
 				+ Integer.toString(width)
-				+ "\" aid5:cellstyle=\"cs_titel_gross\">\n";
-		xml += "    <title aid:pstyle=\"titel"
-				+ language.getXMLFormatSupplement() + "\">\n";
-		xml += "      " + translation.getTitle() + "\n";
-		xml += "    </title>\n";
-		xml += "  </Tag_inside>\n";
+				+ "\" aid5:cellstyle=\"cs_titel_gross\">";
+		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
+				+ "\">";
+		xml += translation.getTitle();
+		xml += "</title>";
+		xml += "</Tag_inside>";
 		return xml;
 	}
 
@@ -151,26 +149,24 @@ public class XMLExportEntry {
 		String xml = new String();
 		if (translation.getLocation() != "") {
 			if (enlarge) {
-				xml += "    <Orttag aid:pstyle=\"ort_gross";
+				xml += "<Orttag aid:pstyle=\"ort_gross";
 			} else {
 				if (language.isRightToLeft()) {
-					xml += "    <Orttag aid:pstyle=\"ort";
+					xml += "<Orttag aid:pstyle=\"ort";
 				} else {
-					xml += "    <Orttag aid:pstyle=\"ort_rtl";
+					xml += "<Orttag aid:pstyle=\"ort_rtl";
 				}
 			}
 			// TODO remove special hack for _ru.
 			xml += (language.getXMLFormatSupplement() == "_ru" ? language
-					.getXMLFormatSupplement() : "") + "\">\n";
-			xml += "      " + translation.getLocation() + "\n";
+					.getXMLFormatSupplement() : "") + "\">";
+			xml += translation.getLocation() + " ";
 
 			if (translation.getUrl() != "") {
 				// TODO remove this replacement hack.
-				xml += "      "
-						+ translation.getUrl().replace("www", "http://www")
-						+ "\n";
+				xml += translation.getUrl().replace("www", "http://www");
 			}
-			xml += "    </Orttag>\n";
+			xml += "</Orttag>";
 		}
 		return xml;
 	}
