@@ -3,8 +3,10 @@ package ch.aoz.maps;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -21,13 +23,17 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 /**
  * A MAPS event.
  */
-public class Event {
+public class Event implements Comparable<Event> {
   public static final String entityKind = "Event";
   private boolean hasKey;
   private long key;
   private Date date;
   private Translation germanTranslation;
   private boolean ok;
+  
+	public int compareTo(Event other) {
+		return getDate().compareTo(other.getDate());
+	}
   
   /**
    * Create a new Event with the specified parameters and key.
@@ -134,6 +140,21 @@ public class Event {
     return events;
   }
 
+  public static List<Event> GetEventListFromKeyList(List<Key> keyList) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+
+		Map<Key, Entity> items = datastore.get((Iterable<Key>) keyList);
+		ArrayList<Event> events = new ArrayList<Event>();
+		if (items != null) {
+			for (Entity item : items.values()) {
+				events.add(new Event(item));
+			}
+		}
+    Collections.sort(events);
+		return events;
+	}
+
   public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
     DatastoreService datastore = DatastoreServiceFactory
         .getDatastoreService();
@@ -152,9 +173,11 @@ public class Event {
         FetchOptions.Builder.withDefaults());
 
     ArrayList<Event> events = new ArrayList<Event>();
-    for (Entity item : items) {
-      events.add(new Event(item));
-    }
+		if (items != null) {
+			for (Entity item : items) {
+				events.add(new Event(item));
+			}
+		}
     return events;
   }
 
@@ -173,6 +196,8 @@ public class Event {
   
 	public static String getXML(int yearFrom, int monthFrom, int dayFrom,
 			int yearTo, int monthTo, int dayTo) {
+		// DEPRECATED.
+		
 		// Set up range to export.
 		Calendar from = Calendar.getInstance();
 		from.clear();

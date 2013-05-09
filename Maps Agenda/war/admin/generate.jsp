@@ -13,6 +13,8 @@
 
 <html>
   <body>
+    DEPRECATED. This will go away. Please use the events overview to select and export events.
+    <!--
     <form action="export_xml.jsp" method="post" target="_blank">
       Exportiere XML f&uuml;r Monat: <input type="number" name=month min=1 max=12 step=1 value=<%
       Calendar now = Calendar.getInstance();
@@ -24,5 +26,6 @@
       Zu exportierende Sprachen:<br>
       // TODO implement.
     </form>
+    -->
   </body>
 </html>

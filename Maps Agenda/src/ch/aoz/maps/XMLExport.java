@@ -62,15 +62,17 @@ public class XMLExport {
 			xml += "<inh>";
 
 			// Topic of the month.
-			for (Event event : getTopicOfMonth()) {
-				Translation translation;
-				try {
-					translation = getTranslation(event, language);
-				} catch (EntityNotFoundException e) {
-					continue;
+			if (getTopicOfMonth() != null) {
+				for (Event event : getTopicOfMonth()) {
+					Translation translation;
+					try {
+						translation = getTranslation(event, language);
+					} catch (EntityNotFoundException e) {
+						continue;
+					}
+					xml += new XMLExportEntry(event, language, translation, true, true,
+							false).getXML();
 				}
-				xml += new XMLExportEntry(event, language, translation, true,
-						true, false).getXML();
 			}
 
 			// Log the date to detect when the day changes.
@@ -146,7 +148,7 @@ public class XMLExport {
 	private String getXMLImages() {
 		String xml = new String();
 		xml += "<bildtexte>";
-		if (getImages().size() > 0) {
+		if (getImages() != null) {
 			for (Event event : getImages()) {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(event.getDate());
