@@ -25,10 +25,10 @@ public static String createLanguageForm(Map<String, Language> languages, String 
 }
 
 public static Map<String, Phrase> getPhrasesForLang(String lang) {
-  List<Phrase> phrases = Phrase.GetPhrasesForLanguage("de");
+  List<Phrase> phrases = Phrase.GetPhrasesForLanguage(lang);
   Map<String, Phrase> phrasesMap = new HashMap<String, Phrase>();
   for (Phrase p : phrases) {
-    phrasesMap.put(p.getLang(), p);
+    phrasesMap.put(p.getKey(), p);
   }
   return phrasesMap;
 }
@@ -53,9 +53,11 @@ public static String createPhraseForm(String formName, Language lang, Phrase p_d
     form.append("<p>Key: " + p_de.getKey() + "<input type='hidden' name='key' value='" + p_de.getKey() + "'></p>");    
     form.append("<input type='hidden' name='new' value='false'></p>");    
   }
-  form.append("<p>de: <input type='text' name='p_de' value='" + (p_de == null ? "" : p_de.getPhrase()) + "'></p>");
+  form.append("<p>Deutsch: <input type='text' name='p_de' value='" + (p_de == null ? "" : p_de.getPhrase()) + "'></p>");
   if (p_ln != null && p_ln.getLang() != p_de.getLang()) {
-    form.append("<p>" + lang.getCode() + ": <input type='text' name='p_ln' value='" + p_ln.getPhrase() + "'></p>");
+    form.append("<p>" + lang.getGermanName() + ": <input type='text' name='p_ln' value='" + p_ln.getPhrase() + "'></p>");
+  } else if (!lang.getCode().equals("de")) {
+    form.append("<p>" + lang.getGermanName() + ": <input type='text' name='p_ln' value=''></p>");
   }
   form.append("<p><input type='checkbox' name='tag' value='true'" + (p_de != null && p_de.isTag()? " checked" : "") + ">Is Tag?</p>");
   form.append("<input type='hidden' name='lang' value='" + lang.getCode() + "'></p>");    
@@ -110,51 +112,39 @@ th, td {
 </style>
 <script>
 function validateForm(formName) {
-  var intRegex = /^\d+$/;
+  var keyRegex = /^[0-9a-zA-Z]+$/;
 
   var form = document.forms[formName];
+  var lang = form.lang.value;
   
-  var year = form.year.value;
-  if(year == "") {
-    alert("Please fill in the year this event is happening.");
-    form.year.focus();
+  var key = form.key.value;
+  if(key == "") {
+    alert("Please fill in the key for this translation.");
+    form.key.focus();
     return false;
   }
-  if(!intRegex.test(year) || year < 2000) {
-    alert("The year should be a number bigger than 2000.");
-    form.year.focus();
-    return false;
-  }
-  
-  var month = form.month.value;
-  if(month == "") {
-    alert("Please fill in the month this event is happening.");
-    form.month.focus();
-    return false;
-  }
-  if(!intRegex.test(month) || month < 0 || month > 11) {
-    alert("The month should be a number between 0 and 11");
-    form.month.focus();
+  if(!keyRegex.test(key)) {
+    alert("The key should be a string containing only letters or numbers.");
+    form.key.focus();
     return false;
   }
   
-  var day = form.day.value;
-  if(day == "") {
-    alert("Please fill in the day this event is happening.");
-    form.day.focus();
-    return false;
-  }
-  if(!intRegex.test(day) || day < 1 || day > 31) {
-    alert("The day should be a number between 1 and 31");
-    form.day.focus();
+  var p_de = form.p_de.value;
+  if(p_de == "") {
+    alert("Please fill in the German version of the phrase.");
+    form.p_de.focus();
     return false;
   }
 
-  if(form.title.value == "") {
-    alert("Please fill in the title of the event.");
-    form.title.focus();
-    return false;
+  if (lang != "de") {  
+	var p_ln = form.p_ln.value;
+	if(p_ln == "") {
+	  alert("Please fill in the translated version of the phrase.");
+	  form.p_ln.focus();
+	  return false;
+	}
   }
+  
   // Send the form
   return true;
 }
@@ -200,6 +190,76 @@ if (lang == null) {
   phrasesOther = getPhrasesForLang(lang);
 }
 
+if (request.getParameter("new") != null) {
+  boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
+  String key = request.getParameter("key");
+  
+  // First handle the German phrase.  
+  Phrase p_de;
+  boolean update_de = false;
+  if (isNew) {
+    if (phrasesDE.containsKey(key)) {
+      out.println("<div class='msg-red'><p>The key already exists. Please choose another key.</p></div>");
+      p_de = null;
+    } else {
+      p_de = new Phrase(key, "de",
+                        request.getParameter("p_de"),
+                        Boolean.parseBoolean(request.getParameter("tag")));
+      update_de = true;
+    }
+  } else if (!phrasesDE.containsKey(key)) {
+    out.println("<div class='msg-red'><p>Could not find the German phrase to update. Key " + key + " is missing.</p></div>");
+    p_de = null;
+  } else {
+    p_de = phrasesDE.get(key);
+    boolean new_tag = Boolean.parseBoolean(request.getParameter("tag"));
+    String new_phrase = request.getParameter("p_de");
+    if (!new_phrase.equals(p_de.getPhrase()) || new_tag != p_de.isTag()) {
+      p_de.setPhrase(new_phrase);
+      p_de.setTag(new_tag);
+      update_de = true;
+    }
+  }
+  if (p_de != null && update_de) {
+    if (p_de.addToStore()) {
+      out.println("<div class='msg-green'><p>German phrase correctly stored.</p></div>");
+      phrasesDE.put(key, p_de);
+    } else {
+      out.println("<div class='msg-red'><p>An error occurred when trying to store the German phrase. Try again later?</p></div>");
+      p_de = null;
+    }
+  }
+  // Now check if there is a second language. Also skip this part of p_de is null, i.e. an error occurred.
+  if (!lang.equals("de") && p_de != null) {
+    Phrase p_ln;
+    boolean update_ln = false;
+    if (isNew || !phrasesOther.containsKey(key)) {
+      // We have a new translated phrase.
+      p_ln = new Phrase(key, lang,
+                        request.getParameter("p_ln"),
+                        Boolean.parseBoolean(request.getParameter("tag")));
+      update_ln = true;
+    } else {
+      p_ln = phrasesOther.get(key);
+      boolean new_tag = Boolean.parseBoolean(request.getParameter("tag"));
+      String new_phrase = request.getParameter("p_ln");
+      if (!new_phrase.equals(p_ln.getPhrase()) || new_tag != p_ln.isTag()) {
+        p_ln.setPhrase(new_phrase);
+        p_ln.setTag(new_tag);
+        update_ln = true;
+      }
+    }
+    if (update_ln) {
+      if (p_ln.addToStore()) {
+        out.println("<div class='msg-green'><p>Translated phrase correctly stored.</p></div>");
+        phrasesOther.put(key, p_ln);
+      } else {
+        out.println("<div class='msg-red'><p>An error occurred when trying to store the translated phrase. Try again later?</p></div>");
+      }
+    }
+  }
+}
+
 out.println(createLanguageForm(languages, lang));
 out.println(createPhraseForm("newPhrase", languages.get(lang), null, null));
 
@@ -212,8 +272,10 @@ if (phrasesDE.isEmpty()) {
     <table>
       <tr>
         <th>Key</th>
-        <th><% languages.get("de").getGermanName(); %></th>
-        <th><% languages.get(lang).getGermanName(); %></th>
+        <th><% out.print(languages.get("de").getGermanName()); %></th>
+        <% if (!lang.equals("de")) { %>
+          <th><% out.print(languages.get(lang).getGermanName()); %></th>
+        <% } %>
         <th>is tag?</th>
         <th></th>
       </tr>
@@ -224,8 +286,11 @@ if (phrasesDE.isEmpty()) {
       <tr>
         <td><% out.println(p.getKey()); %></td>
         <td><% out.println(p.getPhrase()); %></td>
-        <td><% out.println(p2 == null ? "" : p2.getPhrase()); %></td>
+        <% if (!lang.equals("de")) { %>
+          <td><% out.println(p2 == null ? "" : p2.getPhrase()); %></td>
+        <% } %>
         <td><% out.println(p.isTag() ? "&#10003;" : "&#10007;"); %></td>
+        <td><a onclick="show_box('p-<% out.print(p.getKey()); %>');" href='javascript:void(0);'>Edit</a></td>
       </tr>
 <% } }%>
 <div id="new-p-link"><a onclick="show_box('p-new');" href="javascript:void(0);">Add a new phrase</a></div>
