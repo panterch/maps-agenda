@@ -54,23 +54,25 @@ public class XMLExport {
 	public String getXML() {
 		// Header.
 		String xml = new String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		xml += "<Root>\n";
-		xml += "  <Tag1>\n";
+		xml += "<Root>";
+		xml += "<Tag1>";
 
 		for (Language language : Language.getAllLanguages().values()) {
-			xml += "    <" + language.getCode() + ">\n";
-			xml += "      <inh>\n";
+			xml += "<" + language.getCode() + ">";
+			xml += "<inh>";
 
 			// Topic of the month.
-			for (Event event : getTopicOfMonth()) {
-				Translation translation;
-				try {
-					translation = getTranslation(event, language);
-				} catch (EntityNotFoundException e) {
-					continue;
+			if (getTopicOfMonth() != null) {
+				for (Event event : getTopicOfMonth()) {
+					Translation translation;
+					try {
+						translation = getTranslation(event, language);
+					} catch (EntityNotFoundException e) {
+						continue;
+					}
+					xml += new XMLExportEntry(event, language, translation, true, true,
+							false).getXML();
 				}
-				xml += new XMLExportEntry(event, language, translation, true,
-						true, false).getXML();
 			}
 
 			// Log the date to detect when the day changes.
@@ -106,15 +108,15 @@ public class XMLExport {
 				// Log the new date.
 				currentDay.setTime(newDay.getTime());
 			}
-			xml += "      </inh>\n";
-			xml += "    </" + language.getCode() + ">\n";
+			xml += "</inh>";
+			xml += "</" + language.getCode() + ">";
 		}
-		xml += "  </Tag1>\n";
+		xml += "</Tag1>";
 
 		// Images.
 		xml += getXMLImages();
 
-		xml += "</Root>\n";
+		xml += "</Root>";
 		return xml;
 	}
 
@@ -145,16 +147,16 @@ public class XMLExport {
 	 */
 	private String getXMLImages() {
 		String xml = new String();
-		if (getImages().size() > 0) {
-			xml += "  <bildtexte>\n";
+		xml += "<bildtexte>";
+		if (getImages() != null) {
 			for (Event event : getImages()) {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(event.getDate());
 				String day = String.format("%02d",
 						calendar.get(Calendar.DAY_OF_MONTH));
 				String month = String.format("%02d",
-						calendar.get(Calendar.MONTH));
-				xml += "    <bild_" + day + "_" + month + ">\n";
+						calendar.get(Calendar.MONTH) + 1);
+				xml += "<bild_" + day + "_" + month + ">";
 
 				String imageText = new String();
 				for (Language language : Language.getAllLanguages().values()) {
@@ -165,23 +167,23 @@ public class XMLExport {
 						continue;
 					}
 					String translatedTitle = new String(
-							"            <b_titel aid:cstyle=\"bildtitel"
+							"<b_titel aid:cstyle=\"bildtitel"
 									+ language.getXMLFormatSupplement() + "\">"
-									+ translation.getDesc() + "</b_titel>\n");
+									+ translation.getDesc() + "</b_titel>");
 					if (imageText.length() > 0) {
-						imageText += "            <space aid:cstyle=\"space\" > </space>";
+						imageText += "<space aid:cstyle=\"space\" > </space>";
 					}
 					imageText += translatedTitle;
 				}
 				xml += getXMLImageTag(day, month, imageText);
-				xml += "    </bild_" + day + "_" + month + ">\n";
+				xml += "</bild_" + day + "_" + month + ">";
 			}
-
-			xml += "    <individuell>\n";
-			xml += getXMLImageTag("03", "12", "Text text text...");
-			xml += "    </individuell>\n";
-			xml += "    </bildtexte>\n";
 		}
+
+		xml += "<individuell>";
+		xml += getXMLImageTag("03", "12", "Text text text...");
+		xml += "</individuell>";
+		xml += "</bildtexte>";
 		return xml;
 	}
 
@@ -199,15 +201,15 @@ public class XMLExport {
 	private static String getXMLImageTag(String day, String month,
 			String bTitelTag) {
 		String xml = new String();
-		xml += "      <Table_main xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_main\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"1\">\n";
-		xml += "        <Tag_main aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"450\" aid5:cellstyle=\"cs_bildtitel\">\n";
-		xml += "          <bilddatum aid:pstyle=\"bilddatum\"> " + day + "."
-				+ month + ". </bilddatum>\n";
-		xml += "          <p_titel  aid:pstyle=\"bildtitel\">\n";
+		xml += "<Table_main xmlns:aid5=\"http://ns.adobe.com/AdobeInDesign/5.0/\" aid5:tablestyle=\"ts_main\" xmlns:aid=\"http://ns.adobe.com/AdobeInDesign/4.0/\" aid:table=\"table\" aid:trows=\"1\" aid:tcols=\"1\">";
+		xml += "<Tag_main aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"450\" aid5:cellstyle=\"cs_bildtitel\">";
+		xml += "<bilddatum aid:pstyle=\"bilddatum\">" + day + "." + month
+				+ ".</bilddatum>";
+		xml += "<p_titel aid:pstyle=\"bildtitel\">";
 		xml += bTitelTag;
-		xml += "          </p_titel>\n";
-		xml += "        </Tag_main>\n";
-		xml += "      </Table_main>\n";
+		xml += "</p_titel>";
+		xml += "</Tag_main>";
+		xml += "</Table_main>";
 		return xml;
 	}
 }

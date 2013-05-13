@@ -23,7 +23,14 @@ public static String createEventDiv(Event e) {
   div.append("<div class='edesc'>" + de.getDesc() + "</div>");
   div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
   div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
-  div.append("</div></div>");
+  div.append("<div class='eexport'>" +
+	  		"<input type='checkbox' name='XMLExports' value='" + e.getKey() + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
+	  		"<input type='checkbox' name='XMLExportsLarge' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
+	  		"<input type='checkbox' name='XMLExportsTopicOfMonth' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F31F;" +
+	  		"<input type='checkbox' name='XMLExportsImage' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
+	  				"</div>");
+  div.append("</div>");
+  div.append("</div>");
   return div.toString();
 }
 
@@ -149,6 +156,11 @@ form p {
   float: right;
   width: 30px;
 }
+.eexport {
+  display: block;
+  float: right;
+  margin-top: -20px;
+}
 .ebody {
   margin-left: 20px;
   background-color: #ddd;
@@ -183,6 +195,9 @@ form p {
   background-color: #ba7;
   margin-bottom: 10px;
 }
+.xml-export-submit {
+  float: right;
+}
 table {
   border-collapse: collapse;
   border: 1px solid black;
@@ -202,6 +217,32 @@ function validateXMLForm() {
 }
 function test(f) {
   alert(f);
+}
+
+function uncheckXMLOtherButtons(checkbox, event) {
+  if (checkbox.checked) {
+	  return;
+  }
+  tickXMLButton("XMLExportsLarge", event, false);
+  tickXMLButton("XMLExportsTopicOfMonth", event, false);
+  tickXMLButton("XMLExportsImage", event, false);
+}
+
+function checkXMLButton(checkbox, event) {
+  if (!checkbox.checked) {
+	  return;
+  }
+  tickXMLButton("XMLExports", event, true);
+}
+
+function tickXMLButton(eventName, event, value) {
+  var events = document.getElementsByName(eventName);
+  for (e = 0; e < events.length; e++) {
+	if (events[e].value == event) {
+	  events[e].checked = value;
+	  return;
+	}
+  }
 }
 
 function validateForm(formName) {
@@ -338,6 +379,9 @@ if (request.getParameter("new") != null) {
   }
 }
 
+// Initialize the submit form for XML export and newsletter preselections.
+out.println("<form id='export' action='' method='post'></form>");
+
 out.println(createSelectForm(selected_month));
 for (Event e : events) {
   out.println(createEventForm("form-" + e.getKey(), e, selected_month));
@@ -356,5 +400,14 @@ if (events.isEmpty()) {
    } }%>
 <div id="new-event-link"><a onclick="show_box('event-new');" href="javascript:void(0);">Add a new event</a></div>
 <div><a onclick="show_box('event-xml');" href="javascript:void(0);">Import an event</a></div>
+
+<%
+// TODO: Use a copy of this submission button with a different formaction
+// for the newsletter export.
+%>
+<div class='xml-export-submit'>
+<button type='submit' form='export' formaction='export_xml.jsp'>Export selected events to XML</button>
+</div>
+
 </body>
 </html>
