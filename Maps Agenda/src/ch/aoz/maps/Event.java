@@ -46,7 +46,7 @@ public class Event {
    * Create a new Event with the specified parameters.
    *
    * @param date day at which the event takes place
-   * @param title the German title of the event
+   * @param germanTranslation the German translation of the event
    */
   public Event(Date date, Translation germanTranslation) {
     this.date = date;
