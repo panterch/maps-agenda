@@ -65,7 +65,6 @@ public static String createEventForm(String formName, Event e, Calendar selected
       form.append("<option value='" + i + (i == month? "' selected>" : "'>") + months_de[i] + "</option>");
     }
     form.append("</select>");
-    form.append("-<input type='text' name='month' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
     form.append("-<input type='text' name='day' value='' maxlength='2' size='2'></p>");
     form.append("<p>Title: <input type='text' name='title' value=''></p>");
     form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'></textarea>");
@@ -269,7 +268,7 @@ function validateForm(formName) {
     return false;
   }
   if(!intRegex.test(month) || month < 0 || month > 11) {
-    alert("The month should be a number between 0 and 11");
+    alert("The month should be a number between 0 and 11 and it is '" + month + "'");
     form.month.focus();
     return false;
   }
