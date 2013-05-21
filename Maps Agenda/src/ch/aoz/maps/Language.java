@@ -6,7 +6,9 @@ import java.util.List;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
 /**
@@ -163,7 +165,19 @@ public class Language {
 		return true;
 	}
 
-	/**
+	public static Language GetByCode(String key) {
+	  DatastoreService datastore = DatastoreServiceFactory
+	          .getDatastoreService();
+      Entity item;
+      try {
+        item = datastore.get(KeyFactory.createKey(entityKind, key));
+      } catch (EntityNotFoundException e) {
+        return null;
+      }  
+      return new Language(item);
+    }
+
+	 /**
 	 * @return the code
 	 */
 	public String getCode() {
