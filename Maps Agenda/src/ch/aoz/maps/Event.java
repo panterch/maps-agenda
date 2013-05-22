@@ -31,6 +31,7 @@ public class Event implements Comparable<Event> {
   private Date date;
   private Translation germanTranslation;
   private boolean ok;
+  private List<String> errors;
   
 	public int compareTo(Event other) {
 		return getDate().compareTo(other.getDate());
@@ -42,10 +43,13 @@ public class Event implements Comparable<Event> {
    * @param date day at which the event takes place
    */
   public Event(Date date, Translation germanTranslation, long key) {
+    this.ok = true;
     this.date = date;
     this.germanTranslation = germanTranslation;
     this.key = key;
-    this.ok = (date != null);
+    if (date == null) {
+      addError("Date is not defined");
+    }
     hasKey = true;
   }
 
@@ -56,9 +60,12 @@ public class Event implements Comparable<Event> {
    * @param germanTranslation the German translation of the event
    */
   public Event(Date date, Translation germanTranslation) {
+    this.ok = true;
     this.date = date;
     this.germanTranslation = germanTranslation;
-    this.ok = (date != null);
+    if (date == null) {
+      addError("Date is not defined");
+    }
     this.key = 0;
     hasKey = false;
   }
@@ -79,19 +86,22 @@ public class Event implements Comparable<Event> {
       try {
         date = new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
       } catch (Exception e) {}
-      ok = false;
+      addError("Date is not defined.");
     }
     
     try {
       germanTranslation = Translation.getGermanTranslationForEvent(this);
     } catch (EntityNotFoundException e) {
       germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
-      ok = false;
+      addError("No German translation.");
     }
   }
 
   public boolean addToStore() {
-    if (!this.isOk() || !this.germanTranslation.isOk()) {
+    if (!this.germanTranslation.isOk()) {
+      this.errors.addAll(this.germanTranslation.getErrors());
+    }
+    if (!this.isOk()) {
       return false;
     }
 
@@ -104,12 +114,18 @@ public class Event implements Comparable<Event> {
         hasKey = true;
       }
     } catch (Exception ex) {
+      addError(ex.getMessage());
       return false;
     }
 
     if (germanTranslation.getEventID() == null)
       germanTranslation.setEventID(key);
-    return germanTranslation.addToStore();
+    boolean result = germanTranslation.addToStore();
+    if (!result) {
+      addError("Failed to save translation");
+      this.errors.addAll(germanTranslation.getErrors());
+    }
+    return result;
   }
 
   /**
@@ -226,6 +242,22 @@ public class Event implements Comparable<Event> {
 	public Date getDate() {
 		return date;
 	}
+	
+	private void addError(String error) {
+      if (this.errors == null) {
+        this.errors = new ArrayList<String>();
+     }
+	  this.errors.add(error);
+	  this.ok = false;
+	}
+	
+	public List<String> getErrors() {
+	  if (this.errors == null) {
+	    this.errors = new ArrayList<String>();
+	    this.errors.add("No errors actually.");
+	  }
+	  return this.errors;
+	}
 
 	/**
 	 * @param date
@@ -262,7 +294,7 @@ public class Event implements Comparable<Event> {
 	 * @param ok
 	 *            the validation status to set
 	 */
-	public void setOk(boolean ok) {
+	private void setOk(boolean ok) {
 		this.ok = ok;
 	}
 

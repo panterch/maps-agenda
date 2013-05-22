@@ -181,7 +181,6 @@ form p {
 .msg-red {
   background-color: #f33;
   border-radius: 5px;
-  height: 50px;
   padding: 5px;
   margin-bottom: 20px;
 }
@@ -381,9 +380,17 @@ if (request.getParameter("new") != null) {
   }
   
   if (!event.isOk()) {
-    out.println("<div class='msg-red'><p>The event is not valid. Please verify your input.</p></div>");
+    out.print("<div class='msg-red'><p>The event is not valid:</p>");
+    for (String error : event.getErrors()) {
+      out.print("<p>" + error + "</p>");
+    }
+    out.println("</div>");
   } else if (!event.addToStore()){
-    out.println("<div class='msg-red'><p>A problem occurred when trying to store the new event. Try later?</p></div>");
+    out.println("<div class='msg-red'><p>A problem occurred when trying to store the new event. Try later?</p>");
+    for (String error : event.getErrors()) {
+      out.print("<p>" + error + "</p>");
+    }
+    out.println("</div>");
   } else {
     out.println("<div class='msg-green'><p>Event correctly stored.</p></div>");
     // Add the event such that the list remains sorted.
