@@ -16,7 +16,13 @@ public static String createEventDiv(Event e) {
   Translation de = e.getGermanTranslation();
   StringBuilder div = new StringBuilder();
   div.append("<div class='event'>");
+  div.append("<div class='eactions'>");
   div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey() + "');\" href='javascript:void(0);'>Edit</a></div>");
+  div.append("<div class='edelete'><form name='delete-" + e.getKey() + "' id='delete-" + e.getKey() + "' method='POST'>" +
+     "<input type='hidden' name='delete-key' value='" + e.getKey() + "'>" +
+     "<a onclick=\"deleteEvent('delete-" + e.getKey() + "');\" href='javascript:void(0);'>Delete</a>" +
+     "</form></div>");
+  div.append("</div>");
   div.append("<div class='edate'>" + new SimpleDateFormat("yyyy-MMM-dd").format(e.getDate()) + "</div>");
   div.append("<div class='ebody'>");
   div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
@@ -151,9 +157,8 @@ form p {
   overflow: auto;
   width: 100px;
 }
-.eedit {
+.eactions {
   float: right;
-  width: 30px;
 }
 .eexport {
   display: block;
@@ -320,10 +325,19 @@ function hide(elemId) {
   var elem = document.getElementById(elemId);
   elem.style.display = 'none';
 }
+function deleteEvent(form) {
+  if (confirm('Are you sure you want to delete the event?')) {
+    document.getElementById(form).submit();
+  }
+}
 </script>
 </head>
 <body>
 <%
+if (request.getParameter("delete-key") != null) {
+  long key = Long.parseLong(request.getParameter("delete-key"));
+  Event.DeleteEvent(key);
+}
 List<Event> events;
 Calendar selected_month = Calendar.getInstance();
 if (request.getParameter("eyear") != null) {

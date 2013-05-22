@@ -78,7 +78,7 @@ if (user == null) {
     </select>
   </div>
   <div>
-    Untranslated events:
+    Events:
     <%
       Language language = Language.GetByCode(selected_language);
       List<Event> events = Event.GetAllEvents();

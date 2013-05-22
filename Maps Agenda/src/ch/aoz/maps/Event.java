@@ -155,6 +155,12 @@ public class Event implements Comparable<Event> {
     Collections.sort(events);
 		return events;
 	}
+  
+  public static void DeleteEvent(long key) {
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
+    datastore.delete(KeyFactory.createKey(entityKind, key));
+  }
 
   public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
     DatastoreService datastore = DatastoreServiceFactory
