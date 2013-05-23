@@ -217,6 +217,13 @@ public class Event implements Comparable<Event> {
     return GetEventListForTimespan(from, to);
   } 
   
+  public static Event GetByKey(long key) throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
+    Entity entity = datastore.get(KeyFactory.createKey(entityKind, key));
+    return new Event(entity);
+  } 
+  
 	public static String getXML(int yearFrom, int monthFrom, int dayFrom,
 			int yearTo, int monthTo, int dayTo) {
 		// DEPRECATED.

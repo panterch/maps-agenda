@@ -14,3 +14,61 @@
 .right {
   float: right;
 }
+
+.event {
+  float: left;
+  width: 100%;
+  postion: fixed;
+  border: 1px solid grey;
+}
+
+.actions {
+  clear: both;
+  text-align: center;
+  padding: 6px;
+}
+
+.translation {
+  width: 50%;
+  float: left;
+}
+
+.edit .actions, .edit .translated {
+  display: none;
+}
+
+.form div {
+  white-space: nowrap;  
+}
+
+.form input, .form textarea {
+  margin: 4px 2%;
+  width: 96%;
+}
+
+.form textarea {
+  height: 200px;
+}
+
+.collapsed .desc, .collapsed .less, .collapsed .form, .collapsed .location, .collapsed .url {
+  display: none;
+}
+
+.expanded .more, .expanded .form {
+  display: none;
+}
+
+.form-actions {
+  padding: 6px;
+}
+
+.button {
+  padding: 4px;
+  border: 1px solid grey;
+  margin: 4px;
+  cursor: hand;
+}
+
+.error {
+  border: 2px solid red;
+}

@@ -55,6 +55,12 @@ public class Translation {
     this.url = url;
     this.ok = true;
   }
+  
+  public Translation(Event event, Language language) {
+    this.eventID = KeyFactory.createKey(Event.entityKind, event.getKey());
+    this.lang = language.getCode();
+    this.ok = true;
+  }
 
   public Translation(
           String lang,
