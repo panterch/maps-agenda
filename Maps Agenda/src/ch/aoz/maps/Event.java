@@ -33,9 +33,10 @@ public class Event implements Comparable<Event> {
   private boolean ok;
   private List<String> errors;
   
-	public int compareTo(Event other) {
-		return getDate().compareTo(other.getDate());
-	}
+  @Override
+  public int compareTo(Event other) {
+    return getDate().compareTo(other.getDate());
+  }
   
   /**
    * Create a new Event with the specified parameters and key.
@@ -161,7 +162,7 @@ public class Event implements Comparable<Event> {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
-		Map<Key, Entity> items = datastore.get((Iterable<Key>) keyList);
+		Map<Key, Entity> items = datastore.get(keyList);
 		ArrayList<Event> events = new ArrayList<Event>();
 		if (items != null) {
 			for (Entity item : items.values()) {
@@ -293,16 +294,6 @@ public class Event implements Comparable<Event> {
 	 */
 	public boolean isOk() {
 		return ok;
-	}
-
-	/**
-	 * Validates or invalidates an Event.
-	 * 
-	 * @param ok
-	 *            the validation status to set
-	 */
-	private void setOk(boolean ok) {
-		this.ok = ok;
 	}
 
 	public Translation getGermanTranslation() {

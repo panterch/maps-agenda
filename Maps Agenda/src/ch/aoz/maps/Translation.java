@@ -311,13 +311,6 @@ public class Translation {
     return ok;
   }
 
-  /**
-   * @param ok the ok to set
-   */
-  private void setOk(boolean ok) {
-    this.ok = ok;
-  }
-
   private void addError(String error) {
     if (this.errors == null) {
       this.errors = new ArrayList<String>();

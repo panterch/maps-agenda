@@ -167,9 +167,10 @@ if (user == null) {
     <%
     for (String language_code : translator.getLanguages()) {
       Language language = Language.GetByCode(language_code);
-      out.print("<option value='" + language.getCode() + 
-        ((language.getCode().equals(selected_language)) ? "' selected>" : "'>") +
-        language.getName() + "</option>");
+      out.print("<option value='" + language_code + 
+        ((language_code.equals(selected_language)) ? "' selected>" : "'>") +
+        (language == null ? "Unknown language: " + language_code 
+                          : language.getName()) + "</option>");
     }
     %>
     </select>
@@ -178,24 +179,28 @@ if (user == null) {
     Events:
     <%
       Language language = Language.GetByCode(selected_language);
-      List<Event> events = Event.GetAllEvents();
-      for (Event event : events) {
-        long event_id = event.getKey();
-        String div_id = "event-" + event_id;
-        Translation german = event.getGermanTranslation();
-        Translation local = event.getTranslation(language);
-        out.print("<div class='event'>");
-        out.print("<div class='collapsed' id='" + div_id + "'>");
-        out.print(formatTranslation(german, "original"));
-        out.print(formatTranslation(local, "translated"));
-        out.print(formatTranslationForm(local, event_id, div_id));
-        out.print("<div class='actions'>");
-        out.print("<span class='edit button' onclick='mode(\"" + div_id + "\", \"edit\");'>Edit</span>");
-        out.print("<span class='more button' onclick='mode(\"" + div_id + "\", \"expanded\");'>Expand</span>");
-        out.print("<span class='less button' onclick='mode(\"" + div_id + "\", \"collapsed\");'>Collapse</span>");
-        out.print("</div>"); // actions        
-        out.print("</div>"); // collapsed
-        out.print("</div>"); // event        
+      if (language == null) {
+        out.print("<div>Unknown language: " + selected_language + "</div>");
+      } else {
+        List<Event> events = Event.GetAllEvents();
+        for (Event event : events) {
+          long event_id = event.getKey();
+          String div_id = "event-" + event_id;
+          Translation german = event.getGermanTranslation();
+          Translation local = event.getTranslation(language);
+          out.print("<div class='event'>");
+          out.print("<div class='collapsed' id='" + div_id + "'>");
+          out.print(formatTranslation(german, "original"));
+          out.print(formatTranslation(local, "translated"));
+          out.print(formatTranslationForm(local, event_id, div_id));
+          out.print("<div class='actions'>");
+          out.print("<span class='edit button' onclick='mode(\"" + div_id + "\", \"edit\");'>Edit</span>");
+          out.print("<span class='more button' onclick='mode(\"" + div_id + "\", \"expanded\");'>Expand</span>");
+          out.print("<span class='less button' onclick='mode(\"" + div_id + "\", \"collapsed\");'>Collapse</span>");
+          out.print("</div>"); // actions        
+          out.print("</div>"); // collapsed
+          out.print("</div>"); // event        
+        }
       }
     %>
   </div>
