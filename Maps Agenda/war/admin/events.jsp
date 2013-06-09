@@ -16,7 +16,13 @@ public static String createEventDiv(Event e) {
   Translation de = e.getGermanTranslation();
   StringBuilder div = new StringBuilder();
   div.append("<div class='event'>");
+  div.append("<div class='eactions'>");
   div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey() + "');\" href='javascript:void(0);'>Edit</a></div>");
+  div.append("<div class='edelete'><form name='delete-" + e.getKey() + "' id='delete-" + e.getKey() + "' method='POST'>" +
+     "<input type='hidden' name='delete-key' value='" + e.getKey() + "'>" +
+     "<a onclick=\"deleteEvent('delete-" + e.getKey() + "');\" href='javascript:void(0);'>Delete</a>" +
+     "</form></div>");
+  div.append("</div>");
   div.append("<div class='edate'>" + new SimpleDateFormat("yyyy-MMM-dd").format(e.getDate()) + "</div>");
   div.append("<div class='ebody'>");
   div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
@@ -65,7 +71,6 @@ public static String createEventForm(String formName, Event e, Calendar selected
       form.append("<option value='" + i + (i == month? "' selected>" : "'>") + months_de[i] + "</option>");
     }
     form.append("</select>");
-    form.append("-<input type='text' name='month' value='" + selected_month.get(Calendar.MONTH) + "' maxlength='2' size='2'>");
     form.append("-<input type='text' name='day' value='' maxlength='2' size='2'></p>");
     form.append("<p>Title: <input type='text' name='title' value=''></p>");
     form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'></textarea>");
@@ -152,9 +157,8 @@ form p {
   overflow: auto;
   width: 100px;
 }
-.eedit {
+.eactions {
   float: right;
-  width: 30px;
 }
 .eexport {
   display: block;
@@ -177,7 +181,6 @@ form p {
 .msg-red {
   background-color: #f33;
   border-radius: 5px;
-  height: 50px;
   padding: 5px;
   margin-bottom: 20px;
 }
@@ -269,7 +272,7 @@ function validateForm(formName) {
     return false;
   }
   if(!intRegex.test(month) || month < 0 || month > 11) {
-    alert("The month should be a number between 0 and 11");
+    alert("The month should be a number between 0 and 11 and it is '" + month + "'");
     form.month.focus();
     return false;
   }
@@ -321,10 +324,19 @@ function hide(elemId) {
   var elem = document.getElementById(elemId);
   elem.style.display = 'none';
 }
+function deleteEvent(form) {
+  if (confirm('Are you sure you want to delete the event?')) {
+    document.getElementById(form).submit();
+  }
+}
 </script>
 </head>
 <body>
 <%
+if (request.getParameter("delete-key") != null) {
+  long key = Long.parseLong(request.getParameter("delete-key"));
+  Event.DeleteEvent(key);
+}
 List<Event> events;
 Calendar selected_month = Calendar.getInstance();
 if (request.getParameter("eyear") != null) {
@@ -368,9 +380,17 @@ if (request.getParameter("new") != null) {
   }
   
   if (!event.isOk()) {
-    out.println("<div class='msg-red'><p>The event is not valid. Please verify your input.</p></div>");
+    out.print("<div class='msg-red'><p>The event is not valid:</p>");
+    for (String error : event.getErrors()) {
+      out.print("<p>" + error + "</p>");
+    }
+    out.println("</div>");
   } else if (!event.addToStore()){
-    out.println("<div class='msg-red'><p>A problem occurred when trying to store the new event. Try later?</p></div>");
+    out.println("<div class='msg-red'><p>A problem occurred when trying to store the new event. Try later?</p>");
+    for (String error : event.getErrors()) {
+      out.print("<p>" + error + "</p>");
+    }
+    out.println("</div>");
   } else {
     out.println("<div class='msg-green'><p>Event correctly stored.</p></div>");
     // Add the event such that the list remains sorted.

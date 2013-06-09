@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
+
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
@@ -147,6 +149,18 @@ public class Translator {
     return list;
   }
 
+  public static Translator GetByEmail(String key) {
+    DatastoreService datastore = DatastoreServiceFactory
+            .getDatastoreService();
+
+    Entity item;
+    try {
+      item = datastore.get(KeyFactory.createKey(entityKind, key));
+    } catch (EntityNotFoundException e) {
+      return null;
+    }  
+    return new Translator(item);
+  }
   /**
    * @return the email
    */

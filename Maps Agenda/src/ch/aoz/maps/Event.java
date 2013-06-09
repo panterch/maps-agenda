@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -30,10 +31,12 @@ public class Event implements Comparable<Event> {
   private Date date;
   private Translation germanTranslation;
   private boolean ok;
+  private List<String> errors;
   
-	public int compareTo(Event other) {
-		return getDate().compareTo(other.getDate());
-	}
+  @Override
+  public int compareTo(Event other) {
+    return getDate().compareTo(other.getDate());
+  }
   
   /**
    * Create a new Event with the specified parameters and key.
@@ -41,10 +44,13 @@ public class Event implements Comparable<Event> {
    * @param date day at which the event takes place
    */
   public Event(Date date, Translation germanTranslation, long key) {
+    this.ok = true;
     this.date = date;
     this.germanTranslation = germanTranslation;
     this.key = key;
-    this.ok = (date != null);
+    if (date == null) {
+      addError("Date is not defined");
+    }
     hasKey = true;
   }
 
@@ -52,12 +58,15 @@ public class Event implements Comparable<Event> {
    * Create a new Event with the specified parameters.
    *
    * @param date day at which the event takes place
-   * @param title the German title of the event
+   * @param germanTranslation the German translation of the event
    */
   public Event(Date date, Translation germanTranslation) {
+    this.ok = true;
     this.date = date;
     this.germanTranslation = germanTranslation;
-    this.ok = (date != null);
+    if (date == null) {
+      addError("Date is not defined");
+    }
     this.key = 0;
     hasKey = false;
   }
@@ -78,19 +87,22 @@ public class Event implements Comparable<Event> {
       try {
         date = new SimpleDateFormat("yyyy-MM-dd").parse("1900-01-01");
       } catch (Exception e) {}
-      ok = false;
+      addError("Date is not defined.");
     }
     
     try {
       germanTranslation = Translation.getGermanTranslationForEvent(this);
     } catch (EntityNotFoundException e) {
       germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
-      ok = false;
+      addError("No German translation.");
     }
   }
 
   public boolean addToStore() {
-    if (!this.isOk() || !this.germanTranslation.isOk()) {
+    if (!this.germanTranslation.isOk()) {
+      this.errors.addAll(this.germanTranslation.getErrors());
+    }
+    if (!this.isOk()) {
       return false;
     }
 
@@ -103,12 +115,18 @@ public class Event implements Comparable<Event> {
         hasKey = true;
       }
     } catch (Exception ex) {
+      addError(ex.getMessage());
       return false;
     }
 
     if (germanTranslation.getEventID() == null)
       germanTranslation.setEventID(key);
-    return germanTranslation.addToStore();
+    boolean result = germanTranslation.addToStore();
+    if (!result) {
+      addError("Failed to save translation");
+      this.errors.addAll(germanTranslation.getErrors());
+    }
+    return result;
   }
 
   /**
@@ -144,7 +162,7 @@ public class Event implements Comparable<Event> {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
-		Map<Key, Entity> items = datastore.get((Iterable<Key>) keyList);
+		Map<Key, Entity> items = datastore.get(keyList);
 		ArrayList<Event> events = new ArrayList<Event>();
 		if (items != null) {
 			for (Entity item : items.values()) {
@@ -154,6 +172,12 @@ public class Event implements Comparable<Event> {
     Collections.sort(events);
 		return events;
 	}
+  
+  public static void DeleteEvent(long key) {
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
+    datastore.delete(KeyFactory.createKey(entityKind, key));
+  }
 
   public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {
     DatastoreService datastore = DatastoreServiceFactory
@@ -194,6 +218,13 @@ public class Event implements Comparable<Event> {
     return GetEventListForTimespan(from, to);
   } 
   
+  public static Event GetByKey(long key) throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
+    Entity entity = datastore.get(KeyFactory.createKey(entityKind, key));
+    return new Event(entity);
+  } 
+  
 	public static String getXML(int yearFrom, int monthFrom, int dayFrom,
 			int yearTo, int monthTo, int dayTo) {
 		// DEPRECATED.
@@ -218,6 +249,22 @@ public class Event implements Comparable<Event> {
 	 */
 	public Date getDate() {
 		return date;
+	}
+	
+	private void addError(String error) {
+      if (this.errors == null) {
+        this.errors = new ArrayList<String>();
+     }
+	  this.errors.add(error);
+	  this.ok = false;
+	}
+	
+	public List<String> getErrors() {
+	  if (this.errors == null) {
+	    this.errors = new ArrayList<String>();
+	    this.errors.add("No errors actually.");
+	  }
+	  return this.errors;
 	}
 
 	/**
@@ -249,18 +296,24 @@ public class Event implements Comparable<Event> {
 		return ok;
 	}
 
-	/**
-	 * Validates or invalidates an Event.
-	 * 
-	 * @param ok
-	 *            the validation status to set
-	 */
-	public void setOk(boolean ok) {
-		this.ok = ok;
-	}
-
 	public Translation getGermanTranslation() {
 		return germanTranslation;
+	}
+	
+	public Translation getTranslation(Language language) {
+	    DatastoreService datastore = DatastoreServiceFactory
+            .getDatastoreService();
+
+	    Entity item;
+        try {
+          item = datastore.get(KeyFactory.createKey(
+              KeyFactory.createKey(entityKind, getKey()),
+              Translation.entityKind, 
+              language.getCode()));
+        } catch (EntityNotFoundException e) {
+          return null;
+        }  
+        return new Translation(item);
 	}
 
 	public void setGermanTranslation(Translation germanTranslation) {

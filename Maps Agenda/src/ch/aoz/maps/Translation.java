@@ -6,6 +6,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO everywhere: We need to sanitize the text (this was part of the XML output, but I think this should go everywhere). PHP code for this:
 /*
@@ -34,6 +38,7 @@ public class Translation {
   private String location;
   private String url;
   private boolean ok;
+  private List<String> errors;
 
   public Translation(
       Key parentKey,
@@ -48,6 +53,12 @@ public class Translation {
     this.desc = desc;
     this.location = location;
     this.url = url;
+    this.ok = true;
+  }
+  
+  public Translation(Event event, Language language) {
+    this.eventID = KeyFactory.createKey(Event.entityKind, event.getKey());
+    this.lang = language.getCode();
     this.ok = true;
   }
 
@@ -80,7 +91,7 @@ public class Translation {
       lang = (String) entity.getProperty("lang");
     } else {
       lang = new String("");
-      ok = false;
+      addError("Language is unknown.");
     }
 
     if (entity.hasProperty("title")) {
@@ -90,7 +101,13 @@ public class Translation {
     }
 
     if (entity.hasProperty("desc")) {
-      desc = (String) entity.getProperty("desc");
+      Object desc_property = entity.getProperty("desc");
+      if (desc_property instanceof Text) {
+        desc = ((Text) desc_property).getValue();
+      } else {
+        // For compatibility
+        desc = (String) desc_property;
+      }
     } else {
       desc = new String("");
     }
@@ -117,7 +134,7 @@ public class Translation {
     Entity result = new Entity(entityKind, lang, eventID);
     result.setProperty("lang", lang);
     result.setProperty("title", title);
-    result.setProperty("desc", desc);
+    result.setProperty("desc", new Text(desc));
     result.setProperty("location", location);
     result.setProperty("url", url);
     return result;
@@ -129,7 +146,10 @@ public class Translation {
    * @return if this operation succeeded.
    */
   public boolean addToStore() {
-    if (!this.isOk() || this.eventID == null) {
+    if (this.eventID == null) {
+      addError("Event id not set for the translation.");
+    }
+    if (!this.isOk()) {
       return false;
     }
 
@@ -137,6 +157,7 @@ public class Translation {
     try {
       datastore.put(this.toEntity());
     } catch (Exception ex) {
+      addError(ex.getMessage());
       return false;
     }
     return true;
@@ -290,10 +311,19 @@ public class Translation {
     return ok;
   }
 
-  /**
-   * @param ok the ok to set
-   */
-  public void setOk(boolean ok) {
-    this.ok = ok;
+  private void addError(String error) {
+    if (this.errors == null) {
+      this.errors = new ArrayList<String>();
+   }
+    this.errors.add(error);
+    this.ok = false;
+  }
+  
+  public List<String> getErrors() {
+    if (this.errors == null) {
+       this.errors = new ArrayList<String>();
+       this.errors.add("No errors actually.");
+    }
+    return this.errors;
   }
 }
