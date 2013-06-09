@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -15,7 +16,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * A phrase is a word, an abbreviation, or even a full sentence in a given language. 
  * The various translations of a phrase are all grouped using the same key.
  * */
-public class Phrase {
+public class Phrase implements Comparable<Phrase> {
   public static final String entityKind = "Phrase";
   
   /** Key that groups all the translations of the same phrase. */
@@ -30,6 +31,10 @@ public class Phrase {
   private String phrase;  
   public static final String phraseProperty = "phrase";
   
+  /** Phrases are grouped together in sections in the UI. */
+  private String group;
+  public static final String groupProperty = "group";
+
   /** Some phrases are used as tags for events. */
   private boolean isTag;
   public static final String isTagProperty = "isTag";
@@ -38,10 +43,11 @@ public class Phrase {
   private boolean isOk;
   
   /** Create a new Phrase */
-  public Phrase(String key, String lang, String phrase, boolean isTag) {
+  public Phrase(String key, String lang, String phrase, String group, boolean isTag) {
     this.key = key;
     this.lang = lang;
     this.phrase = (phrase == null ? "" : phrase);
+    this.group = (group == null ? "" : group);
     this.isTag = isTag;
     this.isOk = (key != null && key.length() > 0 &&
                  lang != null && lang.length() > 0);  
@@ -51,7 +57,18 @@ public class Phrase {
     this((entity.hasProperty(keyProperty) ? (String)entity.getProperty(keyProperty) : null),
          (entity.hasProperty(langProperty) ? (String)entity.getProperty(langProperty) : null),
          (entity.hasProperty(phraseProperty) ? (String)entity.getProperty(phraseProperty) : null),
+         (entity.hasProperty(groupProperty) ? (String)entity.getProperty(groupProperty) : null),
          (entity.hasProperty(isTagProperty) ? (Boolean)entity.getProperty(isTagProperty) : false));
+  }
+
+  @Override
+  public int compareTo(Phrase p) {
+    int group_compare = group.toLowerCase().compareTo(p.group.toLowerCase()); 
+    if (group_compare == 0) {
+      return key.toLowerCase().compareTo(p.key.toLowerCase());
+    } else {
+      return group_compare;
+    }
   }
 
   /**
@@ -64,6 +81,7 @@ public class Phrase {
     result.setProperty(keyProperty, key);
     result.setProperty(langProperty, lang);
     result.setProperty(phraseProperty, phrase);
+    result.setProperty(groupProperty, group);
     result.setProperty(isTagProperty, isTag);
     return result;
   }
@@ -77,7 +95,6 @@ public class Phrase {
     if (!this.isOk()) {
       return false;
     }
-
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     try {
       datastore.put(this.toEntity());
@@ -96,7 +113,7 @@ public class Phrase {
 
   public static List<Phrase> GetPhrasesForKey(String key) {
     // Create the key filter.
-    Filter keyFilter = new FilterPredicate(langProperty,
+    Filter keyFilter = new FilterPredicate(keyProperty,
         Query.FilterOperator.EQUAL, key);
     return GetPhrases(keyFilter);
   }
@@ -114,6 +131,21 @@ public class Phrase {
     return phrases;
   }
 
+  public static void deleteKey(String key) {
+    Filter keyFilter = new FilterPredicate(keyProperty,
+            Query.FilterOperator.EQUAL, key);
+    DatastoreService datastore = DatastoreServiceFactory
+            .getDatastoreService();
+    Query query = new Query(entityKind).setFilter(keyFilter);
+    List<Entity> items = datastore.prepare(query).asList(
+        FetchOptions.Builder.withDefaults());
+    ArrayList<Key> keys = new ArrayList<Key>();
+    for (Entity item : items) {
+      keys.add(item.getKey());
+    }
+    datastore.delete(keys);
+  }
+  
   public String getKey() {
     return key;
   }
@@ -136,6 +168,14 @@ public class Phrase {
 
   public void setPhrase(String phrase) {
     this.phrase = phrase;
+  }
+
+  public String getGroup() {
+    return group;
+  }
+
+  public void setGroup(String group) {
+    this.group = group;
   }
 
   public boolean isTag() {

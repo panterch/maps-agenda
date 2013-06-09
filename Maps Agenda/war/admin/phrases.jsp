@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.TreeSet" %>
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ page import="ch.aoz.maps.Phrase" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -53,6 +54,7 @@ public static String createPhraseForm(String formName, Language lang, Phrase p_d
     form.append("<p>Key: " + p_de.getKey() + "<input type='hidden' name='key' value='" + p_de.getKey() + "'></p>");    
     form.append("<input type='hidden' name='new' value='false'></p>");    
   }
+  form.append("<p>Group: <input type='text' name='p_group' value='" + (p_de == null ? "" : p_de.getGroup()) + "'></p>");
   form.append("<p>Deutsch: <input type='text' name='p_de' value='" + (p_de == null ? "" : p_de.getPhrase()) + "'></p>");
   if (p_ln != null && p_ln.getLang() != p_de.getLang()) {
     form.append("<p>" + lang.getGermanName() + ": <input type='text' name='p_ln' value='" + p_ln.getPhrase() + "'></p>");
@@ -63,6 +65,17 @@ public static String createPhraseForm(String formName, Language lang, Phrase p_d
   form.append("<input type='hidden' name='lang' value='" + lang.getCode() + "'></p>");    
   form.append("<p><input type='submit' value='" + (p_de == null ? "Add": "Update") + " translation'></p>");
   form.append("</form></div>");
+  return form.toString();
+}
+
+public static String deletePhraseForm(String key) {
+  StringBuilder form = new StringBuilder();
+  form.append("<form name='d-" + key + "' method='POST' target='content-frame'");
+  form.append(" action='' onSubmit=\"return confirm('Are you sure you want to delete " + key + "?')\">");
+  form.append("<input type='hidden' name='delete' value='true'>");    
+  form.append("<input type='hidden' name='key' value='" + key + "'>");    
+  form.append("<input type='submit' value='delete'>");
+  form.append("</form>");
   return form.toString();
 }
 %>
@@ -179,6 +192,11 @@ function hide(elemId) {
 </head>
 <body>
 <%
+if (request.getParameter("delete") != null) {
+  String key = request.getParameter("key");
+  Phrase.deleteKey(key);
+  out.println("<div class='msg-green'><p>Deleted " + key + "</p></div>");
+}
 Map<String, Language> languages = Language.getAllLanguages();
 Map<String, Phrase> phrasesDE = getPhrasesForLang("de");
 Map<String, Phrase> phrasesOther;
@@ -204,6 +222,7 @@ if (request.getParameter("new") != null) {
     } else {
       p_de = new Phrase(key, "de",
                         request.getParameter("p_de"),
+                        request.getParameter("p_group"),
                         Boolean.parseBoolean(request.getParameter("tag")));
       update_de = true;
     }
@@ -214,8 +233,12 @@ if (request.getParameter("new") != null) {
     p_de = phrasesDE.get(key);
     boolean new_tag = Boolean.parseBoolean(request.getParameter("tag"));
     String new_phrase = request.getParameter("p_de");
-    if (!new_phrase.equals(p_de.getPhrase()) || new_tag != p_de.isTag()) {
+    String new_group = request.getParameter("p_group");
+    if (!new_phrase.equals(p_de.getPhrase()) 
+        || !new_group.equals(p_de.getGroup()) 
+        || new_tag != p_de.isTag()) {
       p_de.setPhrase(new_phrase);
+      p_de.setGroup(new_group);
       p_de.setTag(new_tag);
       update_de = true;
     }
@@ -237,14 +260,19 @@ if (request.getParameter("new") != null) {
       // We have a new translated phrase.
       p_ln = new Phrase(key, lang,
                         request.getParameter("p_ln"),
+                        request.getParameter("p_group"),
                         Boolean.parseBoolean(request.getParameter("tag")));
       update_ln = true;
     } else {
       p_ln = phrasesOther.get(key);
       boolean new_tag = Boolean.parseBoolean(request.getParameter("tag"));
+      String new_group = request.getParameter("p_group");
       String new_phrase = request.getParameter("p_ln");
-      if (!new_phrase.equals(p_ln.getPhrase()) || new_tag != p_ln.isTag()) {
+      if (!new_phrase.equals(p_ln.getPhrase()) 
+          || !new_group.equals(p_ln.getGroup())
+          || new_tag != p_ln.isTag()) {
         p_ln.setPhrase(new_phrase);
+        p_ln.setGroup(new_group);
         p_ln.setTag(new_tag);
         update_ln = true;
       }
@@ -277,9 +305,23 @@ if (phrasesDE.isEmpty()) {
           <th><% out.print(languages.get(lang).getGermanName()); %></th>
         <% } %>
         <th>is tag?</th>
-        <th></th>
+        <th>Edit</th>
+        <th>Delete</th>
       </tr>
-<% for (Phrase p : phrasesDE.values()) {
+<% String currentGroup = null;
+   TreeSet<Phrase> set = new TreeSet<Phrase>();
+   for (Phrase p : phrasesDE.values()) {
+     set.add(p);
+   }
+   for (Phrase p : set) {
+     if (currentGroup == null || !currentGroup.equals(p.getGroup().toLowerCase())) {
+       currentGroup = p.getGroup().toLowerCase();
+       if (currentGroup.equals("")) {
+         out.println("<tr><td colspan='6' bgcolor='#0F0'>(unlisted)</td></tr>");
+       } else {
+         out.println("<tr><td colspan='6' bgcolor='#0F0'>" + currentGroup + "</td></tr>");
+       }
+     }
      Phrase p2 = phrasesOther.get(p.getKey()); 
      out.println(createPhraseForm("form-" + p.getKey(), languages.get(lang), p, p2));
 %>
@@ -291,8 +333,9 @@ if (phrasesDE.isEmpty()) {
         <% } %>
         <td><% out.println(p.isTag() ? "&#10003;" : "&#10007;"); %></td>
         <td><a onclick="show_box('p-<% out.print(p.getKey()); %>');" href='javascript:void(0);'>Edit</a></td>
+        <td><% out.println(deletePhraseForm(p.getKey())); %> </td>
       </tr>
-<% } }%>
+<% } } %>
 <div id="new-p-link"><a onclick="show_box('p-new');" href="javascript:void(0);">Add a new phrase</a></div>
 </body>
 </html>
