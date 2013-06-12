@@ -26,7 +26,7 @@ public static String createEventDiv(Event e) {
   div.append("<div class='edate'>" + new SimpleDateFormat("yyyy-MMM-dd").format(e.getDate()) + "</div>");
   div.append("<div class='ebody'>");
   div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
-  div.append("<div class='edesc'>" + de.getDesc() + "</div>");
+  div.append("<div class='edesc' name='eventDescription'>" + de.getDesc() + "</div>");
   div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
   div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
   div.append("<div class='eexport'>" +
@@ -227,6 +227,7 @@ function uncheckXMLOtherButtons(checkbox, event) {
   }
   tickXMLButton("XMLExportsLarge", event, false);
   tickXMLButton("XMLExportsImage", event, false);
+  countEventCharacters();
 }
 
 function checkXMLButton(checkbox, event) {
@@ -234,16 +235,35 @@ function checkXMLButton(checkbox, event) {
 	  return;
   }
   tickXMLButton("XMLExports", event, true);
+  countEventCharacters();
 }
 
 function tickXMLButton(eventName, event, value) {
   var events = document.getElementsByName(eventName);
   for (e = 0; e < events.length; e++) {
-	if (events[e].value == event) {
-	  events[e].checked = value;
-	  return;
-	}
+  	if (events[e].value == event) {
+  	  events[e].checked = value;
+      return;
+	  }
   }
+}
+
+function countEventCharacters() {
+  var total = 0;
+  var selected = 0; 
+  var events = document.getElementsByName("eventDescription");
+  var checks = document.getElementsByName("XMLExports");
+  
+  for (e = 0; e < events.length; e++) {
+    var count = events[e].innerHTML.length;
+    
+    total += count;
+    if (checks[e].checked) {
+      selected += count;
+    }
+  }
+  document.getElementsByName("characterCount")[0].innerHTML = selected.toString() + 'B';
+  document.getElementsByName("characterTotalCount")[0].innerHTML = total.toString() + 'B';  
 }
 
 function validateForm(formName) {
@@ -329,7 +349,7 @@ function deleteEvent(form) {
 }
 </script>
 </head>
-<body>
+<body onload='countEventCharacters()'>
 <%
 if (request.getParameter("delete-key") != null) {
   long key = Long.parseLong(request.getParameter("delete-key"));
@@ -424,6 +444,7 @@ if (events.isEmpty()) {
 // for the newsletter export.
 %>
 <div class='xml-export-submit'>
+Selected (de): <span name="characterCount">0</span> / <span name="characterTotalCount">0</span>
 <button type='submit' form='export' formaction='export_xml.jsp'>Export selected events to XML</button>
 <button type='submit' form='export' formaction='send_newsletter.jsp'>Send newsletter with selected events</button>
 </div>
