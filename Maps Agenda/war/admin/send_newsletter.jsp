@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
 %><%@ page import="ch.aoz.maps.Translation"
+%><%@ page import="java.io.UnsupportedEncodingException"
 %><%@ page import="java.util.ArrayList"
 %><%@ page import="java.util.Calendar"
 %><%@ page import="java.util.Date"
@@ -76,12 +77,15 @@ public static String send(String toAddress,
 
   try {
     Message msg = new MimeMessage(session);
-    msg.setFrom(new InternetAddress("no-reply@maps-agenda.com"));
+    msg.setFrom(new InternetAddress("no.reply.maps.agenda@gmail.com",
+                                    "MAPS Agenda (AOZ)"));
     InternetAddress to = new InternetAddress(toAddress);
     msg.addRecipient(Message.RecipientType.TO, to);
     msg.setSubject(subject);
     msg.setText(msgBody);
     Transport.send(msg, new InternetAddress[] { to });
+  } catch (UnsupportedEncodingException encodingException) {
+    return "UnsupportedEncodingException: " + encodingException.getMessage();
   } catch (AddressException addressException) {
     return "Address Exception , mail could not be sent: " + addressException.getMessage();
   } catch (MessagingException messageException) {
