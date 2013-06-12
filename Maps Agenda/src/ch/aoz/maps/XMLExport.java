@@ -133,9 +133,12 @@ public class XMLExport {
 	private static Translation getTranslation(Event event, Language language)
 			throws EntityNotFoundException {
 		Translation translation;
-		// TODO assign the translation of this event to the given
-		// language.
-		translation = Translation.getGermanTranslationForEvent(event);
+		// Attempt to fetch the appropriate translation, and fall back to the German version if it cannot be found.
+		try {
+		  translation = Translation.getTranslationForEvent(event, language.getCode());
+		} catch (EntityNotFoundException e) {
+		  translation = Translation.getGermanTranslationForEvent(event);
+		}
 		return translation;
 	}
 

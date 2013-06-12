@@ -1,5 +1,17 @@
 package ch.aoz.maps;
 
+import static ch.aoz.maps.NewsletterStyles.CONTAINER_CSS;
+import static ch.aoz.maps.NewsletterStyles.DATE_CSS;
+import static ch.aoz.maps.NewsletterStyles.DESC_CSS;
+import static ch.aoz.maps.NewsletterStyles.EVENT_CSS;
+import static ch.aoz.maps.NewsletterStyles.EVENT_LEFT_CSS;
+import static ch.aoz.maps.NewsletterStyles.EVENT_RIGHT_CSS;
+import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
+import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
+import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
+import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
+import static ch.aoz.maps.NewsletterStyles.URL_CSS;
+
 import com.google.appengine.api.datastore.EntityNotFoundException;
 
 import java.util.List;
@@ -7,6 +19,15 @@ import java.util.List;
 
 /**
  * Generates the HTML for a newsletter of events in a given language.
+ * 
+ * Remaining:
+ *   - pull in static files (image banner)
+ *   - migrate to accept subscriber, not just language
+ *   - link out to log-out page and view-archive page. 
+ *   - get german working (single-language)
+ *   - test RLT & other languages.
+ *   - fill in header links
+ *   - fill in footer links.
  */
 public class NewsletterExport {
   private final List<Event> events;
@@ -25,9 +46,17 @@ public class NewsletterExport {
   public String render() {
     out = new StringBuilder();
     renderPreheader();
+    
+    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' style='" + CONTAINER_CSS + "'>");
+    out.append("<tr>");
+    out.append("<td align='center' valign='top'>");
     renderHeader();
     renderEvents();
     renderFooter();
+    out.append("</td>");
+    out.append("</tr>");
+    out.append("</table>");
+    
     String result = out.toString();
     out = null;
     return result;
@@ -36,13 +65,14 @@ public class NewsletterExport {
   /** Preheader HTML = top of page, above AOZ header. */
   private void renderPreheader() {
     out.append("<div style='font-size: x-large; background-color: red; color: yellow'>IN PROGRESS</div>");
+    
     out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' id='templatePreheader'>");
     out.append("<tr>");
-    out.append("<td valign='top' class='preheaderContent'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%'>");
+    out.append("<td valign='top' style='padding: 0'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%' style='" + PREHEADER_CSS + "'>");
     out.append("<tr>");
     out.append("<td valign='top'>");
-    out.append("<div mc:edit='std_preheader_content'>");
+    out.append("<div>");
     out.append("MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
     out.append("</td>");
     out.append("<td valign='top' width='260'>");
@@ -64,7 +94,7 @@ public class NewsletterExport {
     out.append("<td align='center' valign='top'>");
     out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' id='templateHeader'>");
     out.append("<tr>");
-    out.append("<td class='headerContent'>");                                    
+    out.append("<td>");                                    
     out.append("<img src='header.gif' style='max-width:600px;' id='headerImage campaign-icon'>");
     out.append("</td>");
     out.append("</tr>");
@@ -79,7 +109,7 @@ public class NewsletterExport {
     
     out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' id='templateBody'>");
     out.append("<tr>");
-    out.append("<td valign='top' width='280' class='leftColumnContent'>");
+    out.append("<td valign='top' width='280'>");
 
     for (Event event : events) {
       renderEvent(event);
@@ -124,35 +154,38 @@ public class NewsletterExport {
 
     String date = "TODO - date";
     
-    out.append("<div class='event'>");
-    out.append("<div class='event_left'>");
+    out.append("<div style='" + EVENT_CSS + "'>");
     
+    out.append("<div style='" + EVENT_LEFT_CSS + "'>");
     renderEventDetails(
         date,
         german.getTitle(),
         german.getDesc(),
         german.getLocation(),
         german.getUrl());
+    out.append("</div>");
+    
+    out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,
         getOrDefault(nonGerman.getTitle(), german.getTitle()),
         getOrDefault(nonGerman.getDesc(), german.getDesc()),
         getOrDefault(nonGerman.getLocation(), german.getLocation()),
         getOrDefault(nonGerman.getUrl(), german.getUrl()));
-    
     out.append("</div>");
+    
     out.append("</div>");
   }
   
   /** Renders just the details for one event in one language. */
   private void renderEventDetails(
       String date, String title, String description, String location, String url) {
-    out.append(String.format("<h1>%S</h1>", date));
-    out.append(String.format("<h2>%S</h2>", title));
-    out.append(String.format("<div class='desc'>%S</div>", description));
-    out.append(String.format("<p class='location'>%S</p>", location));
-    out.append("<p class='url'>");
-    out.append(String.format("<a onclick='this.target = '_blank';' href='%S'>%S</a>", url));
+    out.append(String.format("<h1 style='%s'>%s</h1>", DATE_CSS, date));
+    out.append(String.format("<h2 style='%s'>%s</h2>", TITLE_CSS, title));
+    out.append(String.format("<div style='%s'>%s</div>", DESC_CSS, description));
+    out.append(String.format("<p style='%s'>%s</p>", LOCATION_CSS, location));
+    out.append(String.format("<p style='%s'>", URL_CSS));
+    out.append(String.format("<a onclick='this.target = '_blank';' href='%s'>%s</a>", url, url));
     out.append("</p>");
   }
   
@@ -160,20 +193,11 @@ public class NewsletterExport {
   private void renderFooter() {
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' id='templateFooter'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600'>");
+    
     out.append("<tr>");
-    out.append("<td valign='top' class='footerContent'>");
-
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%'>");
-    out.append("<tr>");
-    out.append("<td colspan='2' valign='middle' id='social'>");
-    out.append("<div mc:edit='std_social'>");
-    out.append("<a href='*|TWITTER:PROFILEURL|*'>folgen auf Twitter</a> |"); 
-    out.append("<a href='*|FACEBOOK:PROFILEURL|*'>Freund werden auf Facebook</a> |");
-    out.append("<a href='*|FORWARD|*'>Weiterleiten</a>");
-    out.append("</div>");
-    out.append("</td>");
-    out.append("</tr>");
+    out.append("<td valign='top' style='padding: 0'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%' style='" + FOOTER_CSS + "'>");
 
     out.append("<tr>");
     out.append("<td valign='top' width='350'>");
@@ -198,19 +222,18 @@ public class NewsletterExport {
     out.append("<td colspan='2' valign='middle' id='utility'>");
     out.append("<div mc:edit='std_utility'>");
     out.append("<a href='*|UNSUB|*'>MAPS-Newsletter abbestellen</a> |"); 
+    out.append("<a href='*|FORWARD|*'>Weiterleiten</a> |");
     out.append("<a href='*|UPDATE_PROFILE|*'>Einstellungen</a>");
     out.append("</div>");
     out.append("</td>");
     out.append("</tr>");
-
     out.append("</table>");                            
     out.append("</td>");
     out.append("</tr>");
-    out.append("</table>");
   }
   
   // Utility - returns the first if provided, otherwise the second
   private static <T> T getOrDefault(T value, T defaultValue) {
-    return value != null ? value : defaultValue;
+    return value == null || value.toString().isEmpty() ? defaultValue : value;
   }
 }
