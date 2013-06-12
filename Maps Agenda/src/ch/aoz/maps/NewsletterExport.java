@@ -19,6 +19,15 @@ import java.util.List;
 
 /**
  * Generates the HTML for a newsletter of events in a given language.
+ * 
+ * Remaining:
+ *   - pull in static files (image banner)
+ *   - migrate to accept subscriber, not just language
+ *   - link out to log-out page and view-archive page. 
+ *   - get german working (single-language)
+ *   - test RLT & other languages.
+ *   - fill in header links
+ *   - fill in footer links.
  */
 public class NewsletterExport {
   private final List<Event> events;

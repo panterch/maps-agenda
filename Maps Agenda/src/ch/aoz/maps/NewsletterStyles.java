@@ -17,7 +17,7 @@ public class NewsletterStyles {
       "padding:6px",
       "text-align:left");
 
-  // Styles the section which contains the header, events, and footer.
+  // Styles the section which contains the header, events, and zfooter.
   public static final String CONTAINER_CSS = join(
       "border:1px solid #DDDDDD",
       "font-family:Arial");
