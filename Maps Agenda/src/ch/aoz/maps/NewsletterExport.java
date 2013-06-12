@@ -16,31 +16,50 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 
 /**
  * Generates the HTML for a newsletter of events in a given language.
  * 
  * Remaining:
- *   - pull in static files (image banner)
- *   - migrate to accept subscriber, not just language
- *   - link out to log-out page and view-archive page. 
- *   - get german working (single-language)
+ *   - get single-language working (german, and untranslated)
+ *   - format the date.
+ *   - escape the HTML
  *   - test RLT & other languages.
- *   - fill in header links
- *   - fill in footer links.
+ *   - fill in footer copy text.
  */
 public class NewsletterExport {
   private final List<Event> events;
   private final String lang;
+  private final String urlRoot;
+  private final String themeId;
+  private final int year;
+  private final int month;
+  private final Subscriber subscriber;
   private StringBuilder out;
   
   /**
    * @param events Displayed events, should be translated in the given language.
    * @param lang Second (non-german) language for events, null for german.
+   * @param urlRoot Root page that all served pages are relative to.
+   * @param themeId ID of the theme, used for locating resources in static/themes.
+   * @param year Year the newsletter is for.
+   * @param month (0-based) Month the newsletter is for.
+   * @param subscriber The subscriber this newsletter is for -
+   *     or null for when rendering the public website version.
    */
-  public NewsletterExport(List<Event> events, String lang) {
+  public NewsletterExport(List<Event> events, String lang,
+      String urlRoot, String themeId,
+      int year, int month,
+      @Nullable Subscriber subscriber) {
     this.events = events;
     this.lang = lang;
+    this.urlRoot = urlRoot;
+    this.themeId = themeId;
+    this.year = year;
+    this.month = month;
+    this.subscriber = subscriber;
   }
   
   public String render() {
@@ -64,22 +83,24 @@ public class NewsletterExport {
   
   /** Preheader HTML = top of page, above AOZ header. */
   private void renderPreheader() {
-    out.append("<div style='font-size: x-large; background-color: red; color: yellow'>IN PROGRESS</div>");
-    
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' id='templatePreheader'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600'>");
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%' style='" + PREHEADER_CSS + "'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + PREHEADER_CSS + "'>");
     out.append("<tr>");
     out.append("<td valign='top'>");
     out.append("<div>");
     out.append("MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
     out.append("</td>");
     out.append("<td valign='top' width='260'>");
-    out.append("<div mc:edit='std_preheader_links'>");
-    out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
-    out.append("<a href='*|ARCHIVE|*' target='_blank'>Öffnen Sie es im Broser</a>.");
-    out.append("</div>");
+    
+    if (this.isEmail()) {
+      out.append("<div>");
+      out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
+      addLink(monthPermalink(), "Öffnen Sie es im Broser.");
+      out.append("</div>");
+    }
+    
     out.append("</td>");
     out.append("</tr>");
     out.append("</table>");
@@ -90,12 +111,14 @@ public class NewsletterExport {
   
   /** Header HTML = Colored AOZ banner. */
   private void renderHeader() {
+    String logoUrl = urlRoot + "/static/themes/" + themeId + "_header.png";
+    
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' id='templateHeader'>");
+    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'>");
     out.append("<tr>");
     out.append("<td>");                                    
-    out.append("<img src='header.gif' style='max-width:600px;' id='headerImage campaign-icon'>");
+    out.append("<img src='" + logoUrl + "' style='width:100%' alt='MAPS Züri Agenda'>");
     out.append("</td>");
     out.append("</tr>");
     out.append("</table>");
@@ -107,7 +130,7 @@ public class NewsletterExport {
   private void renderEvents() {
     out.append("<td align='center' valign='top'>");
     
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' id='templateBody'>");
+    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'>");
     out.append("<tr>");
     out.append("<td valign='top' width='280'>");
 
@@ -197,11 +220,11 @@ public class NewsletterExport {
     
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='100%' style='" + FOOTER_CSS + "'>");
+    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + FOOTER_CSS + "'>");
 
     out.append("<tr>");
     out.append("<td valign='top' width='350'>");
-    out.append("<div mc:edit='std_footer'>");
+    out.append("<div>");
     out.append("<em>Copyright &copy; *|CURRENT_YEAR|* *|LIST:COMPANY|*, Alle rechte vorbehalten.</em>");
     out.append("                <br>");
     out.append("*|IFNOT:ARCHIVE_PAGE|* *|LIST:DESCRIPTION|*");
@@ -212,24 +235,58 @@ public class NewsletterExport {
     out.append("</div>");
     out.append("</td>");
     out.append("<td valign='top' width='190' id='monkeyRewards'>");
-    out.append("<div mc:edit='monkeyrewards'>");
+    out.append("<div>");
     out.append("*|IF:REWARDS|* *|HTML:REWARDS|* *|END:IF|*");
     out.append("</div>");
     out.append("</td>");
     out.append("</tr>");
 
-    out.append("<tr>");
-    out.append("<td colspan='2' valign='middle' id='utility'>");
-    out.append("<div mc:edit='std_utility'>");
-    out.append("<a href='*|UNSUB|*'>MAPS-Newsletter abbestellen</a> |"); 
-    out.append("<a href='*|FORWARD|*'>Weiterleiten</a> |");
-    out.append("<a href='*|UPDATE_PROFILE|*'>Einstellungen</a>");
-    out.append("</div>");
-    out.append("</td>");
-    out.append("</tr>");
+    if (this.isEmail()) {
+      out.append("<tr>");
+      out.append("<td colspan='2' valign='middle' id='utility'>");
+      out.append("<div>");
+      // addLink(shareLink(), "Weiterleiten");
+      //out.append(" | ");
+      addLink(unsubscribeLink(), "MAPS-Newsletter abbestellen");
+      out.append(" | ");
+      addLink(changeLanguageLink(), "Einstellungen");
+      out.append("</div>");
+      out.append("</td>");
+      out.append("</tr>");
+    }
+    
     out.append("</table>");                            
     out.append("</td>");
     out.append("</tr>");
+  }
+  
+  // Generators to build more complex properties based on the injected values.
+  
+  private boolean isEmail() {
+    return subscriber != null;
+  }
+  
+  private String unsubscribeLink() {
+    return String.format("%s/unsubscribe.jsp?hash=%s",
+        urlRoot, subscriber.getHash());
+  }
+  
+  private String changeLanguageLink() {
+    return String.format("%s/change_subscriber.jsp?hash=%s",
+        urlRoot, subscriber.getHash());
+  }
+  
+  private String monthPermalink() {
+    return String.format("%s/newsletter.jsp?lang=%s&year=%s&month=%s",
+        urlRoot, lang, year, month);
+  }
+  
+  // HTML writing utilities
+  
+  private void addLink(String url, String text) {
+    out.append("<a href='" + url + "' target='_blank'>");
+    out.append(text);
+    out.append("</a>");
   }
   
   // Utility - returns the first if provided, otherwise the second

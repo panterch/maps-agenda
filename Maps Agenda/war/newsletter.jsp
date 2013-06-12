@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
 %><%@ page import="ch.aoz.maps.NewsletterExport"
+%><%@ page import="ch.aoz.maps.Subscriber"
 %><%@ page import="java.util.List"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
@@ -32,7 +33,16 @@ try {
   return;
 }
 
+String baseUrl = "localhost".equals(request.getServerName()) ? 
+    "http://localhost:8888" : "http://maps-agenda.appspot.com";
+
+String themeId = "1";
 List<Event> events = Event.GetEventListForMonth(year, month);
-NewsletterExport exporter = new NewsletterExport(events, language);
+
+NewsletterExport exporter = new NewsletterExport(
+    events, language,
+    baseUrl, themeId,
+    year, month,
+    null /* subscriber, none for public render. */);
 out.println(exporter.render());
 %>
