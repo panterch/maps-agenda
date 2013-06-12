@@ -1,11 +1,16 @@
 package ch.aoz.maps;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 /**
  * CSS styles for use in the Newsletter. Due to limitations on Email formatting,
  * all CSS must be inline rather than through class='' attributes.
  * See:  http://www.campaignmonitor.com/css/
  */
 public class NewsletterStyles {
+  public static final DateFormat DATE_FORMATTER =
+      new SimpleDateFormat("d.M.yyyy");
   
   public static final String PREHEADER_CSS = join(
       "background-color:#FAFAFA",
@@ -35,13 +40,22 @@ public class NewsletterStyles {
   // Same CSS for left and right columns for now.
   public static final String EVENT_RIGHT_CSS = EVENT_LEFT_CSS;
   
+  public static final String EVENT_SINGLE_CSS = join(
+      "padding: 0 20px 5px 20px",
+      "width: 540px",
+      "float: left");
+  
   public static final String FOOTER_CSS = join(
       "background-color:#FAFAFA",
       "border-top:0",
       "color:#707070",
       "font-size:12px",
       "line-height:125%",
+      "margin-top:8px",
       "text-align:left");
+  
+  public static final String DISCLAIMER_CSS = join(
+      "font-size:10px");
 
   //
   // Rules for styling the sections of each single event

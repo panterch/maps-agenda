@@ -2,10 +2,13 @@ package ch.aoz.maps;
 
 import static ch.aoz.maps.NewsletterStyles.CONTAINER_CSS;
 import static ch.aoz.maps.NewsletterStyles.DATE_CSS;
+import static ch.aoz.maps.NewsletterStyles.DATE_FORMATTER;
 import static ch.aoz.maps.NewsletterStyles.DESC_CSS;
+import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_LEFT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_RIGHT_CSS;
+import static ch.aoz.maps.NewsletterStyles.EVENT_SINGLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
 import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
@@ -23,11 +26,8 @@ import javax.annotation.Nullable;
  * Generates the HTML for a newsletter of events in a given language.
  * 
  * Remaining:
- *   - get single-language working (german, and untranslated)
- *   - format the date.
  *   - escape the HTML
  *   - test RLT & other languages.
- *   - fill in footer copy text.
  */
 public class NewsletterExport {
   private final List<Event> events;
@@ -64,7 +64,10 @@ public class NewsletterExport {
   
   public String render() {
     out = new StringBuilder();
-    renderPreheader();
+    
+    if (isEmail()) {
+      renderPreheader();
+    }
     
     out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' style='" + CONTAINER_CSS + "'>");
     out.append("<tr>");
@@ -86,24 +89,26 @@ public class NewsletterExport {
     out.append("<table border='0' cellpadding='10' cellspacing='0' width='600'>");
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
+    
     out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + PREHEADER_CSS + "'>");
     out.append("<tr>");
-    out.append("<td valign='top'>");
-    out.append("<div>");
-    out.append("MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
-    out.append("</td>");
-    out.append("<td valign='top' width='260'>");
     
+    out.append("<td valign='top'>");
+    out.append("<div>MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
+    out.append("</td>");
+    
+    out.append("<td valign='top' width='260'>");
     if (this.isEmail()) {
       out.append("<div>");
       out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
       addLink(monthPermalink(), "Öffnen Sie es im Broser.");
       out.append("</div>");
     }
-    
     out.append("</td>");
+    
     out.append("</tr>");
     out.append("</table>");
+
     out.append("</td>");
     out.append("</tr>");
     out.append("</table>");
@@ -162,7 +167,19 @@ public class NewsletterExport {
   /** Renders an event row just in German. */
   private void renderEventSingleLanguage(Event event) {
     Translation german = event.getGermanTranslation();
-    // TODO
+    
+    out.append("<div style='" + EVENT_CSS + "'>");
+    
+    out.append("<div style='" + EVENT_SINGLE_CSS + "'>");
+    renderEventDetails(
+        DATE_FORMATTER.format(event.getDate()),
+        german.getTitle(),
+        german.getDesc(),
+        german.getLocation(),
+        german.getUrl());
+    out.append("</div>");
+    
+    out.append("</div>");
   }
   
   /** Renders an event row, in German plus the desired language. */ 
@@ -174,9 +191,8 @@ public class NewsletterExport {
     } catch (EntityNotFoundException e) {
       throw new IllegalStateException(e);
     }
+    String date = DATE_FORMATTER.format(event.getDate());
 
-    String date = "TODO - date";
-    
     out.append("<div style='" + EVENT_CSS + "'>");
     
     out.append("<div style='" + EVENT_LEFT_CSS + "'>");
@@ -208,43 +224,32 @@ public class NewsletterExport {
     out.append(String.format("<div style='%s'>%s</div>", DESC_CSS, description));
     out.append(String.format("<p style='%s'>%s</p>", LOCATION_CSS, location));
     out.append(String.format("<p style='%s'>", URL_CSS));
-    out.append(String.format("<a onclick='this.target = '_blank';' href='%s'>%s</a>", url, url));
+    addLink(url, url);
     out.append("</p>");
   }
   
   /** Foother HTML = Copy text and links to other pages. */
   private void renderFooter() {
-    out.append("<tr>");
-    out.append("<td align='center' valign='top'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600'>");
     
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
     out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + FOOTER_CSS + "'>");
 
     out.append("<tr>");
-    out.append("<td valign='top' width='350'>");
-    out.append("<div>");
-    out.append("<em>Copyright &copy; *|CURRENT_YEAR|* *|LIST:COMPANY|*, Alle rechte vorbehalten.</em>");
-    out.append("                <br>");
-    out.append("*|IFNOT:ARCHIVE_PAGE|* *|LIST:DESCRIPTION|*");
-    out.append("<br>");
-    out.append("<strong>Unsere Mailadresse ist:</strong>");
-    out.append("<br>");
-    out.append("*|HTML:LIST_ADDRESS_HTML|**|END:IF|*"); 
-    out.append("</div>");
-    out.append("</td>");
-    out.append("<td valign='top' width='190' id='monkeyRewards'>");
-    out.append("<div>");
-    out.append("*|IF:REWARDS|* *|HTML:REWARDS|* *|END:IF|*");
-    out.append("</div>");
+    out.append("<td>");
+    out.append("<span style='" + DISCLAIMER_CSS + "'>");
+    out.append("Der Veranstaltungskalender MAPS Züri Agenda informiert in 13 Sprachen über günstige Angebote " +
+        "im Zürcher Kultur- und Freizeitbereich. Dieses Angebot richtet sich vor allem an Migrant/innen, " +
+        "deren Deutschkenntnisse nicht für die Lektüre des \"Züritipp\" ausreichen " +
+        "und die über wenige finanzielle Mittel verfügen.");
+    out.append("</span>");
     out.append("</td>");
     out.append("</tr>");
 
     if (this.isEmail()) {
       out.append("<tr>");
       out.append("<td colspan='2' valign='middle' id='utility'>");
-      out.append("<div>");
+      out.append("<div style='text-align:center'>");
       // addLink(shareLink(), "Weiterleiten");
       //out.append(" | ");
       addLink(unsubscribeLink(), "MAPS-Newsletter abbestellen");
