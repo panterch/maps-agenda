@@ -1,13 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
 %><%@ page import="ch.aoz.maps.NewsletterExport"
+%><%@ page import="ch.aoz.maps.Subscriber"
 %><%@ page import="ch.aoz.maps.Translation"
 %><%@ page import="java.io.UnsupportedEncodingException"
 %><%@ page import="java.util.ArrayList"
 %><%@ page import="java.util.Calendar"
 %><%@ page import="java.util.Date"
+%><%@ page import="java.util.HashMap"
 %><%@ page import="java.util.Iterator"
 %><%@ page import="java.util.List"
+%><%@ page import="java.util.Map"
 %><%@ page import="java.util.Properties"
 %><%@ page import="javax.mail.Message"
 %><%@ page import="javax.mail.MessagingException"
@@ -16,25 +19,14 @@
 %><%@ page import="javax.mail.internet.AddressException"
 %><%@ page import="javax.mail.internet.InternetAddress"
 %><%@ page import="javax.mail.internet.MimeMessage"
-%><%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory"
-%><%@ page import="com.google.appengine.api.datastore.DatastoreService"
-%><%@ page import="com.google.appengine.api.datastore.Query"
-%><%@ page import="com.google.appengine.api.datastore.Entity"
-%><%@ page import="com.google.appengine.api.datastore.FetchOptions"
 %><%@ page import="com.google.appengine.api.datastore.Key"
 %><%@ page import="com.google.appengine.api.datastore.KeyFactory"
-%><%@ page import="com.google.appengine.api.datastore.Query.CompositeFilter"
-%><%@ page import="com.google.appengine.api.datastore.Query.CompositeFilterOperator"
-%><%@ page import="com.google.appengine.api.datastore.Query.Filter"
-%><%@ page import="com.google.appengine.api.datastore.Query.FilterPredicate"
-%><%@ page import="com.google.appengine.api.datastore.Query.FilterOperator"
-%><%@ page import="com.google.appengine.api.datastore.Query.SortDirection"
-%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+%>
 
 <%!
-public static String send(String toAddress, 
-                          String subject, 
-                          String msgBody) {
+public static boolean send(String toAddress, 
+                           String subject, 
+                           String msgBody) {
   Properties props = new Properties();
   Session session = Session.getDefaultInstance(props, null);
 
@@ -45,24 +37,32 @@ public static String send(String toAddress,
     InternetAddress to = new InternetAddress(toAddress);
     msg.addRecipient(Message.RecipientType.TO, to);
     msg.setSubject(subject);
-    msg.setText(msgBody);
+    msg.setContent(msgBody, "text/html; charset=utf-8");
     Transport.send(msg, new InternetAddress[] { to });
-  } catch (UnsupportedEncodingException encodingException) {
-    return "UnsupportedEncodingException: " + encodingException.getMessage();
-  } catch (AddressException addressException) {
-    return "Address Exception , mail could not be sent: " + addressException.getMessage();
-  } catch (MessagingException messageException) {
-    return "Messaging Exception , mail could not be sent " + messageException.getMessage();
+  } catch (Exception e) {
+    return false;
   }  
-  return "Email sent!";
+  return true;
 }
 
 %>
 
 <%
-// Read POST arguments.
-String language = request.getParameter("lang");
-    
+String[] months = new String[]{
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember"
+};
+
 String[] paramEventKeys = request.getParameterValues("XMLExports");
 ArrayList<Key> eventKeys = new ArrayList<Key>();
 if (paramEventKeys != null) {
@@ -72,18 +72,27 @@ if (paramEventKeys != null) {
 }
 List<Event> events = Event.GetEventListFromKeyList(eventKeys);
 
-NewsletterExport exporter = new NewsletterExport(events, language);
-
-boolean sendEmail = false; // true = sends email, false = displays rendered HTML
-String result = "";
-if (sendEmail)  {
-  result = send("tobulogic@gmail.com", 
-                       "Test send newsletter", 
-                       "Looks like " + events.size() + " events are selected.");
-} else {
-  // Testing only!
-  result = exporter.render();
+if (events.size() == 0) {
+  out.println("No event is selected.");
+  return;
 }
 
-out.println(result);
+Calendar c = Calendar.getInstance();
+c.setTime(events.get(0).getDate());
+String subject = months[c.get(Calendar.MONTH)] + " Kultur- und Freizeitangebote";
+
+HashMap<String, NewsletterExport> exporters = new HashMap<String, NewsletterExport>();
+int num_emails_sent = 0;
+for (Subscriber subscriber : Subscriber.getAllSubscribers().values()) {
+  String language = subscriber.getLanguage();
+  if (!exporters.containsKey(language)) {
+    exporters.put(language, new NewsletterExport(events, language));
+  }
+  if (send(subscriber.getEmail(),
+           subject,
+           exporters.get(language).render())) {
+    num_emails_sent++;
+  }
+}
+out.println(String.format("%d email have been sent.", num_emails_sent));
 %>
