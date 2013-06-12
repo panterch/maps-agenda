@@ -95,4 +95,5 @@ for (Subscriber subscriber : Subscriber.getAllSubscribers().values()) {
   }
 }
 out.println(String.format("%d email have been sent.", num_emails_sent));
+out.println(exporters.values().iterator().next().render());
 %>
