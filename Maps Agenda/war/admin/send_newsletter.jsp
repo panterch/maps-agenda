@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
+%><%@ page import="ch.aoz.maps.NewsletterExport"
 %><%@ page import="ch.aoz.maps.Translation"
 %><%@ page import="java.util.ArrayList"
 %><%@ page import="java.util.Calendar"
@@ -30,44 +31,6 @@
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%!
-/*
-    // Read POST arguments.
-      String[] paramEventKeys = request.getParameterValues("XMLExports");
-      ArrayList<Key> eventKeys = new ArrayList<Key>();
-      if (paramEventKeys != null) {
-        for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeys.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
-        }
-      }
-
-      paramEventKeys = request.getParameterValues("XMLExportsLarge");
-      ArrayList<Key> eventKeysLarge = new ArrayList<Key>();
-      if (paramEventKeys != null) {
-        for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysLarge.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
-        }
-      }
-
-      paramEventKeys = request.getParameterValues("XMLExportsTopicOfMonth");
-      ArrayList<Key> eventKeysTopicOfMonth = new ArrayList<Key>();
-      if (paramEventKeys != null) {
-        for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysTopicOfMonth.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
-        }
-      }
-      
-      paramEventKeys = request.getParameterValues("XMLExportsImage");
-      ArrayList<Key> eventKeysImage = new ArrayList<Key>();
-      if (paramEventKeys != null) {
-        for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysImage.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
-        }
-      }
-
-      // Offer this as a downloadable file rather than as a displayable page.
-      response.setHeader("Content-Disposition", "attachment; filename=MAPS_agenda.xml");
-*/
-
 public static String send(String toAddress, 
                           String subject, 
                           String msgBody) {
@@ -93,13 +56,30 @@ public static String send(String toAddress,
 %>
 
 <%
-int num_events = 0;
-if (request.getParameterValues("XMLExports") != null) {
-  num_events = request.getParameterValues("XMLExports").length;
+// Read POST arguments.
+String language = request.getParameter("lang");
+    
+String[] paramEventKeys = request.getParameterValues("XMLExports");
+ArrayList<Key> eventKeys = new ArrayList<Key>();
+if (paramEventKeys != null) {
+  for (int i = 0; i < paramEventKeys.length; i++) {
+    eventKeys.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+  }
 }
-String result = send("tobulogic@gmail.com", 
-                     "Test send newsletter", 
-                     "Looks like " + num_events + " events are selected.");
+List<Event> events = Event.GetEventListFromKeyList(eventKeys);
+
+NewsletterExport exporter = new NewsletterExport(events, language);
+
+boolean sendEmail = false; // true = sends email, false = displays rendered HTML
+String result = "";
+if (sendEmail)  {
+  result = send("tobulogic@gmail.com", 
+                       "Test send newsletter", 
+                       "Looks like " + events.size() + " events are selected.");
+} else {
+  // Testing only!
+  result = exporter.render();
+}
 
 out.println(result);
 %>
