@@ -427,6 +427,7 @@ if (events.isEmpty()) {
 %>
 <div class='xml-export-submit'>
 <button type='submit' form='export' formaction='export_xml.jsp'>Export selected events to XML</button>
+<button type='submit' form='export' formaction='send_newsletter.jsp'>Send newsletter with selected events</button>
 </div>
 
 </body>
