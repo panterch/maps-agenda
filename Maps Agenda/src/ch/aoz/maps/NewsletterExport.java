@@ -5,6 +5,8 @@ import static ch.aoz.maps.NewsletterStyles.DATE_CSS;
 import static ch.aoz.maps.NewsletterStyles.DATE_FORMATTER;
 import static ch.aoz.maps.NewsletterStyles.DESC_CSS;
 import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_CSS;
+import static ch.aoz.maps.NewsletterStyles.ESCAPE_ATTRIBUTE;
+import static ch.aoz.maps.NewsletterStyles.ESCAPE_TEXT;
 import static ch.aoz.maps.NewsletterStyles.EVENT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_LEFT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_RIGHT_CSS;
@@ -26,8 +28,8 @@ import javax.annotation.Nullable;
  * Generates the HTML for a newsletter of events in a given language.
  * 
  * Remaining:
- *   - escape the HTML
  *   - test RLT & other languages.
+ *   - ensure it looks ok in emails.
  */
 public class NewsletterExport {
   private final List<Event> events;
@@ -69,7 +71,7 @@ public class NewsletterExport {
       renderPreheader();
     }
     
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600' style='" + CONTAINER_CSS + "'>");
+    startTable(CONTAINER_CSS);
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
     renderHeader();
@@ -86,11 +88,11 @@ public class NewsletterExport {
   
   /** Preheader HTML = top of page, above AOZ header. */
   private void renderPreheader() {
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600'>");
+    startTable(null);
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
     
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + PREHEADER_CSS + "'>");
+    startTable(PREHEADER_CSS);
     out.append("<tr>");
     
     out.append("<td valign='top'>");
@@ -120,10 +122,10 @@ public class NewsletterExport {
     
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'>");
+    startTable(null);
     out.append("<tr>");
     out.append("<td>");                                    
-    out.append("<img src='" + logoUrl + "' style='width:100%' alt='MAPS Züri Agenda'>");
+    out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) + "' style='width:100%' alt='MAPS Züri Agenda'>");
     out.append("</td>");
     out.append("</tr>");
     out.append("</table>");
@@ -133,9 +135,10 @@ public class NewsletterExport {
   
   /** Event list, one row for each event. */
   private void renderEvents() {
+    out.append("<tr>");
     out.append("<td align='center' valign='top'>");
     
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'>");
+    startTable(null);
     out.append("<tr>");
     out.append("<td valign='top' width='280'>");
 
@@ -148,6 +151,7 @@ public class NewsletterExport {
     out.append("</table>");
     
     out.append("</td>");
+    out.append("</tr>");
   }
   
   /** Renders a single event, in one or two languages. */
@@ -219,10 +223,10 @@ public class NewsletterExport {
   /** Renders just the details for one event in one language. */
   private void renderEventDetails(
       String date, String title, String description, String location, String url) {
-    out.append(String.format("<h1 style='%s'>%s</h1>", DATE_CSS, date));
-    out.append(String.format("<h2 style='%s'>%s</h2>", TITLE_CSS, title));
-    out.append(String.format("<div style='%s'>%s</div>", DESC_CSS, description));
-    out.append(String.format("<p style='%s'>%s</p>", LOCATION_CSS, location));
+    out.append(String.format("<h1 style='%s'>%s</h1>", DATE_CSS, ESCAPE_TEXT(date)));
+    out.append(String.format("<h2 style='%s'>%s</h2>", TITLE_CSS, ESCAPE_TEXT(title)));
+    out.append(String.format("<div style='%s'>%s</div>", DESC_CSS, ESCAPE_TEXT(description)));
+    out.append(String.format("<p style='%s'>%s</p>", LOCATION_CSS, ESCAPE_TEXT(location)));
     out.append(String.format("<p style='%s'>", URL_CSS));
     addLink(url, url);
     out.append("</p>");
@@ -230,10 +234,9 @@ public class NewsletterExport {
   
   /** Foother HTML = Copy text and links to other pages. */
   private void renderFooter() {
-    
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
-    out.append("<table border='0' cellpadding='10' cellspacing='0' width='600' style='" + FOOTER_CSS + "'>");
+    startTable(FOOTER_CSS);
 
     out.append("<tr>");
     out.append("<td>");
@@ -288,10 +291,20 @@ public class NewsletterExport {
   
   // HTML writing utilities
   
-  private void addLink(String url, String text) {
-    out.append("<a href='" + url + "' target='_blank'>");
-    out.append(text);
-    out.append("</a>");
+  private void addLink(@Nullable String url, String text) {
+    if (url != null) {
+      out.append("<a href='" + ESCAPE_ATTRIBUTE(url) + "' target='_blank'>");
+      out.append(ESCAPE_TEXT(text));
+      out.append("</a>");
+    }
+  }
+  
+  private void startTable(@Nullable String style) {
+    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'");
+    if (style != null) {
+      out.append(" style='" + style + "'");
+    }
+    out.append(">");
   }
   
   // Utility - returns the first if provided, otherwise the second
