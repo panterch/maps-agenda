@@ -30,10 +30,9 @@ public static String createEventDiv(Event e) {
   div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
   div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
   div.append("<div class='eexport'>" +
-	  		"<input type='checkbox' name='XMLExports' value='" + e.getKey() + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
-	  		"<input type='checkbox' name='XMLExportsLarge' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
-	  		"<input type='checkbox' name='XMLExportsTopicOfMonth' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F31F;" +
-	  		"<input type='checkbox' name='XMLExportsImage' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
+	  		"<input type='checkbox' title='Export' name='XMLExports' value='" + e.getKey() + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
+	  		"<input type='checkbox' title='Highlight (Large)' name='XMLExportsLarge' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
+	  		"<input type='checkbox' title='Export as Image Page' name='XMLExportsImage' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
 	  				"</div>");
   div.append("</div>");
   div.append("</div>");
@@ -227,7 +226,6 @@ function uncheckXMLOtherButtons(checkbox, event) {
 	  return;
   }
   tickXMLButton("XMLExportsLarge", event, false);
-  tickXMLButton("XMLExportsTopicOfMonth", event, false);
   tickXMLButton("XMLExportsImage", event, false);
 }
 
