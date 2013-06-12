@@ -1,15 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
 %><%@ page import="ch.aoz.maps.NewsletterExport"
-%><%@ page import="ch.aoz.maps.Translation"
-%><%@ page import="java.util.ArrayList"
-%><%@ page import="java.util.Calendar"
-%><%@ page import="java.util.Date"
-%><%@ page import="java.util.HashMap"
-%><%@ page import="java.util.Iterator"
 %><%@ page import="java.util.List"
-%><%@ page import="java.util.Map"
-%><%@ page import="java.util.Properties"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%
