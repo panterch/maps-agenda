@@ -26,7 +26,7 @@ public class Subscriber {
   private final String email;
   public static final String emailProperty = "email";
 
-  private final String language;
+  private String language;
   public static final String languageProperty = "language";
 
   private final String hash;
@@ -102,6 +102,21 @@ public class Subscriber {
     return subscribers;
   }
   
+  public static Subscriber getSubscriberByHash(String hash) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query = new Query(entityKind);
+    // I don't know how to query by hash. Given the number of subscribers, this should be 
+    // fine. We're not expecting millions of queries.
+    List<Entity> entities = 
+        datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+    for (Entity e : entities) {
+      if(hash.equals((String)e.getProperty(hashProperty))) {
+    	  return new Subscriber(e);
+      }
+    }
+    return null;
+  }
+  
   public static boolean AddSubscriber(Subscriber t) {
     if (!t.isOk())
       return false;
@@ -171,6 +186,10 @@ public class Subscriber {
     return language;
   }
 
+  public void setLanguage(String language) {
+    this.language = language;
+  }
+  
   /**
    * @return the ok
    */
