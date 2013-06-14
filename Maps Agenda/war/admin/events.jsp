@@ -222,19 +222,17 @@ function test(f) {
 }
 
 function uncheckXMLOtherButtons(checkbox, event) {
-  if (checkbox.checked) {
-	  return;
+  if (!checkbox.checked) {
+    tickXMLButton("XMLExportsLarge", event, false);
+    tickXMLButton("XMLExportsImage", event, false);
   }
-  tickXMLButton("XMLExportsLarge", event, false);
-  tickXMLButton("XMLExportsImage", event, false);
   countEventCharacters();
 }
 
 function checkXMLButton(checkbox, event) {
-  if (!checkbox.checked) {
-	  return;
+  if (checkbox.checked) {
+    tickXMLButton("XMLExports", event, true);
   }
-  tickXMLButton("XMLExports", event, true);
   countEventCharacters();
 }
 
@@ -251,19 +249,25 @@ function tickXMLButton(eventName, event, value) {
 function countEventCharacters() {
   var total = 0;
   var selected = 0; 
+  var total_chars = 0;
+  var selected_chars = 0; 
   var events = document.getElementsByName("eventDescription");
   var checks = document.getElementsByName("XMLExports");
   
   for (e = 0; e < events.length; e++) {
     var count = events[e].innerHTML.length;
     
-    total += count;
+    total += 1;
+    total_chars += count;
     if (checks[e].checked) {
-      selected += count;
+      selected += 1;
+      selected_chars += count;
     }
   }
-  document.getElementsByName("characterCount")[0].innerHTML = selected.toString() + 'B';
-  document.getElementsByName("characterTotalCount")[0].innerHTML = total.toString() + 'B';  
+  document.getElementsByName("eventsCount")[0].innerHTML = selected.toString();
+  document.getElementsByName("eventsTotalCount")[0].innerHTML = total.toString();  
+  document.getElementsByName("characterCount")[0].innerHTML = selected_chars.toString() + 'B';
+  document.getElementsByName("characterTotalCount")[0].innerHTML = total_chars.toString() + 'B';  
 }
 
 function validateForm(formName) {
@@ -444,7 +448,8 @@ if (events.isEmpty()) {
 // for the newsletter export.
 %>
 <div class='xml-export-submit'>
-Selected (de): <span name="characterCount">0</span> / <span name="characterTotalCount">0</span>
+Selected: <span name="eventsCount">0</span> / <span name="eventsTotalCount">0</span>
+    (de: <span name="characterCount">0B</span> / <span name="characterTotalCount">0B</span>)
 <button type='submit' form='export' formaction='export_xml.jsp'>Export selected events to XML</button>
 <button type='submit' form='export' formaction='send_newsletter.jsp'>Send newsletter with selected events</button>
 </div>
