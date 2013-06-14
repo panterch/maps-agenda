@@ -79,21 +79,35 @@ if (events.size() == 0) {
 
 Calendar c = Calendar.getInstance();
 c.setTime(events.get(0).getDate());
-String subject = months[c.get(Calendar.MONTH)] + " Kultur- und Freizeitangebote";
+int year = c.get(Calendar.YEAR);
+int month = c.get(Calendar.MONTH);
+String subject = months[month] + " Kultur- und Freizeitangebote";
 
-HashMap<String, NewsletterExport> exporters = new HashMap<String, NewsletterExport>();
+String baseUrl = "localhost".equals(request.getServerName()) ? 
+    "http://localhost:8888" : "http://maps-agenda.appspot.com";
+String themeId = "1";
+
 int num_emails_sent = 0;
+NewsletterExport exporter = null;
 for (Subscriber subscriber : Subscriber.getAllSubscribers().values()) {
   String language = subscriber.getLanguage();
-  if (!exporters.containsKey(language)) {
-    exporters.put(language, new NewsletterExport(events, language));
-  }
+
+  // One created for each subscriber.
+  exporter = new NewsletterExport(
+      events, language,
+      baseUrl, themeId,
+      year, month,
+      subscriber);
+  
   if (send(subscriber.getEmail(),
            subject,
-           exporters.get(language).render())) {
+           exporter.render())) {
     num_emails_sent++;
   }
 }
 out.println(String.format("%d email have been sent.", num_emails_sent));
-out.println(exporters.values().iterator().next().render());
+
+if (exporter != null) {
+  out.println(exporter.render());
+}
 %>

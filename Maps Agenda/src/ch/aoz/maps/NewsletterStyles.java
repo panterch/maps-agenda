@@ -1,11 +1,33 @@
 package ch.aoz.maps;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 /**
  * CSS styles for use in the Newsletter. Due to limitations on Email formatting,
  * all CSS must be inline rather than through class='' attributes.
  * See:  http://www.campaignmonitor.com/css/
  */
 public class NewsletterStyles {
+  // Converting event Dates into visual date strings:
+  public static final DateFormat DATE_FORMATTER =
+      new SimpleDateFormat("d.M.yyyy");
+  
+  // Escape event data to be safe in HTML:
+  public static final String ESCAPE_ATTRIBUTE(String attr) {
+    return ESCAPE_TEXT(attr)
+        .replaceAll("\"", "&quot;")
+        .replaceAll("\'", "&#39;");
+  }
+  
+  public static final String ESCAPE_TEXT(String text) {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+  }
+  
+  // CSS for styling the HTML:
   
   public static final String PREHEADER_CSS = join(
       "background-color:#FAFAFA",
@@ -35,18 +57,25 @@ public class NewsletterStyles {
   // Same CSS for left and right columns for now.
   public static final String EVENT_RIGHT_CSS = EVENT_LEFT_CSS;
   
+  public static final String EVENT_SINGLE_CSS = join(
+      "padding: 0 20px 5px 20px",
+      "width: 540px",
+      "float: left");
+  
   public static final String FOOTER_CSS = join(
       "background-color:#FAFAFA",
       "border-top:0",
       "color:#707070",
       "font-size:12px",
       "line-height:125%",
+      "margin-top:8px",
+      "padding:8px",
       "text-align:left");
-
-  //
-  // Rules for styling the sections of each single event
-  //
   
+  public static final String DISCLAIMER_CSS = join(
+      "font-size:10px");
+
+  // Rules for styling the sections of each single event 
   public static final String DATE_CSS = join(
       "border-top: 1px solid #BBB",
       "color:#202020",
@@ -76,7 +105,7 @@ public class NewsletterStyles {
       "padding: 0",
       "font-size:12px");
 
-  
+  // Build multiple CSS rules into a style attribute.
   private static final String join(String... rules) {
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < rules.length; i++) {
