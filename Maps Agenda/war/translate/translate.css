@@ -60,6 +60,7 @@
 
 .form-actions {
   padding: 6px;
+  direction: ltr;
 }
 
 .button {
@@ -71,4 +72,12 @@
 
 .error {
   border: 2px solid red;
+}
+
+.translated .location, .translated .url {
+  display: none;
+}
+
+.rtl {
+  direction: rtl;
 }

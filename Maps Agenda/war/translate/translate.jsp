@@ -20,8 +20,12 @@ public static String escapeHTML(String raw) {
              .replaceAll(">",  "&gt;");
 }
 
-public static String formatTranslation(Translation translation, String cls) {
+public static String formatTranslation(
+    Translation translation, String cls, boolean rtl) {
   String result = "";
+  if (rtl) {
+    cls = cls + " rtl";
+  }
   result += "<div class='translation " + cls + "'>";
   if (translation == null) {
     result += "<div class='no-translation'>No translation</div>";
@@ -36,7 +40,7 @@ public static String formatTranslation(Translation translation, String cls) {
 }
 
 public static String formatTranslationForm(
-    Translation translation, long event_id, String div_name) {
+    Translation translation, long event_id, String div_name, boolean rtl) {
   String result = "";
   String title = "";
   String desc = ""; 
@@ -49,13 +53,18 @@ public static String formatTranslationForm(
     url = translation.getUrl();
   }
   String form_name = "form-" + event_id;
-  result += "<div class='translation form'>";
+  if (rtl) {
+    result += "<div class='translation form rtl'>";
+  } else {
+    result += "<div class='translation form'>";
+  }
   result += "<form name='" + form_name + "' id='" + form_name + "' method='POST'>";
   result += "<input type='hidden' name='event_id' value='" + event_id + "'>";
   result += "<div class='title'><input type='text' name='title' value='" + escapeHTML(title) + "' placeholder='Title'></input></div>";
   result += "<div class='desc'><textarea rows='4' cols='50' name='desc' placeholder='Description'>" + escapeHTML(desc) + "</textarea></div>";
-  result += "<div class='location'><input type='text' name='location' value='" + escapeHTML(location) + "' placeholder='Location'></input></div>";
-  result += "<div class='url'><input type='text' name='url' value='" + escapeHTML(url) + "' placeholder='URL'></input></div>";
+  // Should not edit location and url in translation.
+  // result += "<div class='location'><input type='text' name='location' value='" + escapeHTML(location) + "' placeholder='Location'></input></div>";
+  // result += "<div class='url'><input type='text' name='url' value='" + escapeHTML(url) + "' placeholder='URL'></input></div>";
   result += "<div class='form-actions'><span class='save button' onclick='save(\""
     + form_name + "\");'>Save</span><span class='cancel button' onclick='mode(\"" 
     + div_name + "\", \"expanded\");'>Cancel</span></div>";
@@ -190,9 +199,9 @@ if (user == null) {
           Translation local = event.getTranslation(language);
           out.print("<div class='event'>");
           out.print("<div class='collapsed' id='" + div_id + "'>");
-          out.print(formatTranslation(german, "original"));
-          out.print(formatTranslation(local, "translated"));
-          out.print(formatTranslationForm(local, event_id, div_id));
+          out.print(formatTranslation(german, "original", false));
+          out.print(formatTranslation(local, "translated", language.isRightToLeft()));
+          out.print(formatTranslationForm(local, event_id, div_id, language.isRightToLeft()));
           out.print("<div class='actions'>");
           out.print("<span class='edit button' onclick='mode(\"" + div_id + "\", \"edit\");'>Edit</span>");
           out.print("<span class='more button' onclick='mode(\"" + div_id + "\", \"expanded\");'>Expand</span>");
