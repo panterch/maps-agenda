@@ -26,12 +26,14 @@ import javax.annotation.Nullable;
 
 /**
  * Generates the HTML for a newsletter of events in a given language.
- * 
+ * NOTE: *not* threadsafe. Each caller should create their own instance.
+ *
  * Remaining:
  *   - test RLT & other languages.
  *   - ensure it looks ok in emails.
  */
 public class NewsletterExport {
+  // For field details, see the parameter docs in the constructor.
   private final List<Event> events;
   private final String lang;
   private final String urlRoot;
@@ -39,6 +41,8 @@ public class NewsletterExport {
   private final int year;
   private final int month;
   private final Subscriber subscriber;
+
+  // Local variable used to stream the resulting HTML to.
   private StringBuilder out;
   
   /**
@@ -64,6 +68,7 @@ public class NewsletterExport {
     this.subscriber = subscriber;
   }
   
+  /** Renders the entire newsletter. */
   public String render() {
     out = new StringBuilder();
     
@@ -72,14 +77,14 @@ public class NewsletterExport {
     }
     
     startTable(CONTAINER_CSS);
-    out.append("<tr>");
-    out.append("<td align='center' valign='top'>");
-    renderHeader();
-    renderEvents();
-    renderFooter();
-    out.append("</td>");
-    out.append("</tr>");
-    out.append("</table>");
+      out.append("<tr>");
+      out.append("<td align='center' valign='top'>");
+      renderHeader();
+      renderEvents();
+      renderFooter();
+      out.append("</td>");
+      out.append("</tr>");
+    endTable();
     
     String result = out.toString();
     out = null;
@@ -109,11 +114,11 @@ public class NewsletterExport {
     out.append("</td>");
     
     out.append("</tr>");
-    out.append("</table>");
+    endTable();
 
     out.append("</td>");
     out.append("</tr>");
-    out.append("</table>");
+    endTable();
   }
   
   /** Header HTML = Colored AOZ banner. */
@@ -122,13 +127,15 @@ public class NewsletterExport {
     
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
+
     startTable(null);
-    out.append("<tr>");
-    out.append("<td>");                                    
-    out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) + "' style='width:100%' alt='MAPS Züri Agenda'>");
-    out.append("</td>");
-    out.append("</tr>");
-    out.append("</table>");
+      out.append("<tr>");
+      out.append("<td>");                                    
+      out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) + "' style='width:100%' alt='MAPS Züri Agenda'>");
+      out.append("</td>");
+      out.append("</tr>");
+    endTable();
+
     out.append("</td>");
     out.append("</tr>");
   }
@@ -139,16 +146,14 @@ public class NewsletterExport {
     out.append("<td align='center' valign='top'>");
     
     startTable(null);
-    out.append("<tr>");
-    out.append("<td valign='top' width='280'>");
-
-    for (Event event : events) {
-      renderEvent(event);
-    }
-    
-    out.append("</td>");
-    out.append("</tr>");
-    out.append("</table>");
+      out.append("<tr>");
+      out.append("<td valign='top' width='280'>");
+      for (Event event : events) {
+        renderEvent(event);
+      }
+      out.append("</td>");
+      out.append("</tr>");
+    endTable();
     
     out.append("</td>");
     out.append("</tr>");
@@ -199,6 +204,7 @@ public class NewsletterExport {
 
     out.append("<div style='" + EVENT_CSS + "'>");
     
+    // Left column is always German translation.
     out.append("<div style='" + EVENT_LEFT_CSS + "'>");
     renderEventDetails(
         date,
@@ -207,7 +213,9 @@ public class NewsletterExport {
         german.getLocation(),
         german.getUrl());
     out.append("</div>");
-    
+
+    // Right column is whatever language is desired, falling back to German
+    // for whichever fields aren't translated (e.g. location, url).
     out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,
@@ -219,7 +227,7 @@ public class NewsletterExport {
     
     out.append("</div>");
   }
-  
+
   /** Renders just the details for one event in one language. */
   private void renderEventDetails(
       String date, String title, String description, String location, String url) {
@@ -236,54 +244,60 @@ public class NewsletterExport {
   private void renderFooter() {
     out.append("<tr>");
     out.append("<td valign='top' style='padding: 0'>");
+    
     startTable(FOOTER_CSS);
-
-    out.append("<tr>");
-    out.append("<td>");
-    out.append("<span style='" + DISCLAIMER_CSS + "'>");
-    out.append("Der Veranstaltungskalender MAPS Züri Agenda informiert in 13 Sprachen über günstige Angebote " +
-        "im Zürcher Kultur- und Freizeitbereich. Dieses Angebot richtet sich vor allem an Migrant/innen, " +
-        "deren Deutschkenntnisse nicht für die Lektüre des \"Züritipp\" ausreichen " +
-        "und die über wenige finanzielle Mittel verfügen.");
-    out.append("</span>");
-    out.append("</td>");
-    out.append("</tr>");
-
-    if (this.isEmail()) {
       out.append("<tr>");
-      out.append("<td colspan='2' valign='middle' id='utility'>");
-      out.append("<div style='text-align:center'>");
-      // addLink(shareLink(), "Weiterleiten");
-      //out.append(" | ");
-      addLink(unsubscribeLink(), "MAPS-Newsletter abbestellen");
-      out.append(" | ");
-      addLink(changeLanguageLink(), "Einstellungen");
-      out.append("</div>");
+      out.append("<td>");
+      out.append("<span style='" + DISCLAIMER_CSS + "'>");
+      out.append("Der Veranstaltungskalender MAPS Züri Agenda informiert in 13 Sprachen über günstige Angebote " +
+          "im Zürcher Kultur- und Freizeitbereich. Dieses Angebot richtet sich vor allem an Migrant/innen, " +
+          "deren Deutschkenntnisse nicht für die Lektüre des \"Züritipp\" ausreichen " +
+          "und die über wenige finanzielle Mittel verfügen.");
+      out.append("</span>");
       out.append("</td>");
       out.append("</tr>");
-    }
-    
-    out.append("</table>");                            
+  
+      if (this.isEmail()) {
+        out.append("<tr>");
+        out.append("<td colspan='2' valign='middle' id='utility'>");
+        out.append("<div style='text-align:center'>");
+        // addLink(shareLink(), "Weiterleiten");
+        //out.append(" | ");
+        addLink(unsubscribeLink(), "MAPS-Newsletter abbestellen");
+        out.append(" | ");
+        addLink(changeLanguageLink(), "Einstellungen");
+        out.append("</div>");
+        out.append("</td>");
+        out.append("</tr>");
+      }
+    endTable();
+
     out.append("</td>");
     out.append("</tr>");
   }
   
   // Generators to build more complex properties based on the injected values.
   
+  /** @return Whether this is generating for email or web. */
   private boolean isEmail() {
+    // When viewed via email, we know the receiver (= subscriber).
+    // When viewed online, no subscriber is known, and the language is supplied.
     return subscriber != null;
   }
-  
+
+  /** @return URL the user should visit to unsubscribe from the newsletter. */ 
   private String unsubscribeLink() {
     return String.format("%s/unsubscribe.jsp?hash=%s",
         urlRoot, subscriber.getHash());
   }
-  
+
+  /** @return URL the user should visit to change their settings. */
   private String changeLanguageLink() {
     return String.format("%s/change_subscriber.jsp?hash=%s",
         urlRoot, subscriber.getHash());
   }
-  
+
+  /** @return URL to visit the web version of this rendering. */
   private String monthPermalink() {
     return String.format("%s/newsletter.jsp?lang=%s&year=%s&month=%s",
         urlRoot, lang, year, month);
@@ -300,11 +314,15 @@ public class NewsletterExport {
   }
   
   private void startTable(@Nullable String style) {
+    // Each startTable should be paired with an endTable.
     out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'");
     if (style != null) {
       out.append(" style='" + style + "'");
     }
     out.append(">");
+  }
+  private void endTable() {
+    out.append("</table>");
   }
   
   // Utility - returns the first if provided, otherwise the second
