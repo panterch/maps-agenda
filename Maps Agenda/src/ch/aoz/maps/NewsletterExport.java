@@ -13,6 +13,7 @@ import static ch.aoz.maps.NewsletterStyles.EVENT_RIGHT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_SINGLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
 import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
+import static ch.aoz.maps.NewsletterStyles.MAKE_ABSOLUTE_LINK;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
 import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.URL_CSS;
@@ -307,6 +308,7 @@ public class NewsletterExport {
   
   private void addLink(@Nullable String url, String text) {
     if (url != null) {
+      url = MAKE_ABSOLUTE_LINK(url);
       out.append("<a href='" + ESCAPE_ATTRIBUTE(url) + "' target='_blank'>");
       out.append(ESCAPE_TEXT(text));
       out.append("</a>");
@@ -324,6 +326,7 @@ public class NewsletterExport {
   private void endTable() {
     out.append("</table>");
   }
+  
   
   // Utility - returns the first if provided, otherwise the second
   private static <T> T getOrDefault(T value, T defaultValue) {

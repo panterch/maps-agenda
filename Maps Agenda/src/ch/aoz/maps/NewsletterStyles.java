@@ -27,6 +27,15 @@ public class NewsletterStyles {
         .replaceAll(">", "&gt;");
   }
   
+  public static final String MAKE_ABSOLUTE_LINK(String url) {
+    // Assume that links must be 'http' or 'https'. Anything else, prepend with
+    // http:// to make sure it doesn't link relative to appspot.com.
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return "http://" + url;
+  }
+  
   // CSS for styling the HTML:
   
   public static final String PREHEADER_CSS = join(
