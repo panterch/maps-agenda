@@ -79,7 +79,7 @@ if (sane && (request.getParameter("confirm") == null)) {
 	out.println("<p><input type='submit' value='YES'></p></form></div>");
 } else if (sane && (request.getParameter("confirm").equals("yes"))) {
 	// Perform the actual unsubscribe
-	Subscriber.DeleteSubscriber(currentsubscriber);
+	// Subscriber.DeleteSubscriber(currentsubscriber);
 	out.println("<div><div class='title'>Thank you. You have been unsubscribed from the newsletter.</div>");
 }
 
