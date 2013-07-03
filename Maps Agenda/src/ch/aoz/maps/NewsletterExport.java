@@ -5,6 +5,7 @@ import static ch.aoz.maps.NewsletterStyles.DATE_CSS;
 import static ch.aoz.maps.NewsletterStyles.DATE_FORMATTER;
 import static ch.aoz.maps.NewsletterStyles.DESC_CSS;
 import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_CSS;
+import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_TEXT;
 import static ch.aoz.maps.NewsletterStyles.ESCAPE_ATTRIBUTE;
 import static ch.aoz.maps.NewsletterStyles.ESCAPE_TEXT;
 import static ch.aoz.maps.NewsletterStyles.EVENT_CSS;
@@ -250,10 +251,7 @@ public class NewsletterExport {
       out.append("<tr>");
       out.append("<td>");
       out.append("<span style='" + DISCLAIMER_CSS + "'>");
-      out.append("Der Veranstaltungskalender MAPS Züri Agenda informiert in 13 Sprachen über günstige Angebote " +
-          "im Zürcher Kultur- und Freizeitbereich. Dieses Angebot richtet sich vor allem an Migrant/innen, " +
-          "deren Deutschkenntnisse nicht für die Lektüre des \"Züritipp\" ausreichen " +
-          "und die über wenige finanzielle Mittel verfügen.");
+      out.append(DISCLAIMER_TEXT);
       out.append("</span>");
       out.append("</td>");
       out.append("</tr>");
