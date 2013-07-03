@@ -16,6 +16,7 @@ import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
 import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
 import static ch.aoz.maps.NewsletterStyles.MAKE_ABSOLUTE_LINK;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
+import static ch.aoz.maps.NewsletterStyles.RTL_CSS;
 import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.URL_CSS;
 
@@ -31,13 +32,13 @@ import javax.annotation.Nullable;
  * NOTE: *not* threadsafe. Each caller should create their own instance.
  *
  * Remaining:
- *   - test RLT & other languages.
  *   - ensure it looks ok in emails.
  */
 public class NewsletterExport {
   // For field details, see the parameter docs in the constructor.
   private final List<Event> events;
   private final String lang;
+  private final Language language;
   private final String urlRoot;
   private final String themeId;
   private final int year;
@@ -68,6 +69,7 @@ public class NewsletterExport {
     this.year = year;
     this.month = month;
     this.subscriber = subscriber;
+    this.language = Language.GetByCode(lang);
   }
   
   /** Renders the entire newsletter. */
@@ -184,10 +186,10 @@ public class NewsletterExport {
     out.append("<div style='" + EVENT_SINGLE_CSS + "'>");
     renderEventDetails(
         DATE_FORMATTER.format(event.getDate()),
-        german.getTitle(),
-        german.getDesc(),
-        german.getLocation(),
-        german.getUrl());
+        german.getTitle(), false, // All false, german isn't RTL.
+        german.getDesc(), false,
+        german.getLocation(), false,
+        german.getUrl(), false);
     out.append("</div>");
     
     out.append("</div>");
@@ -210,34 +212,44 @@ public class NewsletterExport {
     out.append("<div style='" + EVENT_LEFT_CSS + "'>");
     renderEventDetails(
         date,
-        german.getTitle(),
-        german.getDesc(),
-        german.getLocation(),
-        german.getUrl());
+        german.getTitle(), false, // All false, german isn't RTL.
+        german.getDesc(), false,
+        german.getLocation(), false,
+        german.getUrl(), false);
     out.append("</div>");
 
     // Right column is whatever language is desired, falling back to German
     // for whichever fields aren't translated (e.g. location, url).
+    TranslationWithFallback translated =
+        new TranslationWithFallback(nonGerman, german); 
     out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,
-        getOrDefault(nonGerman.getTitle(), german.getTitle()),
-        getOrDefault(nonGerman.getDesc(), german.getDesc()),
-        getOrDefault(nonGerman.getLocation(), german.getLocation()),
-        getOrDefault(nonGerman.getUrl(), german.getUrl()));
+        translated.getTitle(), translated.isTitleRtl(),
+        translated.getDesc(), translated.isDescRtl(),
+        translated.getLocation(), translated.isLocationRtl(),
+        translated.getUrl(), translated.isLocationRtl());
     out.append("</div>");
     
     out.append("</div>");
   }
 
   /** Renders just the details for one event in one language. */
-  private void renderEventDetails(
-      String date, String title, String description, String location, String url) {
-    out.append(String.format("<h1 style='%s'>%s</h1>", DATE_CSS, ESCAPE_TEXT(date)));
-    out.append(String.format("<h2 style='%s'>%s</h2>", TITLE_CSS, ESCAPE_TEXT(title)));
-    out.append(String.format("<div style='%s'>%s</div>", DESC_CSS, ESCAPE_TEXT(description)));
-    out.append(String.format("<p style='%s'>%s</p>", LOCATION_CSS, ESCAPE_TEXT(location)));
-    out.append(String.format("<p style='%s'>", URL_CSS));
+  private void renderEventDetails(String date,
+      String title, boolean isTitleRtl, 
+      String desc, boolean isDescRtl, 
+      String location, boolean isLocationRtl,
+      String url, boolean isUrlRtl) {
+    out.append(String.format("<h1 style='%s'>%s</h1>",
+        DATE_CSS, ESCAPE_TEXT(date)));
+    out.append(String.format("<h2 style='%s'>%s</h2>",
+        rtlCss(TITLE_CSS, isTitleRtl), ESCAPE_TEXT(title)));
+    out.append(String.format("<div style='%s'>%s</div>",
+        rtlCss(DESC_CSS, isDescRtl), ESCAPE_TEXT(desc)));
+    out.append(String.format("<p style='%s'>%s</p>",
+        rtlCss(LOCATION_CSS, isLocationRtl), ESCAPE_TEXT(location)));
+    out.append(String.format("<p style='%s'>", 
+        rtlCss(URL_CSS, isUrlRtl)));
     addLink(url, url);
     out.append("</p>");
   }
@@ -325,9 +337,7 @@ public class NewsletterExport {
     out.append("</table>");
   }
   
-  
-  // Utility - returns the first if provided, otherwise the second
-  private static <T> T getOrDefault(T value, T defaultValue) {
-    return value == null || value.toString().isEmpty() ? defaultValue : value;
+  private static String rtlCss(String CSS, boolean isRtl) {
+    return isRtl ? RTL_CSS + CSS : CSS;
   }
 }
