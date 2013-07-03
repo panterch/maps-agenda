@@ -128,14 +128,18 @@ public class NewsletterExport {
   /** Header HTML = Colored AOZ banner. */
   private void renderHeader() {
     String logoUrl = urlRoot + "/static/themes/" + themeId + "_header.png";
+    String aozHeaderUrl = urlRoot + "/static/aoz-stadtzuerich.gif";
     
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
 
     startTable(null);
       out.append("<tr>");
-      out.append("<td>");                                    
-      out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) + "' style='width:100%' alt='MAPS Züri Agenda'>");
+      out.append("<td>");
+      out.append("<img src='" + ESCAPE_ATTRIBUTE(aozHeaderUrl) +
+          "' style='padding: 16px 16px 0' alt='AOZ'>");
+      out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
+          "' style='width:100%' alt='MAPS Züri Agenda'>");
       out.append("</td>");
       out.append("</tr>");
     endTable();
