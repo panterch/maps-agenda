@@ -220,8 +220,8 @@ public class NewsletterExport {
 
     // Right column is whatever language is desired, falling back to German
     // for whichever fields aren't translated (e.g. location, url).
-    TranslationWithFallback translated =
-        new TranslationWithFallback(nonGerman, german); 
+    TranslationWithFallback translated = new TranslationWithFallback(
+        nonGerman, german, language.isRightToLeft()); 
     out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,

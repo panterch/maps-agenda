@@ -5,21 +5,20 @@ package ch.aoz.maps;
  * fallback language (assumed to be German) used when the first is missing data.
  */
 public class TranslationWithFallback extends Translation {
+  // Markers for field-level RTL.
   private final boolean isTitleRtl;
   private final boolean isDescRtl;
   private final boolean isLocationRtl;
   private final boolean isUrlRtl;
   
-  public TranslationWithFallback(Translation primary, Translation fallback) {
+  public TranslationWithFallback(
+      Translation primary, Translation fallback, boolean primaryLangRtl) {
     super(
         primary.getLang(),
         getOrDefault(primary.getTitle(), fallback.getTitle()),
         getOrDefault(primary.getDesc(), fallback.getDesc()),
         getOrDefault(primary.getLocation(), fallback.getLocation()),
         getOrDefault(primary.getUrl(), fallback.getUrl()));
-    
-    boolean primaryLangRtl =
-        Language.GetByCode(primary.getLang()).isRightToLeft();
     
     this.isTitleRtl = primary.getTitle() != null ? primaryLangRtl : false;
     this.isDescRtl = primary.getDesc() != null ? primaryLangRtl : false;
