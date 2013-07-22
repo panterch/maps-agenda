@@ -108,7 +108,7 @@ public class NewsletterExport {
     out.append("<div>MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
     out.append("</td>");
     
-    out.append("<td valign='top' width='260'>");
+    out.append("<td valign='top'>");
     if (this.isEmail()) {
       out.append("<div>");
       out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
@@ -155,7 +155,7 @@ public class NewsletterExport {
     
     startTable(null);
       out.append("<tr>");
-      out.append("<td valign='top' width='280'>");
+      out.append("<td valign='top'>");
       for (Event event : events) {
         renderEvent(event);
       }
@@ -235,6 +235,7 @@ public class NewsletterExport {
         translated.getUrl(), translated.isLocationRtl());
     out.append("</div>");
     
+    out.append("<div style='clear: both;'></div>");
     out.append("</div>");
   }
 
