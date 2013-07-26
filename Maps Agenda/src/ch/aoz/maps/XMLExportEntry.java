@@ -70,7 +70,7 @@ public class XMLExportEntry {
 			xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">";
 			xml += "<Inhalttag aid:pstyle=\"inhalt_gross"
 					+ language.getXMLFormatSupplement() + "\">";
-			xml += translation.getDesc();
+			xml += escapeXML(translation.getDesc());
 			xml += "</Inhalttag>\n";
 			xml += getXMLLocation();
 			xml += "</Tag_inside>";
@@ -85,11 +85,11 @@ public class XMLExportEntry {
 		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += translation.getTitle();
+		xml += escapeXML(translation.getTitle());
 		xml += "</title>\n";
 		xml += "<Inhalttag aid:pstyle=\"inhalt"
 				+ language.getXMLFormatSupplement() + "\">";
-		xml += translation.getDesc();
+		xml += escapeXML(translation.getDesc());
 		xml += "</Inhalttag>\n";
 		xml += getXMLLocation();
 		xml += "</Tag_inside>";
@@ -139,7 +139,7 @@ public class XMLExportEntry {
 				+ "\" aid5:cellstyle=\"cs_titel_gross\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += translation.getTitle();
+		xml += escapeXML(translation.getTitle());
 		xml += "</title>";
 		xml += "</Tag_inside>";
 		return xml;
@@ -160,7 +160,7 @@ public class XMLExportEntry {
 			// TODO remove special hack for _ru.
 			xml += (language.getXMLFormatSupplement() == "_ru" ? language
 					.getXMLFormatSupplement() : "") + "\">";
-			xml += translation.getLocation() + " ";
+			xml += escapeXML(translation.getLocation()) + " ";
 
 			if (translation.getUrl() != null && translation.getUrl() != "") {
 				// TODO remove this replacement hack.
@@ -170,4 +170,23 @@ public class XMLExportEntry {
 		}
 		return xml;
 	}
+	
+    /**
+     * Replaces all characters that Indesign cannot interpret by their proper
+     * XML representations.
+     * 
+     * @param content
+     *            is the content to sanitize
+     * @return the sanitized content
+     */
+    private String escapeXML(String content) {
+	if (content != null) {
+	    // Because Indesign may interpret things on its own way, we do not
+	    // replace anything else than the things that are known to cause
+	    // problems. Please supplement this list with other failing
+	    // characters.
+	    content = content.replace("&", "&amp;");
+	}
+	return content;
+    }
 }
