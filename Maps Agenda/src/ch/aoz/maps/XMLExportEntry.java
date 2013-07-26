@@ -71,7 +71,7 @@ public class XMLExportEntry {
 			xml += "<Inhalttag aid:pstyle=\"inhalt_gross"
 					+ language.getXMLFormatSupplement() + "\">";
 			xml += translation.getDesc();
-			xml += "</Inhalttag>";
+			xml += "</Inhalttag>\n";
 			xml += getXMLLocation();
 			xml += "</Tag_inside>";
 		}
@@ -86,11 +86,11 @@ public class XMLExportEntry {
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
 		xml += translation.getTitle();
-		xml += "</title>";
+		xml += "</title>\n";
 		xml += "<Inhalttag aid:pstyle=\"inhalt"
 				+ language.getXMLFormatSupplement() + "\">";
 		xml += translation.getDesc();
-		xml += "</Inhalttag>";
+		xml += "</Inhalttag>\n";
 		xml += getXMLLocation();
 		xml += "</Tag_inside>";
 		return xml;
@@ -124,9 +124,9 @@ public class XMLExportEntry {
 				+ (enlarge ? "cs_gross" : "cs_datum")
 				+ "\" aid:pstyle=\"datum\">";
 		if (!enlarge || dateChanged) {
-			xml += String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
+			xml += " " + String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
 					+ "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1)
-					+ ".";
+					+ ". ";
 		}
 		xml += "</Tag_inside>";
 		return xml;
@@ -152,9 +152,9 @@ public class XMLExportEntry {
 				xml += "<Orttag aid:pstyle=\"ort_gross";
 			} else {
 				if (language.isRightToLeft()) {
-					xml += "<Orttag aid:pstyle=\"ort";
-				} else {
 					xml += "<Orttag aid:pstyle=\"ort_rtl";
+				} else {
+					xml += "<Orttag aid:pstyle=\"ort";
 				}
 			}
 			// TODO remove special hack for _ru.
