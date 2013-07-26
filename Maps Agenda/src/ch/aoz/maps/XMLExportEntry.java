@@ -162,7 +162,7 @@ public class XMLExportEntry {
 					.getXMLFormatSupplement() : "") + "\">";
 			xml += translation.getLocation() + " ";
 
-			if (translation.getUrl() != "") {
+			if (translation.getUrl() != null && translation.getUrl() != "") {
 				// TODO remove this replacement hack.
 				xml += translation.getUrl().replace("www", "http://www");
 			}
