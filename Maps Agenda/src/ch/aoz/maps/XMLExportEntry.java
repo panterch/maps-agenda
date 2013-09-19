@@ -163,8 +163,7 @@ public class XMLExportEntry {
 			xml += escapeXML(translation.getLocation()) + " ";
 
 			if (translation.getUrl() != null && translation.getUrl() != "") {
-				// TODO remove this replacement hack.
-				xml += translation.getUrl().replace("www", "http://www");
+				xml += translation.getUrl().replace("http://www", "www");
 			}
 			xml += "</Orttag>";
 		}

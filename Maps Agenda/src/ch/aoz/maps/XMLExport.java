@@ -62,7 +62,15 @@ public class XMLExport {
     orderedLanguages.addAll(Language.getAllLanguages().values());
     Collections.sort(orderedLanguages);
     for (Language language : orderedLanguages) {
-      xml += "<" + language.getCode() + ">";
+      // HACK: Do not render code=(ma|ti|so). Indesign is not ready for them.
+      if (language.getCode() == "ma" || language.getCode() == "ti" ||
+	      language.getCode() == "so") {
+	  continue;
+      }
+      
+      // For the rendering of the languages, the code must be translated into
+      // the Standardized representation.
+      xml += "<" + language.getStandardizedLanguageCode() + ">";
       xml += "<inh>";
 
       // Topic of the month.
@@ -113,7 +121,7 @@ public class XMLExport {
         currentDay.setTime(newDay.getTime());
       }
       xml += "</inh>";
-      xml += "</" + language.getCode() + ">";
+      xml += "</" + language.getStandardizedLanguageCode() + ">";
     }
     xml += "</Tag1>";
 

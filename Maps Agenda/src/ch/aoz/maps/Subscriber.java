@@ -110,7 +110,7 @@ public class Subscriber {
     List<Entity> entities = 
         datastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
     for (Entity e : entities) {
-      if(hash.equals((String)e.getProperty(hashProperty))) {
+      if(hash.equals(e.getProperty(hashProperty))) {
     	  return new Subscriber(e);
       }
     }

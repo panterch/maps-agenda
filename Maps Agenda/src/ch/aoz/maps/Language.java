@@ -185,6 +185,28 @@ public class Language implements Comparable<Language> {
     public String getCode() {
 	return code;
     }
+    
+    /**
+     *  The web site (but not the XML export!) occasionally uses other codes
+     *  than the standard representation. This function translates the internal
+     *  representation into the standardized setting.
+     *   
+     * @return the standardized language code for the language.
+     */
+    public String getStandardizedLanguageCode() {
+	Map<String, String> mapping = new HashMap<String, String>();
+	mapping.put("al", "sq");
+	mapping.put("bo", "sh");
+	mapping.put("pe", "fa");
+	mapping.put("tu", "tr");
+	mapping.put("po", "pt");
+
+	if (mapping.containsKey(code)) {
+	    return mapping.get(code);
+	} else {
+	    return code;
+	}
+    }    
 
     /**
      * @return the name
@@ -250,7 +272,7 @@ public class Language implements Comparable<Language> {
      */
     public String getXMLFormatSupplement() {
 	if (hasSpecificFormat()) {
-	    return new String("_" + getCode());
+	    return new String("_" + getStandardizedLanguageCode());
 	} else {
 	    return new String();
 	}
@@ -267,22 +289,22 @@ public class Language implements Comparable<Language> {
 	if (this.getCode() == o.getCode()) {
 	    return 0;
 	}
-
+	
 	// The manual ordering.
 	Map<String, Integer> manualOrdering = new HashMap<String, Integer>();
 	manualOrdering.put("de", 0);
-	manualOrdering.put("sq", 1);
+	manualOrdering.put("al", 1);
 	manualOrdering.put("ar", 2);
 	manualOrdering.put("en", 3);
 	manualOrdering.put("fr", 4);
-	manualOrdering.put("fa", 5);
-	manualOrdering.put("pt", 6);
+	manualOrdering.put("pe", 5);
+	manualOrdering.put("po", 6);
 	manualOrdering.put("ru", 7);
-	manualOrdering.put("sh", 8);
+	manualOrdering.put("bo", 8);
 	manualOrdering.put("es", 9);
 	manualOrdering.put("it", 10);
 	manualOrdering.put("ta", 11);
-	manualOrdering.put("tr", 12);
+	manualOrdering.put("tu", 12);
 
 	Integer thisLang;
 	if (manualOrdering.containsKey(this.getCode())) {
