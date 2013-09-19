@@ -187,7 +187,7 @@ public class Translation {
     
     // The location is usually untranslated. Fall back to the German version.
     Translation translation = new Translation(entity);
-    if (translation.getLocation().isEmpty() && !e.getGermanTranslation().getLocation().isEmpty()) {
+    if (translation.getLocation().isEmpty() && e.getGermanTranslation().getLocation() != null) {
     	translation.setLocation(e.getGermanTranslation().getLocation());
     }
     
