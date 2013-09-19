@@ -184,7 +184,14 @@ public class Translation {
     Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
         .addChild(Translation.entityKind, lang).getKey();
     Entity entity = datastore.get(key);
-    return new Translation(entity);
+    
+    // The location is usually untranslated. Fall back to the German version.
+    Translation translation = new Translation(entity);
+    if (translation.getLocation().isEmpty() && !e.getGermanTranslation().getLocation().isEmpty()) {
+    	translation.setLocation(e.getGermanTranslation().getLocation());
+    }
+    
+    return translation;
   }
 
   /**
