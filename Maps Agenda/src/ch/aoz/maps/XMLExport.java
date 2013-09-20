@@ -46,6 +46,24 @@ public class XMLExport {
       }
     }
   }
+  
+  /**
+   * Filters a list of languages for the ones the InDesign template supports. Preserves order.
+   * @param languages is the unfiltered list of languages.
+   * @return the filtered version of languages in preserved order.
+   */
+    static public List<Language> FilterLanguagesForExport(
+	    List<Language> languages) {
+	List<Language> filteredLanguages = new ArrayList<Language>();
+	for (Language language : languages) {
+	    if (language.getCode() == "ma" || language.getCode() == "ti"
+		    || language.getCode() == "so") {
+		continue;
+	    }
+	    filteredLanguages.add(language);
+	}
+	return filteredLanguages;
+    }
 
   /**
    * Render this Event into an XML tag.
@@ -61,13 +79,8 @@ public class XMLExport {
     List<Language> orderedLanguages = new ArrayList<Language>();
     orderedLanguages.addAll(Language.getAllLanguages().values());
     Collections.sort(orderedLanguages);
+    orderedLanguages = FilterLanguagesForExport(orderedLanguages);
     for (Language language : orderedLanguages) {
-      // HACK: Do not render code=(ma|ti|so). Indesign is not ready for them.
-      if (language.getCode() == "ma" || language.getCode() == "ti" ||
-	      language.getCode() == "so") {
-	  continue;
-      }
-      
       // For the rendering of the languages, the code must be translated into
       // the Standardized representation.
       xml += "<" + language.getStandardizedLanguageCode() + ">";
@@ -171,7 +184,12 @@ public class XMLExport {
         xml += "<bild_" + day + "_" + month + ">";
 
         String imageText = new String();
-        for (Language language : Language.getAllLanguages().values()) {
+        
+        List<Language> orderedLanguages = new ArrayList<Language>();
+        orderedLanguages.addAll(Language.getAllLanguages().values());
+        Collections.sort(orderedLanguages);
+        orderedLanguages = FilterLanguagesForExport(orderedLanguages);
+        for (Language language : orderedLanguages) {
           Translation translation;
           try {
             translation = getTranslation(event, language);
