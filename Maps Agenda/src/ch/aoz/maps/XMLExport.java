@@ -56,8 +56,9 @@ public class XMLExport {
 	    List<Language> languages) {
 	List<Language> filteredLanguages = new ArrayList<Language>();
 	for (Language language : languages) {
-	    if (language.getCode() != "ma" && language.getCode() != "ti"
-		    && language.getCode() != "so") {
+	    if (!language.getCode().equals("ma")
+		    && !language.getCode().equals("ti")
+		    && !language.getCode().equals("so")) {
 		filteredLanguages.add(language);
 	    }
 	}
