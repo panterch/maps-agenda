@@ -3,9 +3,18 @@
 		<servlet-name>Maps_Agenda</servlet-name>
 		<servlet-class>ch.aoz.maps.Maps_AgendaServlet</servlet-class>
 	</servlet>
+  <servlet-mapping>
+    <servlet-name>Maps_Agenda</servlet-name>
+    <url-pattern>/maps_agenda</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Maps_Languages</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_LanguageServlet</servlet-class>
+  </servlet>
 	<servlet-mapping>
-		<servlet-name>Maps_Agenda</servlet-name>
-		<url-pattern>/maps_agenda</url-pattern>
+		<servlet-name>Maps_Languages</servlet-name>
+		<url-pattern>/maps/scripts/menu.js</url-pattern>
 	</servlet-mapping>
 
   <security-constraint>
