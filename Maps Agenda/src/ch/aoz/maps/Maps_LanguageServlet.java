@@ -15,19 +15,20 @@ public class Maps_LanguageServlet extends HttpServlet {
         HashMap<String, Language> languages = Language.getAllLanguages();
         
         StringBuilder response = new StringBuilder();
+        response.append("/* version 0.5 */\n");
         response.append("function LanguageMenuCtrl($scope) {\n");
         response.append("  $scope.languages = [\n");
         for (Language lang : languages.values()) {
           response.append("    {label: '");
-          response.append(lang.getName());
+          response.append(toUnicode(lang.getName()));
           response.append("', code: '");
-          response.append(lang.getCode());
+          response.append(toUnicode(lang.getCode()));
           response.append("'},\n");
         }
         response.append("  ];\n");
         response.append("};");
                 
-        resp.setContentType("text/javascript");
+        resp.setContentType("application/javascript");
         resp.getWriter().println(response.toString());
     }
     
@@ -37,7 +38,15 @@ public class Maps_LanguageServlet extends HttpServlet {
         if (c < 128) {
           b.append(c);
         } else {
-          b.append("\\u").append(Integer.toHexString(c));
+          b.append("\\u");
+          
+          String hex = Integer.toHexString(c);
+          if (hex.length() < 4) {
+            for (int i = hex.length(); i < 4; ++i) {
+              b.append('0');
+            }
+          }
+          b.append(hex);
         }
       }
       return b.toString();      
