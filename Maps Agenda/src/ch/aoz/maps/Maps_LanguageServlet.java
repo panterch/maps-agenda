@@ -30,4 +30,16 @@ public class Maps_LanguageServlet extends HttpServlet {
         resp.setContentType("text/javascript");
         resp.getWriter().println(response.toString());
     }
+    
+    public String toUnicode(String s) {
+      StringBuilder b = new StringBuilder();
+      for (char c : s.toCharArray()) {
+        if (c < 128) {
+          b.append(c);
+        } else {
+          b.append("\\u").append(Integer.toHexString(c));
+        }
+      }
+      return b.toString();      
+    }
 }
