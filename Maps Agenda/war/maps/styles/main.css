@@ -1,0 +1,217 @@
+body {
+  font-family: arial;
+  margin: 0;
+}
+
+body > div > div > ul {
+  list-style: none;
+  padding: 0;
+}
+
+body > div > div > ul > li {
+  margin: 17px 0;
+}
+
+
+.menu-item {
+  background-color: #706f6f;
+  color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 7px 15px;
+  text-decoration: none;
+}
+
+/* A screen to fade the background image */
+.background-screen {
+  background-image: url('/images/temp-bg.jpg');
+  background-position-x: center;
+  height: 100%;
+  opacity: 0.6;
+  position: fixed;
+  width: 100%;
+}
+
+.section-div {
+  background-image: url('/images/perforated_band_1.png');
+  background-position: center;
+  background-repeat: repeat-x; 
+  height: 34px;
+  width: 100%;
+}
+
+/* Left-hand menu */
+.language-menu {
+}
+
+/* Middle section */
+
+.main-content {
+  left: 25%;
+  position: absolute;
+  width: 50%;
+}
+
+/* Header */
+
+.header {
+  background-color: #fe5c6c;
+  color: #fff;
+  font-family: Open Sans, Verdana;
+  font-size: 1.5em;
+  font-weight: bolder;
+  margin: 10px 0;
+}
+
+.header > div {
+  display: table-cell;
+  margin: 5px;
+}
+
+.header .letter {
+  font-size: 3em;
+  padding: 0 15px;
+}
+
+.header .line {
+  border-right: 3px solid #706f6f;
+}
+
+.header .desc {
+  padding-left: 15px;
+  vertical-align: middle;
+}
+
+/* Event styles */
+.event {
+  background-color: #fff;
+  color: #706f6f;
+  padding: 20px 0;
+}
+
+.event > div {
+  display: table-cell;
+}
+
+.event .date {
+  border-right: 2px solid #d5d5d5;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0 30px;
+  text-align: center;
+}
+
+.event .date span {
+  font-size: 0.7em;
+}
+
+.event .date p {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.event .details {
+  padding: 0 30px;
+}
+
+.event .details .title {
+  font-size: 1.2em;
+  font-weight: bold;  
+}
+
+.event .details .link a {
+  color: #706f6f;
+  font-size: 0.9em;
+}
+
+
+/* Calendar styles */
+.cal {
+  background-color: #fff;
+  padding: 20px 40px;
+}
+
+.cal-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.cal-title > a {
+  color: red;
+  text-decoration: none;
+}
+
+.cal-title > span {
+  color: #706f6f;
+  font-size: 0.8em;
+  padding: 0 40px;
+}
+
+.cal-grid {
+  empty-cells: hide;
+  font-size: 0.9em;
+  font-weight: bold;
+  width: 100%;
+}
+
+.cal-grid td {
+  text-align: center;
+}
+
+.cal-grid .cal-headers td {
+  color: #bababa;
+}
+
+.cal-grid .cal-body td {
+  background-color: #fe5c6c;
+  color: #fff;
+}
+
+.cal-grid .cal-body .today {
+  background-color: #706f6f;
+}
+
+
+
+/* Right-hand menu */
+.right-menu {
+  margin-right: -50%;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 150px;
+}
+
+@media screen and (min-width: 801px) {
+  .language-menu {
+    margin-left: -50%;
+    position: absolute;
+    top: 150px;
+  }
+}
+
+
+@media screen and (max-width: 800px) {
+  body > div > div > ul > li {
+    margin: 0 5px 10px 0;
+  }
+
+  .menu-item {
+    font-size: 0.8em;
+    padding: 5px 10px;
+  }
+
+  .language-menu {
+  }
+
+  .right-menu {
+    margin-right: 0;
+    position: relative;
+    right: 0;
+    text-align: left;
+    top: 0;
+  }
+
+}
