@@ -1,88 +1,78 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <title>MAPS</title>
-  <link href="maps.css" rel="stylesheet" type="text/css"></link>
-</head>
-  
-<body>
-<div id="wrapper">
+<!DOCTYPE html>
+<html ng-app>
+  <head>
+    <title>Maps Agenda</title>
+    <meta content-type="text/html" charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
+    <script src="/maps/scripts/angular.min.js"></script>
+    <script src="/maps/scripts/menu.js"></script>
+    <script src="/maps/scripts/events.js"></script>
+    <script src="/maps/scripts/calendar.js"></script>
+  </head>
+  <body>
+    <div class="background-screen"></div>
+    <div class="main-content">
+      <div class="header">
+        <div class="letter line">M</div>
+        <div class="letter line">A</div>
+        <div class="letter line">P</div>
+        <div class="letter line">S</div>
+        <div class="desc">ZÜRI<br>AGENDA</div>
+      </div>
 
-<div id="aoz">
-<!-- aoz -->
-</div>
+      <div ng-controller="LanguageMenuCtrl" class="language-menu">
+        <ul>
+          <li ng-repeat="language in languages">
+            <a ng-href="#lang={{language.code}}" class="menu-item">{{language.label}}</a>
+          </li>
+        </ul>
+      </div>
 
-<div id="language">
-  <ul>
-    <li><a href="">Shqip</a></li>
-    <li><a href="">Deutsch</a</li>
-    <li><a href="">English</a</li>
-    <li><a href="">Français</a</li>
-    <li><a href="">Português</a></li>
-    <li><a href="">русский</a></li>
-    <li><a href="">Español</a></li>
-    <li><a href="">Italiano</a></li>
-    <li><a href="">Tigrinya</a></li>
-    <li><a href="">Türkçe</a></li>
-  </ul>
-</div>
+      <div class="section-div"></div>
+      <div ng-controller="EventsCtrl" ng-init="queryEvents()">
+        <div ng-repeat="event in events">
+          <div class="event">
+            <div class="date">
+              <span class="day">{{printDay(event.date)}}</span>
+              <p>{{printDate(event.date)}}</p>
+            </div>
+            <div class="details">
+              <p class="title">{{event.title}}</p>
+              <p class="desc">{{event.description}}</p>
+              <p class="link">
+                <a href="{{event.url}}" target="_blank">{{event.url}}</a>
+              </p>
+            </div>
+          </div>
+          <div class="section-div"></div>
 
-<div id="main">
-  <div id="header">
-    {MAPS Zuri Agenda}
-  </div>
- 
-  <div id="this-week">
-  </div>
- 
-  <div class="event">
-    <div class="date">
-      Dienstag 9.10.
-    </div>
-    <div class="info">
-    </div>  
-    <div class="title">
-      Konzert mit dschane
-    </div>
-    <div class="desc">
-      Dschanese begeistern die Zuhorer/innen mit traditionellen Liedern der Roma aus Osteuropa. 
-      Elemente des "Swing Manouche", unverwech-selbare Stimmen und eine dynamische Begleitmusick
-      sorgen fur eine.
-    </div>
-    <div class="address">
-    </div>
-    <div class="link">
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <div id="picker">
-  </div>
-</div>
 
-<div id="side-nav">
-  <div id="links">
-    <ul>
-      <li>Uber Maps</li>
-      <li>Kontakt</li>
-      <li>Impressum</li>
-    </ul>
-  </div>
- 
-  <div id="newsletter">
-  </div>
- 
-  <div id="categories">
-    Kategorien
-    <ul>
-      <li>Gratis</li>
-      <li>Selbst Mitmachen</li>
-      <li>Fur den korper</li>
-      <li>Kinder und familien</li>
-      <li>Unterhaltung</li>
-      <li>Fur den korper</li>
-    </ul>
-   </div> 
-</div>
-  
-</body>
+      <div ng-controller="CalendarCtrl" ng-init="renderCalendar()" class="cal">
+        <div class="cal-title">
+          <a href="" ng-click="movePivotBack();">⤎</a>
+          <span>{{getMonth()}}</span>
+          <a href="" ng-click="movePivotForward();">⤏</a>
+        </div>
+        <table class="cal-grid">
+          <tr class="cal-headers">
+            <td ng-repeat="title in titles">{{title}}</td>
+          </tr>
+          <tr ng-repeat="week in weeks" class="cal-body">
+            <td ng-repeat="day in week" class="{{isToday(day)}}">{{day}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="right-menu">
+        <ul>
+          <li><a href="#" class="menu-item">About maps</a></li>
+          <li><a href="#" class="menu-item">Contact</a></li>
+          <li><a href="#" class="menu-item">Impressum</a></li>
+        </ul>
+      </div>
+    </div>
+  </body>
 </html>
