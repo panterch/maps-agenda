@@ -55,12 +55,11 @@ public class NewsletterStyles {
   
   public static final String EVENT_CSS = join(
       "display:block",
-      "margin:10px 0 15px 0",
-      "clear:left");
+      "margin:10px 0 15px 0");
   
   public static final String EVENT_LEFT_CSS = join(
       "padding: 0 20px 5px 20px",
-      "width: 250px;",
+      "width: 250px",
       "float: left");
   
   // Same CSS for left and right columns for now.
@@ -68,8 +67,7 @@ public class NewsletterStyles {
   
   public static final String EVENT_SINGLE_CSS = join(
       "padding: 0 20px 5px 20px",
-      "width: 540px",
-      "float: left");
+      "width: 540px");
   
   public static final String FOOTER_CSS = join(
       "background-color:#FAFAFA",
@@ -83,6 +81,8 @@ public class NewsletterStyles {
   
   public static final String DISCLAIMER_CSS = join(
       "font-size:10px");
+  
+  public static final String RTL_CSS = "direction: rtl;";
 
   // Rules for styling the sections of each single event 
   public static final String DATE_CSS = join(
@@ -123,4 +123,12 @@ public class NewsletterStyles {
     }
     return result.toString();
   }
+  
+  // NOTE - as specified by AOZ.
+  public static final String DISCLAIMER_TEXT = 
+      "Die MAPS Züri Agenda ist ein Veranstaltungskalender, der jeden Monat über günstige " +
+      "Kultur- und Freizeitangebote in der Stadt Zürich informiert. Das Angebot richtet " +  
+      "sich an zugewanderte Personen mit beschränkten finanziellen Mitteln und geringen " + 
+      "Deutschkenntnissen. Das Projekt MAPS Züri Agenda ist eine Integrationsleistung der " +
+      "AOZ im Auftrag der Stadt Zürich.";
 }

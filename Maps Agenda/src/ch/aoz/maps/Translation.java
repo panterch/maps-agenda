@@ -174,7 +174,7 @@ public class Translation {
   }
   
   /**
-   * Fetches the German translation for the provided event. 
+   * Fetches the translation for the provided event. 
    * @param e An event
    * @return the German translation.
    * @throws EntityNotFoundException 
@@ -184,7 +184,15 @@ public class Translation {
     Key key = new KeyFactory.Builder(Event.entityKind, e.getKey())
         .addChild(Translation.entityKind, lang).getKey();
     Entity entity = datastore.get(key);
-    return new Translation(entity);
+    
+    // The location is usually untranslated. Fall back to the German version.
+    Translation translation = new Translation(entity);
+    if (lang != "de" &&
+	    (translation.getLocation() == null || translation.getLocation().isEmpty())) {
+    	translation.setLocation(e.getGermanTranslation().getLocation());
+    }
+    
+    return translation;
   }
 
   /**

@@ -117,6 +117,16 @@ public class Subscriber {
     return null;
   }
   
+  public static boolean DeleteSubscriber(Subscriber t) {
+	  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService(); 
+	  try {
+	      datastore.delete(KeyFactory.createKey(entityKind, t.getEmail()));
+	  } catch (Exception ex) {
+	      return false;
+	  }
+	  return true;  
+  }
+  
   public static boolean AddSubscriber(Subscriber t) {
     if (!t.isOk())
       return false;
