@@ -42,7 +42,8 @@ public class Maps_EventServlet extends HttpServlet {
         // TODO: new lines in the description break the system...
         response.append("        description: '").append(toUnicode(t.getDesc())).append("',\n");
         response.append("        url: '").append(toUnicode(t.getUrl())).append("'\n");
-        response.append("      },\n");        
+        response.append("      },\n");
+        break;
       }
       response.deleteCharAt(response.length() - 2);  // remove the last ,
       response.append("    ];\n");
