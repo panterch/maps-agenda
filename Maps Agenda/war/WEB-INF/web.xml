@@ -17,6 +17,15 @@
 		<url-pattern>/maps/scripts/menu.js</url-pattern>
 	</servlet-mapping>
 
+  <servlet>
+    <servlet-name>Maps_Events</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_EventServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Maps_Events</servlet-name>
+    <url-pattern>/maps/scripts/events.js</url-pattern>
+  </servlet-mapping>
+
   <security-constraint>
      <web-resource-collection>
        <url-pattern>/admin/*</url-pattern>

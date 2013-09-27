@@ -367,8 +367,9 @@ if (request.getParameter("eyear") != null) {
   events = Event.GetEventListForMonth(year, month);
   selected_month.set(year, month, 1);
 } else {
-  events = Event.GetAllEvents();
-  selected_month = null;
+  int year = selected_month.get(Calendar.YEAR); 
+  int month = selected_month.get(Calendar.MONTH);
+  events = Event.GetEventListForMonth(year, month);
 }
 if (request.getParameter("new") != null) {
   // An event is to be submitted.
