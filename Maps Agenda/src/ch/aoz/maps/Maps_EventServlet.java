@@ -39,11 +39,10 @@ public class Maps_EventServlet extends HttpServlet {
         response.append("      {\n");
         response.append("        date: '").append(dateToString(e.getDate())).append("',\n");
         response.append("        title: '").append(toUnicode(t.getTitle())).append("',\n");
-        // TODO: new lines in the description break the system...
-        response.append("        description: '").append(toUnicode(t.getDesc())).append("',\n");
+        // TODO: We cannot replace newlines by anything reasonable as it seems. The template mechanism ignores br, p, or \\n tags...
+        response.append("        description: '").append(toUnicode(t.getDesc().replace("\n", "").replace("\r", ""))).append("',\n");
         response.append("        url: '").append(toUnicode(t.getUrl())).append("'\n");
         response.append("      },\n");
-        break;
       }
       response.deleteCharAt(response.length() - 2);  // remove the last ,
       response.append("    ];\n");
