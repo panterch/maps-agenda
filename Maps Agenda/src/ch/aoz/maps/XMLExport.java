@@ -48,6 +48,7 @@ public class XMLExport {
   }
   
   /**
+   * TODO Remove. This will probably not be used anymore.
    * Filters a list of languages for the ones the InDesign template supports. Preserves order.
    * @param languages is the unfiltered list of languages.
    * @return the filtered version of languages in preserved order.
@@ -79,7 +80,6 @@ public class XMLExport {
     List<Language> orderedLanguages = new ArrayList<Language>();
     orderedLanguages.addAll(Language.getAllLanguages().values());
     Collections.sort(orderedLanguages);
-    orderedLanguages = FilterLanguagesForExport(orderedLanguages);
     for (Language language : orderedLanguages) {
       // For the rendering of the languages, the code must be translated into
       // the Standardized representation.
@@ -188,7 +188,6 @@ public class XMLExport {
         List<Language> orderedLanguages = new ArrayList<Language>();
         orderedLanguages.addAll(Language.getAllLanguages().values());
         Collections.sort(orderedLanguages);
-        orderedLanguages = FilterLanguagesForExport(orderedLanguages);
         for (Language language : orderedLanguages) {
           Translation translation;
           try {

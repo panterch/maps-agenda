@@ -149,7 +149,11 @@ public class XMLExportEntry {
 		String xml = new String();
 		if (translation.getLocation() != "") {
 			if (enlarge) {
-				xml += "<Orttag aid:pstyle=\"ort_gross";
+				if (language.isRightToLeft()) {
+					xml += "<Orttag aid:pstyle=\"ort_gross_rtl";
+				} else {
+					xml += "<Orttag aid:pstyle=\"ort_gross";
+				}
 			} else {
 				if (language.isRightToLeft()) {
 					xml += "<Orttag aid:pstyle=\"ort_rtl";

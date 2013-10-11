@@ -197,10 +197,11 @@ public class Language implements Comparable<Language> {
 	Map<String, String> mapping = new HashMap<String, String>();
 	mapping.put("al", "sq");
 	mapping.put("bo", "sh");
+	mapping.put("ma", "cjk");
 	mapping.put("pe", "fa");
-	mapping.put("tu", "tr");
 	mapping.put("po", "pt");
-
+	mapping.put("tu", "tr");
+	
 	if (mapping.containsKey(code)) {
 	    return mapping.get(code);
 	} else {
@@ -297,14 +298,17 @@ public class Language implements Comparable<Language> {
 	manualOrdering.put("ar", 2);
 	manualOrdering.put("en", 3);
 	manualOrdering.put("fr", 4);
-	manualOrdering.put("pe", 5);
-	manualOrdering.put("po", 6);
-	manualOrdering.put("ru", 7);
-	manualOrdering.put("bo", 8);
-	manualOrdering.put("es", 9);
-	manualOrdering.put("it", 10);
-	manualOrdering.put("ta", 11);
-	manualOrdering.put("tu", 12);
+	manualOrdering.put("it", 5);
+	manualOrdering.put("ma", 6);
+	manualOrdering.put("pe", 7);
+	manualOrdering.put("po", 8);
+	manualOrdering.put("ru", 9);
+	manualOrdering.put("bo", 10);
+	manualOrdering.put("so", 11);
+	manualOrdering.put("es", 12);
+	manualOrdering.put("ta", 13);
+	manualOrdering.put("ti", 14);
+	manualOrdering.put("tu", 15);
 
 	Integer thisLang;
 	if (manualOrdering.containsKey(this.getCode())) {
