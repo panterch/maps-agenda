@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -161,6 +162,18 @@ public class Translator {
     }  
     return new Translator(item);
   }
+  
+  public static boolean delete(String email) {
+    DatastoreService datastore = DatastoreServiceFactory
+            .getDatastoreService();
+    try {
+      datastore.delete(KeyFactory.createKey(entityKind, email));
+    } catch (Exception e){
+      return false;
+    }
+    return true;
+  }
+  
   /**
    * @return the email
    */

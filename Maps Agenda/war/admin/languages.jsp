@@ -2,6 +2,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -208,8 +209,10 @@ if (request.getParameter("code") != null) {
   }
 }
 
+Map<String, Language> sorted_languages = new TreeMap<String, Language>();
 for (Language l : languages.values()) {
   out.println(createLanguageForm("form-" + l.getCode(), l));
+  sorted_languages.put(l.getGermanName(), l);
 }
 out.println(createLanguageForm("newLang", null));
 
@@ -236,7 +239,7 @@ if (languages.isEmpty()) {
         <th>Spec format?</th>
         <th></th>
       </tr>
-<% for (Language l : languages.values()) { %> 
+<% for (Language l : sorted_languages.values()) { %> 
       <tr>
         <td><% out.println(l.getCode()); %></td>
         <td><% out.println(l.getName()); %></td>

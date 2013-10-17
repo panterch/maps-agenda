@@ -98,19 +98,6 @@ public static String createEventForm(String formName, Event e, Calendar selected
   return form.toString();
 }
 
-public static String createXMLForm() {
-  StringBuilder form = new StringBuilder();
-  form.append("<div id='event-xml' class='eventdiv'>");
-  form.append("<div class='title'>Import an event ");
-  form.append("<a onclick=\"hide_box('event-xml');\" href='javascript:void(0);''>(hide)</a></div>");
-  form.append("<form name='xml' method='POST' target='content-frame' enctype='multipart/form-data'");
-  form.append(" action='' onSubmit=\"return validateXMLForm()\">");
-  form.append("<p><input type='file' name='file'></p>");
-  form.append("<p><input type='submit' value='Import event'></p>");
-  form.append("</form></div>");
-  return form.toString();
-}
-
 public static String createSelectForm(Calendar selected_month) {
   if (selected_month == null) {
     selected_month = Calendar.getInstance();
@@ -430,19 +417,19 @@ for (Event e : events) {
   out.println(createEventForm("form-" + e.getKey(), e, selected_month));
 }
 out.println(createEventForm("newEvent", null, selected_month));
-out.println(createXMLForm());
 
 if (events.isEmpty()) {
   out.println("No event is yet defined.");
 } else {
 %>
+  <div id="new-event-link"><a onclick="show_box('event-new');" href="javascript:void(0);">Add a new event</a></div>
   <div>
     <div class="title">Defined events:</div>
 <% for (Event e : events) {
      out.println(createEventDiv(e)); 
    } }%>
+   </div>
 <div id="new-event-link"><a onclick="show_box('event-new');" href="javascript:void(0);">Add a new event</a></div>
-<div><a onclick="show_box('event-xml');" href="javascript:void(0);">Import an event</a></div>
 
 <%
 // TODO: Use a copy of this submission button with a different formaction

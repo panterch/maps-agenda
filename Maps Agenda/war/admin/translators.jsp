@@ -2,6 +2,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="ch.aoz.maps.Translator" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -30,6 +31,17 @@ public static String createTranslatorForm(String formName, Translator t) {
   form.append("<p>Languages handled: <input type='text' name='langs' value='" + (t == null ? "" : t.getLanguageString()) + "'></p>");
   form.append("<p><input type='submit' value='" + (t == null ? "Add": "Update") + " translator'></p>");
   form.append("</form></div>");
+  return form.toString();
+}
+
+public static String deleteTranslatorForm(String email) {
+  StringBuilder form = new StringBuilder();
+  form.append("<form name='d-" + email + "' method='POST' target='content-frame'");
+  form.append(" action='' onSubmit=\"return confirm('Are you sure you want to delete translator " + email + "?')\">");
+  form.append("<input type='hidden' name='delete' value='true'>");    
+  form.append("<input type='hidden' name='email' value='" + email + "'>");    
+  form.append("<input type='submit' value='delete'>");
+  form.append("</form>");
   return form.toString();
 }
 %>
@@ -131,13 +143,19 @@ function hide(elemId) {
 </script>
 <body>
 <%
+if (Boolean.parseBoolean(request.getParameter("delete"))) {
+  if (!Translator.delete(request.getParameter("email"))) {
+    out.println("<div class='msg-red'><p>Failed to delete translator " 
+                + request.getParameter("email") + ".</p></div>");
+  }
+}
 Map<String, Translator> translators = Translator.getAllTranslators();
 if (request.getParameter("email") != null) {
   // A new language is to be submitted.
   Translator t = new Translator(
       request.getParameter("email"), 
       request.getParameter("name"), 
-      Translator.parseLanguageString(request.getParameter("langs")));
+    Translator.parseLanguageString(request.getParameter("langs")));
   boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
   // TODO: check that all the language codes actually exist.
   if (isNew && translators.containsKey(t.getEmail())) {
@@ -153,6 +171,12 @@ if (request.getParameter("email") != null) {
   }
 }
 
+Map<String, Translator> sorted_translators = new TreeMap<String, Translator>();
+for (Translator t : translators.values()) {
+  out.println(createTranslatorForm("form-" + t.getEmail(), t));
+  sorted_translators.put(t.getLanguageString() + t.getEmail().toLowerCase(), t);
+}
+
 if (translators.isEmpty()) {
   out.println("<div>No translator is yet defined.</div>");
 } else {
@@ -165,22 +189,21 @@ if (translators.isEmpty()) {
         <th>Email</th>
         <th>Languages handled</th>
         <th></th>
+        <th></th>
       </tr>
-<% for (Translator t : translators.values()) { %> 
+<% for (Translator t : sorted_translators.values()) { %> 
       <tr>
         <td><% out.println(t.getName()); %></td>
         <td><% out.println(t.getEmail()); %></td>
         <td><% out.println(t.getLanguageString()); %></td>
         <td><a id="t-<% out.print(t.getEmail()); %>-link" onclick="show('t-<% out.print(t.getEmail()); %>')" href="javascript:void(0);">edit</a></td>
+        <td><% out.println(deleteTranslatorForm(t.getEmail())); %> </td>
       </tr>
 <% } %>
     </table>
   </div>
 <%
 } 
-for (Translator t : translators.values()) {
-  out.println(createTranslatorForm("form-" + t.getEmail(), t));
-}
 out.println(createTranslatorForm("newTranslator", null));
 %>
 <div id="new-t-link"><a onclick="show('t-new'); hide('new-t-link');" href="javascript:void(0);">Add a new translator</a></div>
