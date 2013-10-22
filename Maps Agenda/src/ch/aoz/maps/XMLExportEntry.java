@@ -82,7 +82,7 @@ public class XMLExportEntry {
 
 	private String getXMLSmallContents(int width) {
 		String xml = new String();
-		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">";
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + width + "\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
 		xml += escapeXML(translation.getTitle());
