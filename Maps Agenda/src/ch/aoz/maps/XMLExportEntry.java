@@ -182,7 +182,7 @@ public class XMLExportEntry {
      *            is the content to sanitize
      * @return the sanitized content
      */
-    private String escapeXML(String content) {
+    public static final String escapeXML(String content) {
 	if (content != null) {
 	    // Because Indesign may interpret things on its own way, we do not
 	    // replace anything else than the things that are known to cause
