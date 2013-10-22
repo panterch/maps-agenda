@@ -4,12 +4,15 @@
 <%@ page import="ch.aoz.maps.Translation" %>
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ page import="ch.aoz.maps.Event" %>
+<%@ page import="ch.aoz.maps.Strings"%>
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
+<%@ page import="java.util.Calendar" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
+      
 public static String escapeHTML(String raw) {
   if (raw == null) {
     return null;
@@ -71,6 +74,27 @@ public static String formatTranslationForm(
   result += "</form>";
   result += "</div>";
   return result;
+}
+
+public static String createSelectForm(Calendar selected_month) {
+  if (selected_month == null) {
+    selected_month = Calendar.getInstance();
+  }
+  int month = selected_month.get(Calendar.MONTH);
+  StringBuilder form = new StringBuilder();
+  form.append("<div id='event-date'>");
+  form.append("<form name='date' method='GET' style='display:inline'>");
+  form.append("Month to display (Year-Month): ");
+  form.append("<input type='text' name='eyear' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
+  form.append("-<select name='emonth'>");
+  for (int i = 0; i < 12; ++i) {
+    form.append("<option value='" + i + (i == month? "' selected>" : "'>") + Strings.months_de[i] + "</option>");
+  }
+  form.append("</select>");
+  form.append("<input type='submit' value='Show'></form>");
+  form.append("<form name='date_all' method='GET' target='content-frame'><input type='submit' value='Show all'>");
+  form.append("</form></p></div>");
+  return form.toString();
 }
 %>
 
@@ -185,13 +209,29 @@ if (user == null) {
     </select>
   </div>
   <div>
+    <%
+    List<Event> events;
+    Calendar selected_month = Calendar.getInstance();
+    if (request.getParameter("eyear") != null) {
+      int year = Integer.parseInt(request.getParameter("eyear"));
+      int month = Integer.parseInt(request.getParameter("emonth"));
+      events = Event.GetEventListForMonth(year, month);
+      selected_month.set(year, month, 1);
+    } else {
+      int year = selected_month.get(Calendar.YEAR);
+      int month = selected_month.get(Calendar.MONTH);
+      events = Event.GetEventListForMonth(year, month);
+    }
+    out.println(createSelectForm(selected_month));
+    %>
+  </div>
+  <div>
     Events:
     <%
       Language language = Language.GetByCode(selected_language);
       if (language == null) {
         out.print("<div>Unknown language: " + selected_language + "</div>");
       } else {
-        List<Event> events = Event.GetAllEvents();
         for (Event event : events) {
           long event_id = event.getKey();
           String div_id = "event-" + event_id;
