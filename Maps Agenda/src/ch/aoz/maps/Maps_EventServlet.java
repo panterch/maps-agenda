@@ -1,6 +1,7 @@
 package ch.aoz.maps;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,14 +16,28 @@ public class Maps_EventServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-      // TODO: make these dynamic.
-      // Calendar selected_month = Calendar.getInstance();
-      int year = 2013;
-      int month = 6; // July
-      Language l = Language.GetByCode("de");
+      String lang = req.getParameter("lang");
+      if (lang == null) {
+        lang = "de";
+      }
+      
+      Calendar monday = Calendar.getInstance();
+      String requested_date = req.getParameter("startDate");
+      if (requested_date != null) {
+        try {
+          monday.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
+        } catch (Exception e) {
+        }
+      }
+      if (monday.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+        monday.setFirstDayOfWeek(Calendar.MONDAY);
+        monday.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);  
+      }
+      int year = monday.get(Calendar.YEAR);
+      int month = monday.get(Calendar.MONTH);
+      Language l = Language.GetByCode(lang);
       List<Event> events = Event.GetEventListForMonth(year, month);
       
-        
       StringBuilder response = new StringBuilder();
       response.append("/* version 0.1 */\n");
       response.append("var DAYS_OF_WEEK = [\n");
