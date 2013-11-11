@@ -17,11 +17,13 @@ public static String createEventDiv(Event e) {
   StringBuilder div = new StringBuilder();
   div.append("<div class='event'>");
   div.append("<div class='eactions'>");
-  div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey() + "');\" href='javascript:void(0);'>Edit</a></div>");
+  div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey() + "');\" href=\"javascript:void(0);\">Edit</a></div>");
+  /*
   div.append("<div class='edelete'><form name='delete-" + e.getKey() + "' id='delete-" + e.getKey() + "' method='POST'>" +
      "<input type='hidden' name='delete-key' value='" + e.getKey() + "'>" +
-     "<a onclick=\"deleteEvent('delete-" + e.getKey() + "');\" href='javascript:void(0);'>Delete</a>" +
+     "<a onclick=\"deleteEvent('delete-" + e.getKey() + "');\" href=\"javascript:void(0);\">Delete</a>" +
      "</form></div>");
+  */
   div.append("</div>");
   div.append("<div class='edate'>" + new SimpleDateFormat("yyyy-MMM-dd").format(e.getDate()) + "</div>");
   div.append("<div class='ebody'>");
@@ -30,9 +32,9 @@ public static String createEventDiv(Event e) {
   div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
   div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl() + "</a></div>");
   div.append("<div class='eexport'>" +
-	  		"<input type='checkbox' title='Export' name='XMLExports' value='" + e.getKey() + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
-	  		"<input type='checkbox' title='Highlight (Large)' name='XMLExportsLarge' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
-	  		"<input type='checkbox' title='Export as Image Page' name='XMLExportsImage' value='" + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
+	  		"<input type='checkbox' title='Export' name='XMLExports' value='" + e.getKey() + "' checked onclick=\"uncheckXMLOtherButtons(this," + e.getKey() + ")\" /><b>a</b>" +
+	  		"<input type='checkbox' title='Highlight (Large)' name='XMLExportsLarge' value='" + e.getKey() + "' onclick=\"checkXMLButton(this," + e.getKey() + ")\" /><b>A</b>" +
+	  		"<input type='checkbox' title='Export as Image Page' name='XMLExportsImage' value='" + e.getKey() + "' onclick=\"checkXMLButton(this," + e.getKey() + ")\" />&#x1F307;" +
 	  				"</div>");
   div.append("</div>");
   div.append("</div>");
@@ -45,12 +47,12 @@ public static String createEventForm(String formName, Event e, Calendar selected
   if (e == null) {
     form.append("<div id='event-new' class='eventdiv'>");
     form.append("<div class='title'>Add a new event ");
-    form.append("<a onclick=\"hide_box('event-new'); show('new-event-link')\" href='javascript:void(0);''>(hide)</a></div>");
+    form.append("<a onclick=\"hide_box('event-new'); show('new-event-link')\" href=\"javascript:void(0);\">(hide)</a></div>");
   } else {
     de = e.getGermanTranslation();
     form.append("<div id='event-" + e.getKey() + "' class='eventdiv'>");
     form.append("<div class='title'>Update " + de.getTitle() + " ");
-    form.append("<a onclick=\"hide_box('event-" + e.getKey() + "')\" href='javascript:void(0);''>(hide)</a></div>");
+    form.append("<a onclick=\"hide_box('event-" + e.getKey() + "')\" href=\"javascript:void(0);\">(hide)</a></div>");
   }
   form.append("<form name='" + formName + "' method='POST' target='content-frame'");
   form.append(" action='' onSubmit=\"return validateForm('" + formName + "')\">");
@@ -409,15 +411,14 @@ if (request.getParameter("new") != null) {
   }
 }
 
-// Initialize the submit form for XML export and newsletter preselections.
-out.println("<form id='export' action='' method='post'></form>");
-
 out.println(createSelectForm(selected_month));
 for (Event e : events) {
   out.println(createEventForm("form-" + e.getKey(), e, selected_month));
 }
 out.println(createEventForm("newEvent", null, selected_month));
-
+%>
+<form id='export' action='export_xml.jsp' method='post'>
+<%
 if (events.isEmpty()) {
   out.println("No event is yet defined.");
 } else {
@@ -431,16 +432,12 @@ if (events.isEmpty()) {
    </div>
 <div id="new-event-link"><a onclick="show_box('event-new');" href="javascript:void(0);">Add a new event</a></div>
 
-<%
-// TODO: Use a copy of this submission button with a different formaction
-// for the newsletter export.
-%>
 <div class='xml-export-submit'>
 Selected: <span name="eventsCount">0</span> / <span name="eventsTotalCount">0</span>
     (de: <span name="characterCount">0B</span> / <span name="characterTotalCount">0B</span>)
-<button type='submit' form='export' formaction='export_xml.jsp'>Export selected events to XML</button>
-<button type='submit' form='export' formaction='send_newsletter.jsp'>Send newsletter with selected events</button>
+<input type='submit' value='Export selected events to XML'>
 </div>
+</form>
 
 </body>
 </html>
