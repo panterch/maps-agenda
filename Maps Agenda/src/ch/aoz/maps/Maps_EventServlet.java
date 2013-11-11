@@ -39,43 +39,25 @@ public class Maps_EventServlet extends HttpServlet {
       List<Event> events = Event.GetEventListForMonth(year, month);
       
       StringBuilder response = new StringBuilder();
-      response.append("/* version 0.1 */\n");
-      response.append("var DAYS_OF_WEEK = [\n");
-      // TODO: translate those too.
-      response.append("  'Monday', 'Tuesday', 'Wednesday', 'Thursday',\n");
-      response.append("  'Friday', 'Saturday', 'Sunday'\n");
-      response.append("];\n");
-      response.append("\n");
-      response.append("function EventsCtrl($scope) {\n");
-      response.append("  $scope.queryEvents = function() {\n");
-      response.append("    $scope.events = [\n");
+      response.append("[");
       for (Event e : events) {
         Translation t = e.getTranslation(l);
-        response.append("      {\n");
-        response.append("        date: '").append(dateToString(e.getDate())).append("',\n");
-        response.append("        title: '").append(toUnicode(t.getTitle())).append("',\n");
-        // TODO: We cannot replace newlines by anything reasonable as it seems. The template mechanism ignores br, p, or \\n tags...
-        response.append("        description: '").append(toUnicode(t.getDesc().replace("\n", "").replace("\r", ""))).append("',\n");
-        response.append("        url: '").append(toUnicode(t.getUrl())).append("'\n");
-        response.append("      },\n");
+        if (t != null) {
+          response.append("{");
+          response.append("\"date\":\"").append(dateToString(e.getDate())).append("\",");
+          response.append("\"title\":\"").append(toUnicode(t.getTitle())).append("\",");
+          // TODO: We cannot replace newlines by anything reasonable as it seems. The template mechanism ignores br, p, or \\n tags...
+          response.append("\"description\":\"").append(toUnicode(t.getDesc().replace("\n", "").replace("\r", ""))).append("\",");
+          response.append("\"url\":\"").append(toUnicode(t.getUrl())).append("\"");
+          response.append("},");
+        }
       }
-      response.deleteCharAt(response.length() - 2);  // remove the last ,
-      response.append("    ];\n");
-      response.append("  };\n");
-      response.append("\n");
-      response.append("  $scope.printDate = function(dateStr) {\n");
-      response.append("    var date = new Date(dateStr);\n");
-      response.append("    return date.getDate() + '. ' + (date.getMonth() + 1) + '.';\n");
-      response.append("  };\n");
-      response.append("\n");
-      response.append("  $scope.printDay = function(dateStr) {\n");
-      response.append("    var date = new Date(dateStr);\n");
-      response.append("    return DAYS_OF_WEEK[date.getDay()];\n");
-      response.append("  };\n");
-      response.append("\n");
-      response.append("};\n");
-              
-      resp.setContentType("application/javascript");
+      if (response.charAt(response.length() - 1) == ',') {
+        response.deleteCharAt(response.length() - 1);  // remove the last ,
+      }
+      response.append("]");
+      
+      resp.setContentType("application/json");
       resp.getWriter().println(response.toString());
     }
 
@@ -83,7 +65,7 @@ public class Maps_EventServlet extends HttpServlet {
       Calendar c = Calendar.getInstance();
       c.setTime(d);
       return new StringBuilder()
-          .append(c.get(Calendar.MONTH))
+          .append(c.get(Calendar.MONTH) + 1)
           .append('/')
           .append(c.get(Calendar.DAY_OF_MONTH))
           .append('/')
