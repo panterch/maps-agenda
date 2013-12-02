@@ -25,7 +25,7 @@ function EventsCtrl($scope, $http) {
     ];
     var url = '/maps/scripts/data.json?' + params.join('&');
     $http.get(url).success(function(data) {
-      $scope.events = data;
+      $scope.events = data.events;
     });
   };
 
