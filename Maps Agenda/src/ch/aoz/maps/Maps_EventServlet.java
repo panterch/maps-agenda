@@ -70,17 +70,15 @@ public class Maps_EventServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
       
-      response.append("], \"strings\": [");
+      response.append("], \"strings\": {");
       for (Phrase phrase : getPhrases(lang).values()) {
-        response.append("{");
-        response.append("\"key\":\"").append(phrase.getKey()).append("\",");
-        response.append("\"value\":\"").append(toUnicode(phrase.getPhrase())).append("\"");
-        response.append("},");
+        response.append("\"").append(phrase.getKey()).append("\":");
+        response.append("\"").append(toUnicode(phrase.getPhrase())).append("\",");
       }
       if (response.charAt(response.length() - 1) == ',') {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
-      response.append("], \"cursor\": \"").append(cursor).append("\"}");
+      response.append("}, \"cursor\": \"").append(cursor).append("\"}");
       
       resp.setContentType("application/json");
       resp.getWriter().println(response.toString());
@@ -128,7 +126,9 @@ public class Maps_EventServlet extends HttpServlet {
       List<Phrase> laPhrases = Phrase.GetPhrasesForLanguage(lang);
       Map<String, Phrase> phrases = new HashMap<String, Phrase>();
       for (Phrase phrase : laPhrases) {
-        phrases.put(phrase.getKey(), phrase);
+        if (phrase.getPhrase().length() > 0) {
+          phrases.put(phrase.getKey(), phrase);
+        }
       }
       
       if (lang != "de") {
