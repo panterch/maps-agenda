@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -16,11 +17,11 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-
 /**
  * A MAPS event.
  */
@@ -177,6 +178,35 @@ public class Event implements Comparable<Event> {
     DatastoreService datastore = DatastoreServiceFactory
         .getDatastoreService();
     datastore.delete(KeyFactory.createKey(entityKind, key));
+  }
+
+  public static String GetNextEvents(Calendar from, int pageSize, 
+                                     String startCursor, List<Event> eventList) {
+    eventList.clear();
+
+    DatastoreService datastore = DatastoreServiceFactory
+        .getDatastoreService();
+    
+    // Set up the query.
+    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(pageSize);
+    if (startCursor != null) {
+      fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));
+    }
+    
+    Filter minimumFilter = new FilterPredicate("date",
+        Query.FilterOperator.GREATER_THAN_OR_EQUAL, from.getTime());
+    Query query = new Query(entityKind)
+        .setFilter(minimumFilter)
+        .addSort("date", SortDirection.ASCENDING);
+    
+    // Make the query.
+    QueryResultList<Entity> results = datastore.prepare(query).asQueryResultList(fetchOptions);
+    if (results != null) {
+        for (Entity item : results) {
+            eventList.add(new Event(item));
+        }
+    }
+    return results.getCursor().toWebSafeString();
   }
 
   public static List<Event> GetEventListForTimespan(Calendar from, Calendar to) {

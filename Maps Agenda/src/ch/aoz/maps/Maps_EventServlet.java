@@ -2,6 +2,7 @@ package ch.aoz.maps;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,23 +24,34 @@ public class Maps_EventServlet extends HttpServlet {
       if (lang == null) {
         lang = "de";
       }
+
+      int num_events;
+      try {
+        num_events = Integer.parseInt(req.getParameter("numEvents"));
+      } catch (Exception e) {
+        num_events = 15;
+      }
+
+      // Can be null.
+      String startCursor = req.getParameter("cursor");
       
-      Calendar monday = Calendar.getInstance();
+      Calendar date = Calendar.getInstance();
       String requested_date = req.getParameter("startDate");
       if (requested_date != null) {
         try {
-          monday.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
+          date.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
         } catch (Exception e) {
         }
       }
-      if (monday.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-        monday.setFirstDayOfWeek(Calendar.MONDAY);
-        monday.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);  
-      }
-      int year = monday.get(Calendar.YEAR);
-      int month = monday.get(Calendar.MONTH);
+      // Set the time at midnight, so that the below query stays the same.
+      date.set(Calendar.MILLISECOND, 0);
+      date.set(Calendar.SECOND, 0);
+      date.set(Calendar.MINUTE, 0);
+      date.set(Calendar.HOUR_OF_DAY, 0);
+
       Language l = Language.GetByCode(lang);
-      List<Event> events = Event.GetEventListForMonth(year, month);
+      List<Event> events = new ArrayList<Event>(num_events);
+      String cursor = Event.GetNextEvents(date, num_events, startCursor, events);
       
       StringBuilder response = new StringBuilder();
       response.append("{ \"events\": [");
@@ -68,7 +80,7 @@ public class Maps_EventServlet extends HttpServlet {
       if (response.charAt(response.length() - 1) == ',') {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
-      response.append("]}");
+      response.append("], \"cursor\": \"").append(cursor).append("\"}");
       
       resp.setContentType("application/json");
       resp.getWriter().println(response.toString());
