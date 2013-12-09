@@ -19,6 +19,7 @@ import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
 import static ch.aoz.maps.NewsletterStyles.RTL_CSS;
 import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.URL_CSS;
+import static ch.aoz.maps.NewsletterStyles.WHATS_UP_CSS;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
 
@@ -156,6 +157,11 @@ public class NewsletterExport {
     startTable(null);
       out.append("<tr>");
       out.append("<td valign='top'>");
+
+      out.append("<div style='" + WHATS_UP_CSS + "'>");
+      out.append("Was läuft in Zürich?");
+      out.append("</div>");
+      
       for (Event event : events) {
         renderEvent(event);
       }
