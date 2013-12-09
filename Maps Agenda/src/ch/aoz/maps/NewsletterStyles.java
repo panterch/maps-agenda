@@ -106,11 +106,11 @@ public class NewsletterStyles {
       "margin:5px 0 0 0");
   public static final String LOCATION_CSS = join(
       "font-style:italic",
-      "margin:7px 0 0 25px",
+      "margin:7px 0 0 0",
       "padding:0",
       "font-size:12px");
   public static final String URL_CSS = join(
-      "margin: 7px 0 0 25px",
+      "margin: 7px 0 0 0",
       "padding: 0",
       "font-size:12px");
 

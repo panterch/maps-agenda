@@ -105,14 +105,14 @@ public class NewsletterExport {
     out.append("<tr>");
     
     out.append("<td valign='top'>");
-    out.append("<div>MAPS-AGENDA: Günstige Kultur- und Freizeitangebote</div>");
+    out.append("<div>MAPS Züri Agenda: Günstige Kultur- und Freizeitangebote</div>");
     out.append("</td>");
     
     out.append("<td valign='top'>");
     if (this.isEmail()) {
       out.append("<div>");
       out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
-      addLink(monthPermalink(), "Öffnen Sie es im Broser.");
+      addLink(monthPermalink(), "Öffnen Sie es im Browser.");
       out.append("</div>");
     }
     out.append("</td>");
