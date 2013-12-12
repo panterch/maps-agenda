@@ -151,6 +151,11 @@ public class NewsletterExport {
   
   /** Event list, one row for each event. */
   private void renderEvents() {
+    Phrase wasLauft = Phrase.GetPhrase(lang, "headNL");
+    if (wasLauft == null) {
+      // Fall back to German if we don't have the correct heading.
+      wasLauft = Phrase.GetPhrase("de", "headNL");
+    }
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
     
@@ -159,7 +164,11 @@ public class NewsletterExport {
       out.append("<td valign='top'>");
 
       out.append("<div style='" + WHATS_UP_CSS + "'>");
-      out.append("Was läuft in Zürich?");
+      if (wasLauft == null) {
+        out.append("Was läuft in Zürich?");
+      } else {
+        out.append(wasLauft.getPhrase());
+      }
       out.append("</div>");
       
       for (Event event : events) {

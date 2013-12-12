@@ -1,5 +1,6 @@
 package ch.aoz.maps;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /** 
@@ -116,6 +120,19 @@ public class Phrase implements Comparable<Phrase> {
     Filter keyFilter = new FilterPredicate(keyProperty,
         Query.FilterOperator.EQUAL, key);
     return GetPhrases(keyFilter);
+  }
+
+  public static Phrase GetPhrase(String language, String key) {
+    Filter filter = CompositeFilterOperator.and(
+        FilterOperator.EQUAL.of(langProperty, language),
+        FilterOperator.EQUAL.of(keyProperty, key));
+
+    List<Phrase> phrases = GetPhrases(filter);
+    if (phrases.isEmpty()) {
+      return null;
+    } else {
+      return phrases.get(0);
+    }
   }
 
   private static List<Phrase> GetPhrases(Filter f) {

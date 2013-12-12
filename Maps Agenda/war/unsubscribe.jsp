@@ -71,7 +71,7 @@ if (sane) {
 }
 
 if (sane && (request.getParameter("confirm") == null)) {
-	// As the user if he is really sure 
+	// Ask the user if he is really sure.
 	out.println("<div><div class='title'>You are about to be unsubscribed from the newsletter ! Are you sure ?</div>");
 	out.println("<div><form>");
 	out.println("<input type='hidden' name='hash' value='"+currentsubscriber.getHash()+"'>");
@@ -79,7 +79,7 @@ if (sane && (request.getParameter("confirm") == null)) {
 	out.println("<p><input type='submit' value='YES'></p></form></div>");
 } else if (sane && (request.getParameter("confirm").equals("yes"))) {
 	// Perform the actual unsubscribe
-	// Subscriber.DeleteSubscriber(currentsubscriber);
+	Subscriber.DeleteSubscriber(currentsubscriber);
 	out.println("<div><div class='title'>Thank you. You have been unsubscribed from the newsletter.</div>");
 }
 
