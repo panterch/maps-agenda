@@ -23,7 +23,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Maps_Events</servlet-name>
-    <url-pattern>/maps/scripts/events.js</url-pattern>
+    <url-pattern>/maps/scripts/data.json</url-pattern>
   </servlet-mapping>
 
   <security-constraint>

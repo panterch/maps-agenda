@@ -1,7 +1,10 @@
 package ch.aoz.maps;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.*;
 
@@ -11,14 +14,12 @@ import ch.aoz.maps.Language;
 public class Maps_LanguageServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        HashMap<String, Language> languages = Language.getAllLanguages();
-        
+            throws IOException {        
         StringBuilder response = new StringBuilder();
         response.append("/* version 0.5 */\n");
         response.append("function LanguageMenuCtrl($scope) {\n");
         response.append("  $scope.languages = [\n");
-        for (Language lang : languages.values()) {
+        for (Language lang : getLanguages()) {
           response.append("    {label: '");
           response.append(toUnicode(lang.getName()));
           response.append("', code: '");
@@ -50,5 +51,17 @@ public class Maps_LanguageServlet extends HttpServlet {
         }
       }
       return b.toString();      
+    }
+    
+    public List<Language> getLanguages() {
+      HashMap<String, Language> languages = Language.getAllLanguages();
+      ArrayList<Language> langs = new ArrayList<Language>(languages.size());
+      langs.add(languages.remove("de"));
+      ArrayList<String> keys = new ArrayList<String>(languages.keySet());
+      Collections.sort(keys);
+      for (String lang : keys) {
+        langs.add(languages.remove(lang));
+      }
+      return langs;
     }
 }

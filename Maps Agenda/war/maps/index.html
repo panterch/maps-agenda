@@ -5,6 +5,7 @@
     <meta content-type="text/html" charset="utf-8">
     <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
     <script src="/maps/scripts/angular.min.js"></script>
+    <script src="/maps/scripts/main.js"></script>
     <script src="/maps/scripts/menu.js"></script>
     <script src="/maps/scripts/events.js"></script>
     <script src="/maps/scripts/calendar.js"></script>
@@ -61,7 +62,7 @@
             <td ng-repeat="title in titles">{{title}}</td>
           </tr>
           <tr ng-repeat="week in weeks" class="cal-body">
-            <td ng-repeat="day in week" class="{{isToday(day)}}">{{day}}</td>
+            <td ng-repeat="day in week" class="{{isToday(day)}}" ng-click="selectDate(day);">{{day}}</td>
           </tr>
         </table>
       </div>

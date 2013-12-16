@@ -22,11 +22,11 @@ var MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-function CalendarCtrl($scope) {
-  $scope.pivot = new Date();
+function CalendarCtrl($scope, $http) {
+  window.calPivot = new Date();
   $scope.getDaysInMonth = function() {
-    var days = DAYS_IN_MONTH[$scope.pivot.getMonth()];
-    if (days == 28 && ($scope.pivot.getYear() - 100) % 4 == 0) {
+    var days = DAYS_IN_MONTH[window.calPivot.getMonth()];
+    if (days == 28 && (window.calPivot.getYear() - 100) % 4 == 0) {
       days++;
     }
 
@@ -34,13 +34,19 @@ function CalendarCtrl($scope) {
   };
 
   $scope.movePivotForward = function() {
-    $scope.pivot.setMonth($scope.pivot.getMonth() + 1);
+    window.calPivot.setMonth(window.calPivot.getMonth() + 1);
     $scope.renderCalendar();
+    notifyDateChange();
   };
 
   $scope.movePivotBack = function() {
-    $scope.pivot.setMonth($scope.pivot.getMonth() - 1);
+    window.calPivot.setMonth(window.calPivot.getMonth() - 1);
     $scope.renderCalendar();
+    notifyDateChange();
+  };
+
+  var notifyDateChange = function() {
+    window.postMessage('datechanged', window.location.href);
   };
 
   $scope.renderCalendar = function() {
@@ -48,7 +54,7 @@ function CalendarCtrl($scope) {
     var currentWeek = [];
     $scope.weeks = [currentWeek];
     for (var i = 0; i < $scope.getDaysInMonth(); i++) {
-      var date = new Date($scope.pivot);
+      var date = new Date(window.calPivot);
       date.setDate(i + 1);
 
       var day = date.getDay();
@@ -69,11 +75,22 @@ function CalendarCtrl($scope) {
   };
 
   $scope.getMonth = function() {
-    return MONTHS[$scope.pivot.getMonth()].toUpperCase();
+    return MONTHS[window.calPivot.getMonth()].toUpperCase();
   }
 
   $scope.isToday = function(day) {
     var today = new Date();
-    return today.getDate() == day ? 'today' : '';
+
+    if (today.getDate() == day &&
+        window.calPivot.getMonth() == today.getMonth()) {
+      return 'today';
+    } else {
+      return '';
+    }
+  }
+
+  $scope.selectDate = function(date) {
+    window.calPivot.setDate(date);
+    notifyDateChange();
   }
 };

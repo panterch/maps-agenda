@@ -82,7 +82,7 @@ public class XMLExportEntry {
 
 	private String getXMLSmallContents(int width) {
 		String xml = new String();
-		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"374\" aid5:cellstyle=\"cs_desc\">";
+		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + width + "\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
 		xml += escapeXML(translation.getTitle());
@@ -182,7 +182,7 @@ public class XMLExportEntry {
      *            is the content to sanitize
      * @return the sanitized content
      */
-    private String escapeXML(String content) {
+    public static final String escapeXML(String content) {
 	if (content != null) {
 	    // Because Indesign may interpret things on its own way, we do not
 	    // replace anything else than the things that are known to cause

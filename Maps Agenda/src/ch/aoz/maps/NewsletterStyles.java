@@ -53,6 +53,11 @@ public class NewsletterStyles {
       "border:1px solid #DDDDDD",
       "font-family:Arial");
   
+  public static final String WHATS_UP_CSS = join(
+      "margin-bottom:-15px",
+      "font-style:italic",
+      "padding: 5px 20px");
+  
   public static final String EVENT_CSS = join(
       "display:block",
       "margin:10px 0 15px 0");
@@ -106,11 +111,11 @@ public class NewsletterStyles {
       "margin:5px 0 0 0");
   public static final String LOCATION_CSS = join(
       "font-style:italic",
-      "margin:7px 0 0 25px",
+      "margin:7px 0 0 0",
       "padding:0",
       "font-size:12px");
   public static final String URL_CSS = join(
-      "margin: 7px 0 0 25px",
+      "margin: 7px 0 0 0",
       "padding: 0",
       "font-size:12px");
 
