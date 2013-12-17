@@ -1,3 +1,11 @@
+function getElementsByClassName(className) {
+  if (document.getElementsByClassName) { 
+    return document.getElementsByClassName(className); 
+  } else { 
+	return document.querySelectorAll('.' + className); 
+  }
+}
+
 // Function to attach an event to an element. IE compatible.
 function AttachEvent(element, type, handler) {  
   if (element.addEventListener) 
@@ -9,7 +17,7 @@ function AttachEvent(element, type, handler) {
 // When the page is loaded, make the menu work.
 function onLoadAdmin() {
   // Attach the onClick handlers to the menu items.
-  var elements = document.getElementsByClassName("menu_item");
+  var elements = getElementsByClassName("menu_item");
   for (var i = 0; i < elements.length; i++) {
     AttachEvent(elements[i], "click", itemClickHandler);
   }
