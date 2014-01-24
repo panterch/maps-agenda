@@ -23,7 +23,8 @@ var MONTHS = [
 ];
 
 function CalendarCtrl($scope, $http) {
-  window.calPivot = new Date();
+  var targetDate = common.getHashParams()['date'];
+  window.calPivot = targetDate ? new Date(targetDate) : new Date();
   $scope.getDaysInMonth = function() {
     var days = DAYS_IN_MONTH[window.calPivot.getMonth()];
     if (days == 28 && (window.calPivot.getYear() - 100) % 4 == 0) {
@@ -78,12 +79,13 @@ function CalendarCtrl($scope, $http) {
     return MONTHS[window.calPivot.getMonth()].toUpperCase();
   }
 
-  $scope.isToday = function(day) {
-    var today = new Date();
+  $scope.isSelected = function(day) {
+    var targetDate = common.getHashParams()['date'];
+    var selected = targetDate ? new Date(targetDate) : new Date();
 
-    if (today.getDate() == day &&
-        window.calPivot.getMonth() == today.getMonth()) {
-      return 'today';
+    if (selected.getDate() == day &&
+        window.calPivot.getMonth() == selected.getMonth()) {
+      return 'selected';
     } else {
       return '';
     }
@@ -91,6 +93,9 @@ function CalendarCtrl($scope, $http) {
 
   $scope.selectDate = function(date) {
     window.calPivot.setDate(date);
+    var params = common.getHashParams();
+    params['date'] = common.getStartDate();
+    common.setHashParams(params);
     notifyDateChange();
   }
 };

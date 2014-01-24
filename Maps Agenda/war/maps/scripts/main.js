@@ -15,20 +15,21 @@ common.getHashParams = function() {
   return params;
 };
 
+common.setHashParams = function(params) {
+  var pairs = [];
+  for(var key in params) {
+    pairs.push(key + '=' + params[key]);
+  }
+
+  window.location.hash = '#' + pairs.join('&');
+};
+
 common.getSelectedLanguage = function() {
   return common.getHashParams()['lang'] || 'de';
 };
 
 common.getStartDate = function() {
   var pivot = window.calPivot || new Date();
-  var offset = (pivot.getDay() - 1) % 7;
-  if (offset < 0) {
-    offset += 7;
-  }
-
-  var startDate = new Date(
-      pivot - offset * 24 * 3600 * 1000);
-  console.debug(startDate);
 
   function pad(number, spaces) {
     var output = '';
@@ -44,12 +45,11 @@ common.getStartDate = function() {
   }
 
   return [
-    startDate.getFullYear(),
-    pad(startDate.getMonth() + 1, 2),
-    pad(startDate.getDate(), 2)
+    pivot.getFullYear(),
+    pad(pivot.getMonth() + 1, 2),
+    pad(pivot.getDate(), 2)
   ].join('-');
 };
-
 
 
 //2013-10-01

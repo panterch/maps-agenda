@@ -62,7 +62,7 @@
             <td ng-repeat="title in titles">{{title}}</td>
           </tr>
           <tr ng-repeat="week in weeks" class="cal-body">
-            <td ng-repeat="day in week" class="{{isToday(day)}}" ng-click="selectDate(day);">{{day}}</td>
+            <td ng-repeat="day in week" class="{{isSelected(day)}}" ng-click="selectDate(day);">{{day}}</td>
           </tr>
         </table>
       </div>
@@ -72,6 +72,23 @@
           <li><a href="#" class="menu-item">About maps</a></li>
           <li><a href="#" class="menu-item">Contact</a></li>
           <li><a href="#" class="menu-item">Impressum</a></li>
+        </ul>
+        <div class="newsletter">Newsletter</div>
+        <div class="section-div newsletter-section-div"></div>
+        <div class="newsletter newsletter-text">
+          Erhalten Sie die MAPS-Agenda einmal monatlich in Ihrer Sprache per E-Mail
+          <p>
+            <select>
+            </select>
+            <br><input type=“text”>
+          </p>
+        </div>
+        <div class="section-div newsletter-section-div"></div>
+        <div class="newsletter">Anmelden</div>
+        <ul>
+          <li><a href="#" class="menu-item">Label 1</a></li>
+          <li><a href="#" class="menu-item">Label 11111</a></li>
+          <li><a href="#" class="menu-item">Label 111</a></li>
         </ul>
       </div>
     </div>

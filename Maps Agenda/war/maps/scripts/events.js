@@ -15,6 +15,11 @@ function EventsCtrl($scope, $http) {
   });
 
   window.addEventListener('hashchange', function() {
+    var targetDate = common.getHashParams()['date'];
+    if (targetDate) {
+      window.calPivot = new Date(targetDate);
+    }
+
     $scope.queryEvents();
   });
 
