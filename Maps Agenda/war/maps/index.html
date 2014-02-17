@@ -31,6 +31,11 @@
 
       <div class="section-div"></div>
       <div ng-controller="EventsCtrl" ng-init="queryEvents()">
+        <div class="event-nav">
+          <div ng-click="showPreviousEvents()" class="prev">⤎<div>previous</div></div>
+          <div ng-click="showNextEvents()" class="next">⤏<div>next</div></div>          
+        </div>
+
         <div ng-repeat="event in events">
           <div class="event">
             <div class="date">
