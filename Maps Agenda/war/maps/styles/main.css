@@ -54,6 +54,31 @@ body > div > div > ul > li {
   width: 50%;
 }
 
+.event-nav {
+  height: 35px;
+}
+
+.event-nav > .prev,
+.event-nav > .next {
+  cursor: pointer;
+  margin: 0 50px;
+  padding: 5px;
+  text-align: center;
+}
+
+.event-nav > .prev {
+  float: left;
+}
+
+.event-nav > .next {
+  float: right;
+}
+
+.event-nav > .prev > div,
+.event-nav > .next > div {
+  font-size: .8em;
+}
+
 /* Header */
 
 .header {
