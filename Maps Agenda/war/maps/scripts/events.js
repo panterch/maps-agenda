@@ -8,6 +8,8 @@ var DAYS_OF_WEEK = [
 ];
 
 function EventsCtrl($scope, $http) {
+  $scope.cursors = [];
+
   window.addEventListener('message', function(evt) {
     if (evt.data == 'datechanged') {
       $scope.queryEvents();
@@ -23,15 +25,35 @@ function EventsCtrl($scope, $http) {
     $scope.queryEvents();
   });
 
-  $scope.queryEvents = function() {
+  $scope.queryEvents = function(opt_cursor) {
     var params = [
       'lang=' + common.getSelectedLanguage(),
       'startDate=' + common.getStartDate()
     ];
+
+    if (Boolean(opt_cursor)) {
+      params.push('cursor=' + opt_cursor);
+    }
+
     var url = '/maps/scripts/data.json?' + params.join('&');
     $http.get(url).success(function(data) {
       $scope.events = data.events;
+      $scope.cursors.push(data.cursor);
     });
+  };
+
+  $scope.showNextEvents = function() {
+    var cursor = $scope.cursors.pop();
+    if (cursor) {
+      $scope.cursors.push(cursor);
+    }
+
+    $scope.queryEvents(cursor);
+  };
+
+  $scope.showPreviousEvents = function() {
+    var cursor = $scope.cursors.pop();
+    $scope.queryEvents(cursor);
   };
 
   $scope.printDate = function(dateStr) {
