@@ -23,7 +23,7 @@ var MONTHS = [
   'moseptember', 'mooktober', 'monovember', 'modezember'
 ];
 
-var DAYS_OF_WEEK = [
+var DAYS_OF_WEEK_SHORT = [
   'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
   'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
 ];
@@ -58,7 +58,7 @@ function CalendarCtrl($scope, $http) {
   };
 
   $scope.renderCalendar = function() {
-    $scope.titles = DAYS_OF_WEEK.map(function(title) {
+    $scope.titles = DAYS_OF_WEEK_SHORT.map(function(title) {
       return common.getLanguageString(title);
     });
     var currentWeek = [];
