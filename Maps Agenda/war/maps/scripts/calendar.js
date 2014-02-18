@@ -18,9 +18,16 @@ var DAYS_IN_MONTH = {
 };
 
 var MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'mojanuar', 'mofebruar', 'momaerz', 'moapril',
+  'momai', 'mojuni', 'mojuli', 'moaugust',
+  'moseptember', 'mooktober', 'monovember', 'modezember'
 ];
+
+var DAYS_OF_WEEK = [
+  'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
+  'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
+];
+
 
 function CalendarCtrl($scope, $http) {
   var targetDate = common.getHashParams()['date'];
@@ -51,7 +58,9 @@ function CalendarCtrl($scope, $http) {
   };
 
   $scope.renderCalendar = function() {
-    $scope.titles = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    $scope.titles = DAYS_OF_WEEK.map(function(title) {
+      return common.getLanguageString(title);
+    });
     var currentWeek = [];
     $scope.weeks = [currentWeek];
     for (var i = 0; i < $scope.getDaysInMonth(); i++) {
@@ -76,7 +85,8 @@ function CalendarCtrl($scope, $http) {
   };
 
   $scope.getMonth = function() {
-    return MONTHS[window.calPivot.getMonth()].toUpperCase();
+    var monthKey = MONTHS[window.calPivot.getMonth()];
+    return common.getLanguageString(monthKey);
   }
 
   $scope.isSelected = function(day) {
