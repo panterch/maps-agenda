@@ -3,12 +3,12 @@
   <head>
     <title>Maps Agenda</title>
     <meta content-type="text/html" charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
-    <script src="/maps/scripts/angular.min.js"></script>
-    <script src="/maps/scripts/main.js"></script>
-    <script src="/maps/scripts/menu.js"></script>
-    <script src="/maps/scripts/events.js"></script>
-    <script src="/maps/scripts/calendar.js"></script>
+      <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
+       <script src="/maps/scripts/angular.min.js"></script>
+	    <script src="/maps/scripts/main.js"></script>
+	    <script src="/maps/scripts/menu.js"></script>
+	    <script src="/maps/scripts/events.js"></script>
+	    <script src="/maps/scripts/calendar.js"></script>
   </head>
   <body>
     <div class="background-screen"></div>
@@ -32,8 +32,14 @@
       <div class="section-div"></div>
       <div ng-controller="EventsCtrl" ng-init="queryEvents()">
         <div class="event-nav">
-          <div ng-click="showPreviousEvents()" class="prev">⤎<div>previous</div></div>
-          <div ng-click="showNextEvents()" class="next">⤏<div>next</div></div>          
+          <div ng-click="showPreviousEvents()" class="prev">
+            ⤎
+            <div i18n="Frueher">Earlier</div>
+          </div>
+          <div ng-click="showNextEvents()" class="next">
+            ⤏
+            <div i18n="Spaeter">Later</div>
+          </div>          
         </div>
 
         <div ng-repeat="event in events">
@@ -74,14 +80,14 @@
 
       <div class="right-menu">
         <ul>
-          <li><a href="#" class="menu-item">About maps</a></li>
-          <li><a href="#" class="menu-item">Contact</a></li>
-          <li><a href="#" class="menu-item">Impressum</a></li>
+          <li><a href="#" class="menu-item" i18n="UeberMAPS">About maps</a></li>
+          <li><a href="#" class="menu-item" i18n="Kontakt">Contact</a></li>
+          <li><a href="#" class="menu-item" i18n="Impressum">Impressum</a></li>
         </ul>
-        <div class="newsletter">Newsletter</div>
+        <div class="newsletter" i18n="Newsletter">Newsletter</div>
         <div class="section-div newsletter-section-div"></div>
         <div class="newsletter newsletter-text">
-          Erhalten Sie die MAPS-Agenda einmal monatlich in Ihrer Sprache per E-Mail
+          <span i18n="AnmeldungNewsletter">Erhalten Sie die MAPS-Agenda einmal monatlich in Ihrer Sprache per E-Mail</span>
           <p>
             <select>
             </select>
@@ -89,7 +95,7 @@
           </p>
         </div>
         <div class="section-div newsletter-section-div"></div>
-        <div class="newsletter">Anmelden</div>
+        <div class="newsletter" i18n="Anmelden">Anmelden</div>
         <ul>
           <li><a href="#" class="menu-item">Label 1</a></li>
           <li><a href="#" class="menu-item">Label 11111</a></li>
@@ -97,5 +103,6 @@
         </ul>
       </div>
     </div>
+    <script>common.applyLanguageDict();</script>
   </body>
 </html>
