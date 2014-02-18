@@ -2,9 +2,9 @@
  * @fileoverview Displays upcoming events.
  */
 
-var DAYS_OF_WEEK = [
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-  'Friday', 'Saturday', 'Sunday'
+var DAYS_OF_WEEK_LONG = [
+  'Wochentage', 'wtdienstag', 'wtmittwoch', 'wtdonnerstag',
+  'wtfreitag', 'wtsamstag', 'wtsonntag'
 ];
 
 function EventsCtrl($scope, $http) {
@@ -63,7 +63,7 @@ function EventsCtrl($scope, $http) {
 
   $scope.printDay = function(dateStr) {
     var date = new Date(dateStr);
-    return DAYS_OF_WEEK[date.getDay()];
+    return common.getLanguageString(DAYS_OF_WEEK_LONG[date.getDay()]);
   };
 
 };
