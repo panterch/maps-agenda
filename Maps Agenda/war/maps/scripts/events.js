@@ -39,6 +39,7 @@ function EventsCtrl($scope, $http) {
     $http.get(url).success(function(data) {
       $scope.events = data.events;
       $scope.cursors.push(data.cursor);
+      common.updateLanguage(data.strings);
     });
   };
 
