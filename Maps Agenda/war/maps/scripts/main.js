@@ -136,6 +136,12 @@ common.getSelectedLanguage = function() {
   return common.getHashParams()['lang'] || 'de';
 };
 
+common.setSelectedLanguage = function(language) {
+  var params = common.getHashParams();
+  params['lang'] = language;
+  common.setHashParams(params);
+};
+
 common.getStartDate = function() {
   var pivot = window.calPivot || new Date();
 
