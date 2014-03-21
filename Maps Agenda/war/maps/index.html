@@ -3,12 +3,12 @@
   <head>
     <title>Maps Agenda</title>
     <meta content-type="text/html" charset="utf-8">
-      <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
-       <script src="/maps/scripts/angular.min.js"></script>
-	    <script src="/maps/scripts/main.js"></script>
-	    <script src="/maps/scripts/menu.js"></script>
-	    <script src="/maps/scripts/events.js"></script>
-	    <script src="/maps/scripts/calendar.js"></script>
+    <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
+    <script src="/maps/scripts/angular.min.js"></script>
+    <script src="/maps/scripts/main.js"></script>
+    <script src="/maps/scripts/menu.js"></script>
+    <script src="/maps/scripts/events.js"></script>
+    <script src="/maps/scripts/calendar.js"></script>
   </head>
   <body>
     <div class="background-screen"></div>
@@ -23,8 +23,8 @@
 
       <div ng-controller="LanguageMenuCtrl" class="language-menu">
         <ul>
-          <li ng-repeat="language in languages">
-            <a ng-href="#lang={{language.code}}" class="menu-item">{{language.label}}</a>
+          <li ng-repeat="language in languages" ng-click="setLanguage(language);" class="menu-item">
+            {{language.label}}
           </li>
         </ul>
       </div>
@@ -34,11 +34,11 @@
         <div class="event-nav">
           <div ng-click="showPreviousEvents()" class="prev">
             ⤎
-            <div i18n="Frueher">Earlier</div>
+            <div i18n="Frueher">previous</div>
           </div>
           <div ng-click="showNextEvents()" class="next">
             ⤏
-            <div i18n="Spaeter">Later</div>
+            <div i18n="Spaeter">next</div>
           </div>          
         </div>
 
@@ -89,9 +89,13 @@
         <div class="newsletter newsletter-text">
           <span i18n="AnmeldungNewsletter">Erhalten Sie die MAPS-Agenda einmal monatlich in Ihrer Sprache per E-Mail</span>
           <p>
-            <select>
+            <select ng-controller="LanguageMenuCtrl">
+              <option ng-repeat="language in languages" value="{{language.code}}">
+                {{language.label}}
+              </a>
             </select>
-            <br><input type=“text”>
+            <br>
+            <input type=“text”>
           </p>
         </div>
         <div class="section-div newsletter-section-div"></div>
