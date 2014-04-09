@@ -5,6 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<!DOCTYPE html>
 <html>
   <head>
     <title>Maps Agenda Admin Console</title>

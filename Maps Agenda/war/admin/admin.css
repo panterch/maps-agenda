@@ -51,8 +51,12 @@ html, body, #main { height: 96%; }
   margin: 5px;
   position: relative; /* for z-index */
   z-index: 100;
-  cursor: pointer;
+  cursor: pointer;  
 }
+
+.menu_item:hover {
+  background-color: #a0b4ce;
+ }
 
 #menu_selector {
   background-color: #90a0b6;
