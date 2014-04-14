@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/maps/styles/main.css">
     <script src="/maps/scripts/angular.min.js"></script>
     <script src="/maps/scripts/main.js"></script>
-    <script src="/maps/scripts/menu.js"></script>
+    <script src="/maps/scripts/menu.js"></script> <!-- auto generated, see web.xml -->
     <script src="/maps/scripts/events.js"></script>
     <script src="/maps/scripts/calendar.js"></script>
   </head>
@@ -70,7 +70,7 @@
         </div>
         <table class="cal-grid">
           <tr class="cal-headers">
-            <td ng-repeat="title in titles">{{title}}</td>
+            <td ng-repeat="s in strings" i18n="{{s}}">{{getTitle(s)}}</td>
           </tr>
           <tr ng-repeat="week in weeks" class="cal-body">
             <td ng-repeat="day in week" class="{{isSelected(day)}}" ng-click="selectDate(day);">{{day}}</td>

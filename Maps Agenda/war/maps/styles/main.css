@@ -20,6 +20,7 @@ body > div > div > ul > li {
   font-weight: bold;
   padding: 7px 15px;
   text-decoration: none;
+  cursor: pointer;
 }
 
 /* A screen to fade the background image */

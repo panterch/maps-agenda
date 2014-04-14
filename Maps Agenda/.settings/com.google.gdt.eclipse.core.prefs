@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
+lastWarOutDir=/home/tobulogic/work/gserve/client/maps-agenda/Maps Agenda/war
 warSrcDir=war
-warSrcDirIsOutput=true
+warSrcDirIsOutput=false

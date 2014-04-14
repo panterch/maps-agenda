@@ -58,9 +58,7 @@ function CalendarCtrl($scope, $http) {
   };
 
   $scope.renderCalendar = function() {
-    $scope.titles = DAYS_OF_WEEK_SHORT.map(function(title) {
-      return common.getLanguageString(title);
-    });
+    $scope.strings = DAYS_OF_WEEK_SHORT;
     var currentWeek = [];
     $scope.weeks = [currentWeek];
     for (var i = 0; i < $scope.getDaysInMonth(); i++) {
@@ -84,6 +82,10 @@ function CalendarCtrl($scope, $http) {
     }
   };
 
+  $scope.getTitle = function(s) {
+    return common.getLanguageString(s);
+  }
+  
   $scope.getMonth = function() {
     var monthKey = MONTHS[window.calPivot.getMonth()];
     return common.getLanguageString(monthKey);
