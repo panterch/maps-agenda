@@ -1,6 +1,7 @@
 body {
   font-family: arial;
   margin: 0;
+  z-index: 1;
 }
 
 body > div > div > ul {
@@ -249,7 +250,28 @@ body > div > div > ul > li {
   background-image: url('/maps/images/perforated_band_2.png');
 }
 
+/* A layer for popup like screens */
+.popup-screen {
+  background-color:rgba(0,0,0,0.7);
+  text-color: white;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  display: none;
+  z-index: 100;
+}
 
+.popup-screen div {
+  background-color: white;
+  top: 20%;
+  display: table;
+  text-align: center;
+  text-color: black;
+  margin: 0 auto;
+  position: relative;
+}
 
 @media screen and (min-width: 801px) {
   .language-menu {

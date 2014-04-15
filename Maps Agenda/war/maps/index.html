@@ -78,11 +78,21 @@
         </table>
       </div>
 
-      <div class="right-menu">
+      <div class="right-menu" ng-controller="PopupCtrl">
+        <div id="uber-popup" class="popup-screen" ng-click="hidePopup('uber-popup');">
+          <div i18n="UeberMAPS">About maps</div>
+        </div>
+        <div id="contact-popup" class="popup-screen" ng-click="hidePopup('contact-popup');">
+          <div i18n="Kontakt">Contact</div>
+        </div>
+        <div id="impressum-popup" class="popup-screen" ng-click="hidePopup('impressum-popup');">
+          <div i18n="Impressum">Impressum</div>
+        </div>
+        
         <ul>
-          <li><a href="#" class="menu-item" i18n="UeberMAPS">About maps</a></li>
-          <li><a href="#" class="menu-item" i18n="Kontakt">Contact</a></li>
-          <li><a href="#" class="menu-item" i18n="Impressum">Impressum</a></li>
+          <li><a href="#" class="menu-item" i18n="UeberMAPS" ng-click="showPopup('uber-popup');">About maps</a></li>
+          <li><a href="#" class="menu-item" i18n="Kontakt" ng-click="showPopup('contact-popup');">Contact</a></li>
+          <li><a href="#" class="menu-item" i18n="Impressum" ng-click="showPopup('impressum-popup');">Impressum</a></li>
         </ul>
         <div class="newsletter" i18n="Newsletter">Newsletter</div>
         <div class="section-div newsletter-section-div"></div>

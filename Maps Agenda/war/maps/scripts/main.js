@@ -165,5 +165,24 @@ common.getStartDate = function() {
   ].join('-');
 };
 
+function PopupCtrl($scope, $http) {
+  $scope.showPopup = function(elemId) {
+    var elem = document.getElementById(elemId);
+    if (elem != null) {
+      elem.style.display = "block";
+    } else {
+      console.log("Cannot show popup: " + elemId);
+    }
+  }
+
+  $scope.hidePopup = function(elemId) {
+    var elem = document.getElementById(elemId);
+    if (elem != null) {
+      elem.style.display = "none";
+    } else {
+      console.log("Cannot hide popup: " + elemId);
+    }
+  }
+}
 
 //2013-10-01
