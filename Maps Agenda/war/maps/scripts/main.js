@@ -102,9 +102,11 @@ common.updateLanguage = function(newLang) {
 };
 
 common.applyLanguage = function() {
-  ([]).forEach.call(document.querySelectorAll('[i18n]'), function(elem) {
+  ([]).forEach.call(Sizzle('[i18n]'), function(elem) {
     var key = elem.getAttribute('i18n');
-    elem.innerText = common.getLanguageString(key);
+    while (elem.firstChild !== null)
+      elem.removeChild(elem.firstChild);
+    elem.appendChild(document.createTextNode(common.getLanguageString(key)));
   });
 };
 
