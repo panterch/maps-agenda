@@ -253,7 +253,6 @@ body > div > div > ul > li {
 /* A layer for popup like screens */
 .popup-screen {
   background-color:rgba(0,0,0,0.7);
-  text-color: white;
   top: 0px;
   left: 0px;
   height: 100%;
@@ -268,7 +267,6 @@ body > div > div > ul > li {
   top: 20%;
   display: table;
   text-align: center;
-  text-color: black;
   margin: 0 auto;
   position: relative;
 }
