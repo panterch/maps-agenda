@@ -30,7 +30,7 @@ var DAYS_OF_WEEK_SHORT = [
 
 
 function CalendarCtrl($scope, $http) {
-  var targetDate = common.getHashParams()['date'];
+  var targetDate = common.getSearchParams()['date'];
   window.calPivot = targetDate ? new Date(targetDate) : new Date();
   $scope.getDaysInMonth = function() {
     var days = DAYS_IN_MONTH[window.calPivot.getMonth()];
@@ -92,7 +92,7 @@ function CalendarCtrl($scope, $http) {
   }
 
   $scope.isSelected = function(day) {
-    var targetDate = common.getHashParams()['date'];
+    var targetDate = common.getSearchParams()['date'];
     var selected = targetDate ? new Date(targetDate) : new Date();
 
     if (selected.getDate() == day &&
@@ -105,9 +105,9 @@ function CalendarCtrl($scope, $http) {
 
   $scope.selectDate = function(date) {
     window.calPivot.setDate(date);
-    var params = common.getHashParams();
+    var params = common.getSearchParams();
     params['date'] = common.getStartDate();
-    common.setHashParams(params);
+    common.setSearchParams(params);
     notifyDateChange();
   }
 };

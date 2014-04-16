@@ -108,8 +108,8 @@ common.applyLanguage = function() {
   });
 };
 
-common.getHashParams = function() {
-  var hash = window.location.hash.substring(1);
+common.getSearchParams = function() {
+  var hash = window.location.search.substring(1);
   var params = {};
   hash.split('&').forEach(function(pair) {
     var tokens = pair.split('=');
@@ -123,23 +123,23 @@ common.getHashParams = function() {
   return params;
 };
 
-common.setHashParams = function(params) {
+common.setSearchParams = function(params) {
   var pairs = [];
   for(var key in params) {
     pairs.push(key + '=' + params[key]);
   }
 
-  window.location.hash = '#' + pairs.join('&');
+  window.location.search = '?' + pairs.join('&');
 };
 
 common.getSelectedLanguage = function() {
-  return common.getHashParams()['lang'] || 'de';
+  return common.getSearchParams()['lang'] || 'de';
 };
 
 common.setSelectedLanguage = function(language) {
-  var params = common.getHashParams();
+  var params = common.getSearchParams();
   params['lang'] = language;
-  common.setHashParams(params);
+  common.setSearchParams(params);
 };
 
 common.getStartDate = function() {
