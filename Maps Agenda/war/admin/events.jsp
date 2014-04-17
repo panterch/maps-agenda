@@ -32,13 +32,13 @@
     div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl()
         + "</a></div>");
     div.append("<div class='eexport'>"
-        + "<input type='checkbox' title='Export' name='XMLExports' value='" + e.getKey()
+        + "<input type='checkbox' title='Export' class='ecexport' value='" + e.getKey()
         + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey()
         + ")\" /><b>a</b>"
-        + "<input type='checkbox' title='Highlight (Large)' name='XMLExportsLarge' value='"
+        + "<input type='checkbox' title='Highlight (Large)' class='eclarge' value='"
         + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey()
         + ")\" /><b>A</b>"
-        + "<input type='checkbox' title='Export as Image Page' name='XMLExportsImage' value='"
+        + "<input type='checkbox' title='Export as Image Page' class='ecimage' value='"
         + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey()
         + ")\" />&#x1F307;" + "</div>");
     div.append("</div>");
@@ -233,6 +233,7 @@ th,td {
   padding: 5px;
 }
 </style>
+<script src="admin.js"></script>
 <script>
 function validateXMLForm() {
   var form = document.forms["xml"];
@@ -246,21 +247,21 @@ function test(f) {
 
 function uncheckXMLOtherButtons(checkbox, event) {
   if (!checkbox.checked) {
-    tickXMLButton("XMLExportsLarge", event, false);
-    tickXMLButton("XMLExportsImage", event, false);
+    tickXMLButton("eclarge", event, false);
+    tickXMLButton("ecimage", event, false);
   }
   countEventCharacters();
 }
 
 function checkXMLButton(checkbox, event) {
   if (checkbox.checked) {
-    tickXMLButton("XMLExports", event, true);
+    tickXMLButton("ecexport", event, true);
   }
   countEventCharacters();
 }
 
 function tickXMLButton(eventName, event, value) {
-  var events = document.getElementsByName(eventName);
+  var events = getElementsByClassName(document.body, eventName);
   for (e = 0; e < events.length; e++) {
   	if (events[e].value == event) {
   	  events[e].checked = value;
@@ -274,8 +275,8 @@ function countEventCharacters() {
   var selected = 0; 
   var total_chars = 0;
   var selected_chars = 0; 
-  var events = document.getElementsByName("eventDescription");
-  var checks = document.getElementsByName("XMLExports");
+  var events = getElementsByClassName(document.body, "edesc");
+  var checks = getElementsByClassName(document.body, "ecexport");
   
   for (e = 0; e < events.length; e++) {
     var count = events[e].innerHTML.length;
@@ -287,10 +288,10 @@ function countEventCharacters() {
       selected_chars += count;
     }
   }
-  document.getElementsByName("eventsCount")[0].innerHTML = selected.toString();
-  document.getElementsByName("eventsTotalCount")[0].innerHTML = total.toString();  
-  document.getElementsByName("characterCount")[0].innerHTML = selected_chars.toString() + 'B';
-  document.getElementsByName("characterTotalCount")[0].innerHTML = total_chars.toString() + 'B';  
+  getElementsByClassName(document.body, "cntevents")[0].innerHTML = selected.toString();
+  getElementsByClassName(document.body, "cnteventstotal")[0].innerHTML = total.toString();  
+  getElementsByClassName(document.body, "cntbytes")[0].innerHTML = selected_chars.toString() + 'B';
+  getElementsByClassName(document.body, "cntbytestotal")[0].innerHTML = total_chars.toString() + 'B';  
 }
 
 function validateForm(formName) {
@@ -480,9 +481,10 @@ function deleteEvent(form) {
     // for the newsletter export.
   %>
   <div class='xml-export-submit'>
-    Selected: <span name="eventsCount">0</span> / <span name="eventsTotalCount">0</span>
-    (de: <span name="characterCount">0B</span> / <span
-      name="characterTotalCount">0B</span>)
+    Selected: <span class="cntevents">0</span> /
+              <span class="cnteventstotal">0</span>
+    (de: <span class="cntbytes">0B</span> /
+         <span class="cntbytestotal">0B</span>)
     <button type='submit' form='export' formaction='export_xml.jsp'>Export
       selected events to XML</button>
     <button type='submit' form='export' formaction='send_newsletter.jsp'>Send
