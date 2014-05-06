@@ -102,7 +102,7 @@ common.updateLanguage = function(newLang) {
 };
 
 common.applyLanguage = function() {
-  ([]).forEach.call(Sizzle('[i18n]'), function(elem) {
+  Sizzle('[i18n]').forEach(function(elem) {
     var key = elem.getAttribute('i18n');
     while (elem.firstChild !== null)
       elem.removeChild(elem.firstChild);
