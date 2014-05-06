@@ -79,7 +79,7 @@
         </table>
       </div>
 
-      <div class="right-menu" ng-controller="PopupCtrl">
+      <div class="right-menu" ng-controller="RightColumnCtrl">
         <div id="uber-popup" class="popup-screen" ng-click="hidePopup('uber-popup');">
           <div i18n="UeberMAPS">About maps</div>
         </div>
@@ -100,17 +100,13 @@
         <div class="newsletter newsletter-text">
           <span i18n="AnmeldungNewsletter">Erhalten Sie die MAPS-Agenda einmal monatlich in Ihrer Sprache per E-Mail</span>
           <p>
-            <select ng-controller="LanguageMenuCtrl">
-              <option ng-repeat="language in languages" value="{{language.code}}">
-                {{language.label}}
-              </a>
-            </select>
+            <select ng-model="selectedLang" ng-options="language.label for language in getLanguages()"></select>
             <br>
-            <input type=“text”>
+            <input ng-model="email" type="text" placeholder="Email address">
           </p>
         </div>
         <div class="section-div newsletter-section-div"></div>
-        <div class="newsletter" i18n="Anmelden">Anmelden</div>
+        <div class="newsletter"><a href="" class="menu-item" i18n="Anmelden" ng-click="register();">Anmelden</a></div>
         <ul>
           <li><a href="#" class="menu-item">Label 1</a></li>
           <li><a href="#" class="menu-item">Label 11111</a></li>

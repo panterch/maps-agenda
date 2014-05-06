@@ -144,6 +144,10 @@ common.setSelectedLanguage = function(language) {
   common.setSearchParams(params);
 };
 
+common.setLanguages = function(languages) {
+  common.languages = languages;
+};
+
 common.getStartDate = function() {
   var pivot = window.calPivot || new Date();
 
@@ -167,7 +171,7 @@ common.getStartDate = function() {
   ].join('-');
 };
 
-function PopupCtrl($scope, $http) {
+function RightColumnCtrl($scope, $http) {
   $scope.showPopup = function(elemId) {
     var elem = document.getElementById(elemId);
     if (elem != null) {
@@ -184,6 +188,18 @@ function PopupCtrl($scope, $http) {
     } else {
       console.log("Cannot hide popup: " + elemId);
     }
+  }
+
+  $scope.getLanguages = function() {
+    return common.languages;
+  }
+  common.languages.forEach(function(language) {
+	  if (language.code == common.getSelectedLanguage()) {
+		  $scope.selectedLang = language;
+	  }
+  })
+  $scope.register = function() {
+	  console.log("Registering " + $scope.email);
   }
 }
 

@@ -27,6 +27,7 @@ public class Maps_LanguageServlet extends HttpServlet {
           response.append("'},\n");
         }
         response.append("  ];\n");
+        response.append("  common.setLanguages($scope.languages);\n");
         response.append("  $scope.setLanguage = function(language) {\n");
         response.append("    common.setSelectedLanguage(language.code);\n");
         response.append("  };\n");
