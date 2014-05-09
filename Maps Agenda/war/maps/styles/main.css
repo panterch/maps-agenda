@@ -98,6 +98,7 @@ body > div > div > ul > li {
 }
 
 .header .letter {
+  font-family: HouschkaAltPro-Bold;
   font-size: 3em;
   padding: 0 15px;
 }
@@ -107,6 +108,7 @@ body > div > div > ul > li {
 }
 
 .header .desc {
+  font-family: HouschkaAltPro-Bold;
   padding-left: 15px;
   vertical-align: middle;
 }

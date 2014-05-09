@@ -199,7 +199,7 @@ function RightColumnCtrl($scope, $http) {
 	  }
   })
   $scope.register = function() {
-	  console.log("Registering " + $scope.email);
+	  alert("Sorry " + $scope.email + ", but registering doesn't work yet.");
   }
 }
 
