@@ -3,6 +3,7 @@ package ch.aoz.maps;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,13 +99,14 @@ public class Maps_EventServlet extends HttpServlet {
     
     public String toUnicode(String s) {
       StringBuilder b = new StringBuilder();
+      List<Character> forbiddenChars  = Arrays.asList('"', '\\', '/');
       if (s != null && s.length() > 0) {
         for (char c : s.toCharArray()) {
           if (c == '\n') {
             b.append("\\n");
           } else if (c == '\r') {
             b.append("\\r");
-          } else if (c < 128 && c != '\'' && c != '"') {
+          } else if (c > 32 && c < 128 && !forbiddenChars.contains(c)) {
             b.append(c);
           } else {
             b.append("\\u");
