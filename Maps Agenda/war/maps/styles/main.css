@@ -268,9 +268,21 @@ body > div > div > ul > li {
   background-color: white;
   top: 20%;
   display: table;
-  text-align: center;
   margin: 0 auto;
+  padding: 10px;
   position: relative;
+  width: 50%;
+  text-align: left;
+  border-bottom: 2px solid black;
+}
+
+.popup-head {
+  font-size: 1.5em;
+  font-weight: bold; 
+}
+
+.popup-screen .popup-body {
+  padding-top: 0px;
 }
 
 @media screen and (min-width: 801px) {
