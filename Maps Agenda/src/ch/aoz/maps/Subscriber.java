@@ -64,7 +64,6 @@ public class Subscriber {
 	  return sb.toString();
   }
   
-  @SuppressWarnings("unchecked")
   public Subscriber(Entity entity) {
     boolean ok = true;
     if (entity.hasProperty(emailProperty)) {
