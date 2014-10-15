@@ -205,7 +205,7 @@ function RightColumnCtrl($scope, $http) {
   })
   $scope.register = function() {
       var params = [
-        'lang=' + $scope.selectedLang.label,
+        'lang=' + $scope.selectedLang.code,
         'name=' + $scope.name,
         'email=' + $scope.email
       ];

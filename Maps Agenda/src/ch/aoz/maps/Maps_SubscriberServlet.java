@@ -16,7 +16,7 @@ public class Maps_SubscriberServlet extends HttpServlet {
 
       String email = req.getParameter("email");
       // TODO: also check if email is valid.
-      if (email == null) {
+      if (email == null || email.isEmpty()) {
         Send(buildError("A valid email address must be specified."), resp);
         return;
       }
