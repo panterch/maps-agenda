@@ -55,7 +55,7 @@ th, td {
 </head>
 <body>
 <%
-Subscriber currentsubscriber = null;
+Subscriber currentSubscriber = null;
 Boolean sane = Boolean.TRUE;
 
 // Basic sanitation
@@ -63,8 +63,8 @@ if (request.getParameter("hash") == null)
 	sane = Boolean.FALSE;
 
 if (sane) {
-	currentsubscriber = Subscriber.getSubscriberByHash(request.getParameter("hash"));
-	if (currentsubscriber == null) {
+	currentSubscriber = Subscriber.getSubscriberByHash(request.getParameter("hash"));
+	if (currentSubscriber == null) {
 		sane = Boolean.FALSE;
 		out.println("Could not identify any subscriber with that hash. Do you have the correct link ?");		
 	}
@@ -74,12 +74,12 @@ if (sane && (request.getParameter("confirm") == null)) {
 	// Ask the user if he is really sure.
 	out.println("<div><div class='title'>You are about to be unsubscribed from the newsletter ! Are you sure ?</div>");
 	out.println("<div><form>");
-	out.println("<input type='hidden' name='hash' value='"+currentsubscriber.getHash()+"'>");
+	out.println("<input type='hidden' name='hash' value='"+currentSubscriber.getHash()+"'>");
 	out.println("<input type='hidden' name='confirm' value='yes'>");
 	out.println("<p><input type='submit' value='YES'></p></form></div>");
 } else if (sane && (request.getParameter("confirm").equals("yes"))) {
 	// Perform the actual unsubscribe
-	Subscriber.DeleteSubscriber(currentsubscriber);
+	Subscriber.DeleteSubscriber(currentSubscriber);
 	out.println("<div><div class='title'>Thank you. You have been unsubscribed from the newsletter.</div>");
 }
 

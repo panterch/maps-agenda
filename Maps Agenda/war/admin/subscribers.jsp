@@ -2,11 +2,12 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="ch.aoz.maps.Language" %>
 <%@ page import="ch.aoz.maps.Subscriber" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
-public static String createSubscriberForm(String formName, Subscriber t) {
+public static String createSubscriberForm(String formName, Subscriber t, Map<String, Language> languages) {
   StringBuilder form = new StringBuilder();
   if (t == null) {
     form.append("<div id='t-new' class='tdiv'>");
@@ -26,10 +27,27 @@ public static String createSubscriberForm(String formName, Subscriber t) {
     form.append("<input type='hidden' name='email' value='" + t.getEmail() + "'></p>");    
     form.append("<input type='hidden' name='new' value='false'></p>");    
   }
-  form.append("<p>Language: <input type='text' name='language' value='" + (t == null ? "" : t.getLanguage()) + "'></p>");
-  form.append("<p><input type='submit' value='" + (t == null ? "Add": "Update") + " subscriber'></p>");
+  form.append("<p>Name: <input type='text' name='name' value='" + (t == null ? "" : t.getName()) + "'></p>");
+
+  form.append("<p>Language: <select name='language'>)");
+  for (Language l : languages.values()) {
+    boolean isSelected = (t != null && t.getLanguage().equals(l.getCode())); 
+    form.append("<option value='" + l.getCode() + (isSelected ? "' selected>" : "'>") + l.getGermanName() + "</option>");
+  }
+  form.append("</select></p><p><input type='submit' value='" + (t == null ? "Add": "Update") + " subscriber'></p>");
   form.append("</form></div>");
   return form.toString();
+}
+
+public static String getLanguageName(Subscriber t, Map<String, Language> languages) {
+  if (t == null || languages == null) {
+    return "";
+  }
+  Language l = languages.get(t.getLanguage());  
+  if (l == null) {
+    return t.getLanguage();
+  }
+  return l.getGermanName();
 }
 %>
 
@@ -121,10 +139,12 @@ function hide(elemId) {
 <body>
 <%
 Map<String, Subscriber> subscribers = Subscriber.getAllSubscribers();
+Map<String, Language> languages = Language.getAllLanguages();
 if (request.getParameter("email") != null) {
   // A new language is to be submitted.
   Subscriber t = new Subscriber(
       request.getParameter("email"), 
+      request.getParameter("name"), 
       request.getParameter("language"));
   boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
   // TODO: check that all the language codes actually exist.
@@ -150,6 +170,7 @@ if (subscribers.isEmpty()) {
     <table>
       <tr>
         <th>Email address</th>
+        <th>Name</th>
         <th>Language</th>
         <th>Hash</th>
         <th></th>
@@ -157,7 +178,8 @@ if (subscribers.isEmpty()) {
 <% for (Subscriber t : subscribers.values()) { %> 
       <tr>
         <td><% out.println(t.getEmail()); %></td>
-        <td><% out.println(t.getLanguage()); %></td>
+        <td><% out.println(t.getName()); %></td>
+        <td><% out.println(getLanguageName(t, languages)); %></td>
         <td><% out.println(t.getHash()); %></td>
         <td><a id="t-<% out.print(t.getEmail()); %>-link" onclick="show('t-<% out.print(t.getEmail()); %>')" href="javascript:void(0);">edit</a></td>
       </tr>
@@ -167,9 +189,9 @@ if (subscribers.isEmpty()) {
 <%
 } 
 for (Subscriber t : subscribers.values()) {
-  out.println(createSubscriberForm("form-" + t.getEmail(), t));
+  out.println(createSubscriberForm("form-" + t.getEmail(), t, languages));
 }
-out.println(createSubscriberForm("newSubscriber", null));
+out.println(createSubscriberForm("newSubscriber", null, languages));
 %>
 <div id="new-t-link"><a onclick="show('t-new'); hide('new-t-link');" href="javascript:void(0);">Add a new subscriber</a></div>
 </body>

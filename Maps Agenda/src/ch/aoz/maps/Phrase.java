@@ -113,6 +113,19 @@ public class Phrase implements Comparable<Phrase> {
     return GetPhrases(langFilter);
   }
 
+  public static List<String> GetKeysForTags() {
+    // Create the language filter.
+    Filter tagFilter = CompositeFilterOperator.and(
+            FilterOperator.EQUAL.of(langProperty, "de"),
+            FilterOperator.EQUAL.of(isTagProperty, true));
+    List<Phrase> phrases = GetPhrases(tagFilter);
+    ArrayList<String> keys = new ArrayList<String>();
+    for (Phrase p : phrases) {
+      keys.add(p.getKey());
+    }
+    return keys;
+  }
+
   public static List<Phrase> GetPhrasesForKey(String key) {
     // Create the key filter.
     Filter keyFilter = new FilterPredicate(keyProperty,

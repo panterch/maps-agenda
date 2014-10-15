@@ -3,7 +3,6 @@ package ch.aoz.maps;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,10 +16,42 @@ import ch.aoz.maps.Language;
 import ch.aoz.maps.Phrase;
 
 @SuppressWarnings("serial")
-public class Maps_EventServlet extends HttpServlet {
+public class Maps_DataServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+      String response = null;
+      switch (req.getParameter("type")) {
+        case "events":
+          response = getEvents(req);
+          break;
+        case "tags":
+          response = getTags();
+          break;
+      }
+      if (response == null) {
+        
+      }
+      resp.setContentType("application/json");
+      resp.getWriter().println(response);
+    }
+    
+    private String getTags() {
+      List<String> tags = Phrase.GetKeysForTags();
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"tags\": [");
+      for (String tag : tags) {
+        response.append("\"" + tag + "\",");
+      }
+      if (!tags.isEmpty()) {
+        // Remove the last comma.
+        response.deleteCharAt(response.length() - 1);
+      }
+      response.append("]}");
+      return response.toString();
+    }
+    
+    private String getEvents(HttpServletRequest req) {
       String lang = req.getParameter("lang");
       if (lang == null) {
         lang = "de";
@@ -61,9 +92,9 @@ public class Maps_EventServlet extends HttpServlet {
         if (t != null) {
           response.append("{");
           response.append("\"date\":\"").append(dateToString(e.getDate())).append("\",");
-          response.append("\"title\":\"").append(toUnicode(t.getTitle())).append("\",");
-          response.append("\"description\":\"").append(toUnicode(t.getDesc())).append("\",");
-          response.append("\"url\":\"").append(toUnicode(t.getUrl())).append("\"");
+          response.append("\"title\":\"").append(Utils.toUnicode(t.getTitle())).append("\",");
+          response.append("\"description\":\"").append(Utils.toUnicode(t.getDesc())).append("\",");
+          response.append("\"url\":\"").append(Utils.toUnicode(t.getUrl())).append("\"");
           response.append("},");
         }
       }
@@ -74,15 +105,13 @@ public class Maps_EventServlet extends HttpServlet {
       response.append("], \"strings\": {");
       for (Phrase phrase : getPhrases(lang).values()) {
         response.append("\"").append(phrase.getKey()).append("\":");
-        response.append("\"").append(toUnicode(phrase.getPhrase())).append("\",");
+        response.append("\"").append(Utils.toUnicode(phrase.getPhrase())).append("\",");
       }
       if (response.charAt(response.length() - 1) == ',') {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
       response.append("}, \"cursor\": \"").append(cursor).append("\"}");
-      
-      resp.setContentType("application/json");
-      resp.getWriter().println(response.toString());
+      return response.toString();
     }
 
     public String dateToString(Date d) {      
@@ -96,34 +125,7 @@ public class Maps_EventServlet extends HttpServlet {
           .append(c.get(Calendar.YEAR))
           .toString();
     }
-    
-    public String toUnicode(String s) {
-      StringBuilder b = new StringBuilder();
-      List<Character> forbiddenChars  = Arrays.asList('"', '\\', '/');
-      if (s != null && s.length() > 0) {
-        for (char c : s.toCharArray()) {
-          if (c == '\n') {
-            b.append("\\n");
-          } else if (c == '\r') {
-            b.append("\\r");
-          } else if (c > 32 && c < 128 && !forbiddenChars.contains(c)) {
-            b.append(c);
-          } else {
-            b.append("\\u");
-            
-            String hex = Integer.toHexString(c);
-            if (hex.length() < 4) {
-              for (int i = hex.length(); i < 4; ++i) {
-                b.append('0');
-              }
-            }
-            b.append(hex);
-          }
-        }
-      }
-      return b.toString();      
-    }
-    
+        
     public Map<String, Phrase> getPhrases(String lang) {
       List<Phrase> laPhrases = Phrase.GetPhrasesForLanguage(lang);
       Map<String, Phrase> phrases = new HashMap<String, Phrase>();

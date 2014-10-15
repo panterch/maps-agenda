@@ -172,6 +172,11 @@ common.getStartDate = function() {
 };
 
 function RightColumnCtrl($scope, $http) {
+  $scope.tags = [];
+  $http.get('/maps/data?type=tags').success(function(data) {
+	  $scope.tags = data.tags;
+  });
+  
   $scope.showPopup = function(elemId) {
     var elem = document.getElementById(elemId);
     if (elem != null) {
@@ -199,8 +204,21 @@ function RightColumnCtrl($scope, $http) {
 	  }
   })
   $scope.register = function() {
-	  alert("Sorry " + $scope.email + ", but registering doesn't work yet.");
+      var params = [
+        'lang=' + $scope.selectedLang.label,
+        'name=' + $scope.name,
+        'email=' + $scope.email
+      ];
+	  
+	  var url = '/maps/subscribe?' + params.join('&');
+		$http.get(url).success(function(data) {
+		    if (data.status == "ok") {
+		      $scope.name = "";
+		      $scope.email = "";
+		      alert(data.message);
+		    } else {
+		      alert("Error: " + data.message);
+		    }
+		});	  
   }
 }
-
-//2013-10-01

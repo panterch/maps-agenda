@@ -76,7 +76,7 @@ th, td {
 </head>
 <body>
 <%
-Subscriber currentsubscriber = null;
+Subscriber currentSubscriber = null;
 Collection<Language> languages;
 Boolean sane = Boolean.TRUE;
 
@@ -85,8 +85,8 @@ if (request.getParameter("hash") == null)
 	sane = Boolean.FALSE;
 
 if (sane) {
-	currentsubscriber = Subscriber.getSubscriberByHash(request.getParameter("hash"));
-	if (currentsubscriber == null) {
+	currentSubscriber = Subscriber.getSubscriberByHash(request.getParameter("hash"));
+	if (currentSubscriber == null) {
 		sane = Boolean.FALSE;
 		out.println("Could not identify any subscriber with that hash. Do you have the correct link ?");		
 	}
@@ -99,11 +99,11 @@ if (languages == null) {
 
 if (sane && request.getParameter("language") != null ) {
 	Language l = Language.GetByCode(request.getParameter("language"));
-	currentsubscriber.setLanguage(l.getCode());
-	Subscriber.AddSubscriber(currentsubscriber);
+	currentSubscriber.setLanguage(l.getCode());
+	Subscriber.AddSubscriber(currentSubscriber);
 	out.println("<div><div class='title'>Thank you ! Your language has been set to " + l.getName() + "</div>");
 } else if (sane) {
-	out.println(createLanguageForm("foo", request.getParameter("hash"), currentsubscriber.getLanguage(), languages));
+	out.println(createLanguageForm("foo", request.getParameter("hash"), currentSubscriber.getLanguage(), languages));
 }
 
 %>

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-	<servlet>
-		<servlet-name>Maps_Agenda</servlet-name>
-		<servlet-class>ch.aoz.maps.Maps_AgendaServlet</servlet-class>
-	</servlet>
-  <servlet-mapping>
-    <servlet-name>Maps_Agenda</servlet-name>
-    <url-pattern>/maps_agenda</url-pattern>
-  </servlet-mapping>
-
   <servlet>
     <servlet-name>Maps_Languages</servlet-name>
     <servlet-class>ch.aoz.maps.Maps_LanguageServlet</servlet-class>
   </servlet>
-	<servlet-mapping>
-		<servlet-name>Maps_Languages</servlet-name>
-		<url-pattern>/maps/scripts/menu.js</url-pattern>
-	</servlet-mapping>
+  <servlet-mapping>
+     <servlet-name>Maps_Languages</servlet-name>
+     <url-pattern>/maps/scripts/menu.js</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>Maps_Events</servlet-name>
-    <servlet-class>ch.aoz.maps.Maps_EventServlet</servlet-class>
+    <servlet-class>ch.aoz.maps.Maps_DataServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Maps_Events</servlet-name>
-    <url-pattern>/maps/scripts/data.json</url-pattern>
+    <url-pattern>/maps/data</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Maps_Subscriber</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_SubscriberServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+     <servlet-name>Maps_Subscriber</servlet-name>
+     <url-pattern>/maps/subscribe</url-pattern>
   </servlet-mapping>
 
   <security-constraint>

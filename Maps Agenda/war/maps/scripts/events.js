@@ -27,6 +27,7 @@ function EventsCtrl($scope, $http) {
 
   $scope.queryEvents = function(opt_cursor) {
     var params = [
+      'type=events',
       'lang=' + common.getSelectedLanguage(),
       'startDate=' + common.getStartDate()
     ];
@@ -35,7 +36,7 @@ function EventsCtrl($scope, $http) {
       params.push('cursor=' + opt_cursor);
     }
 
-    var url = '/maps/scripts/data.json?' + params.join('&');
+    var url = '/maps/data?' + params.join('&');
     $http.get(url).success(function(data) {
       $scope.events = data.events;
       $scope.cursors.push(data.cursor);

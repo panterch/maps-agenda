@@ -26,6 +26,10 @@ public class Subscriber {
   private final String email;
   public static final String emailProperty = "email";
 
+  /** This field is optional and may be left blank. */
+  private final String name;
+  public static final String nameProperty = "name";
+
   private String language;
   public static final String languageProperty = "language";
 
@@ -34,8 +38,13 @@ public class Subscriber {
 
   private final boolean ok;
   
-  public Subscriber(String email, String language) {
+  public Subscriber(String email, String name, String language) {
     this.email = email;
+    if (name == null) {
+      this.name = "";      
+    } else {
+      this.name = name;
+    }
     this.language = language;
     this.hash = constructHash();
     this.ok = (email != null && this.hash != null && language != null);
@@ -45,9 +54,9 @@ public class Subscriber {
 	  // The hash consists of sha1(email + language + 128-bit random nonce)
 	  MessageDigest sha1;
 	  try {
-		sha1 = MessageDigest.getInstance("SHA");
+	    sha1 = MessageDigest.getInstance("SHA");
 	  } catch (NoSuchAlgorithmException e) {
-		return null;	// Signals to the caller that things are not all right
+	    return null;	// Signals to the caller that things are not all right
 	  }
 	  SecureRandom random = new SecureRandom();
 	  
@@ -71,6 +80,11 @@ public class Subscriber {
     } else {
       email = "";
       ok = false;
+    }
+    if (entity.hasProperty(nameProperty)) {
+      name = (String)entity.getProperty(nameProperty);
+    } else {
+      name = "";
     }
     if (entity.hasProperty(languageProperty)) {
       language = (String)entity.getProperty(languageProperty);
@@ -131,6 +145,7 @@ public class Subscriber {
       return false;
     Entity e = new Entity(entityKind, t.getEmail());
     e.setProperty(emailProperty, t.getEmail());    
+    e.setProperty(nameProperty, t.getName());    
     e.setProperty(languageProperty, t.getLanguage());
     e.setProperty(hashProperty, t.getHash());
     
@@ -162,23 +177,30 @@ public class Subscriber {
     }
   }
 
-  public static Translator GetByEmail(String key) {
+  public static Subscriber GetByEmail(String email) {
     DatastoreService datastore = DatastoreServiceFactory
             .getDatastoreService();
 
     Entity item;
     try {
-      item = datastore.get(KeyFactory.createKey(entityKind, key));
+      item = datastore.get(KeyFactory.createKey(entityKind, email));
     } catch (EntityNotFoundException e) {
       return null;
     }  
-    return new Translator(item);
+    return new Subscriber(item);
   }
   /**
    * @return the email
    */
   public String getEmail() {
     return email;
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
   }
 
   /**

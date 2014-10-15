@@ -117,15 +117,14 @@
           <p>
             <select ng-model="selectedLang" ng-options="language.label for language in getLanguages()"></select>
             <br>
+            <input ng-model="name" type="text" placeholder="Name">
             <input ng-model="email" type="text" placeholder="Email address">
           </p>
         </div>
         <div class="section-div newsletter-section-div"></div>
         <div class="newsletter"><a href="" class="menu-item" i18n="Anmelden" ng-click="register();">Anmelden</a></div>
         <ul>
-          <li><a href="#" class="menu-item">Label 1</a></li>
-          <li><a href="#" class="menu-item">Label 11111</a></li>
-          <li><a href="#" class="menu-item">Label 111</a></li>
+          <li ng-repeat="tag in tags"><a href="#" class="menu-item" i18n="{{tag}}">{{tag}}</a></li>
         </ul>
       </div>
     </div>
