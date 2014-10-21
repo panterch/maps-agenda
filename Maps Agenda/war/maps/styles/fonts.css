@@ -26,7 +26,7 @@
   
 @font-face {
   font-family: 'HouschkaAltPro-Bold';
-  src: url('maps/fonts/292CFA_0_0.eot');
-  src: url('maps/fonts/292CFA_0_0.eot?#iefix') format('embedded-opentype'),url('maps/fonts/292CFA_0_0.woff') format('woff'),url('maps/fonts/292CFA_0_0.ttf') format('truetype');
+  src: url('/maps/fonts/292CFA_0_0.eot');
+  src: url('/maps/fonts/292CFA_0_0.eot?#iefix') format('embedded-opentype'),url('/maps/fonts/292CFA_0_0.woff') format('woff'),url('/maps/fonts/292CFA_0_0.ttf') format('truetype');
 }
  
