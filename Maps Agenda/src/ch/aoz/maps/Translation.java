@@ -36,6 +36,7 @@ public class Translation {
   private String title;
   private String desc;
   private String location;
+  private String transit;
   private String url;
   private boolean ok;
   private List<String> errors;
@@ -46,12 +47,14 @@ public class Translation {
       String title,
       String desc,
       String location,
+      String transit,
       String url) {
     this.eventID = parentKey;
     this.lang = lang;
     this.title = title;
     this.desc = desc;
     this.location = location;
+    this.transit = transit;
     this.url = url;
     this.ok = true;
   }
@@ -67,12 +70,14 @@ public class Translation {
           String title,
           String desc,
           String location,
+          String transit,
           String url) {
         this.eventID = null;
         this.lang = lang;
         this.title = title;
         this.desc = desc;
         this.location = location;
+        this.transit = transit;
         this.url = url;
         this.ok = true;
       }
@@ -118,6 +123,12 @@ public class Translation {
       location = new String("");
     }
 
+    if (entity.hasProperty("transit")) {
+      transit = (String) entity.getProperty("transit");
+    } else {
+      transit = new String("");
+    }
+
     if (entity.hasProperty("url")) {
       url = (String) entity.getProperty("url");
     } else {
@@ -136,6 +147,7 @@ public class Translation {
     result.setProperty("title", title);
     result.setProperty("desc", new Text(desc));
     result.setProperty("location", location);
+    result.setProperty("transit", transit);
     result.setProperty("url", url);
     return result;
   }
@@ -185,11 +197,20 @@ public class Translation {
         .addChild(Translation.entityKind, lang).getKey();
     Entity entity = datastore.get(key);
     
-    // The location is usually untranslated. Fall back to the German version.
+    // Location and transit directions are usually untranslated. Fall back to the German version.
     Translation translation = new Translation(entity);
-    if (lang != "de" &&
-	    (translation.getLocation() == null || translation.getLocation().isEmpty())) {
-    	translation.setLocation(e.getGermanTranslation().getLocation());
+    if (lang != "de") {
+	boolean fall_back_location = translation.getLocation() == null || translation.getLocation().isEmpty();
+	boolean fall_back_transit = translation.getTransit() == null || translation.getTransit().isEmpty();
+	if (fall_back_location || fall_back_transit) {
+	    Translation german_translation = e.getGermanTranslation();
+	    if (fall_back_location) {
+		translation.setLocation(german_translation.getLocation());
+	    }
+	    if (fall_back_transit) {
+		translation.setTransit(german_translation.getTransit());
+	    }
+	}
     }
     
     return translation;
@@ -222,7 +243,7 @@ public class Translation {
     result += "<lang>" + lang + "</lang>\n";
     result += "<title><![CDATA[" + title + "]]></title>\n";
     result += "<desc><![CDATA[" + desc + "]]></desc>\n";
-    result += "<location><![CDATA[" + location + "]]></location>\n";
+    result += "<location><![CDATA[" + location + " " + transit + "]]></location>\n";
     result += "<url><![CDATA[" + url + "]]></url>\n";
     result += "</event>";
     return result;
@@ -296,6 +317,20 @@ public class Translation {
    */
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  /**
+   * @return the transit directions
+   */
+  public String getTransit() {
+    return transit;
+  }
+
+  /**
+   * @param transit the transit directions to set
+   */
+  public void setTransit(String transit) {
+    this.transit = transit;
   }
 
   /**

@@ -9,6 +9,7 @@ public class TranslationWithFallback extends Translation {
   private final boolean isTitleRtl;
   private final boolean isDescRtl;
   private final boolean isLocationRtl;
+  private final boolean isTransitRtl;
   private final boolean isUrlRtl;
   
   public TranslationWithFallback(
@@ -18,11 +19,13 @@ public class TranslationWithFallback extends Translation {
         getOrDefault(primary.getTitle(), fallback.getTitle()),
         getOrDefault(primary.getDesc(), fallback.getDesc()),
         getOrDefault(primary.getLocation(), fallback.getLocation()),
+        getOrDefault(primary.getTransit(), fallback.getTransit()),
         getOrDefault(primary.getUrl(), fallback.getUrl()));
     
     this.isTitleRtl = primary.getTitle() != null ? primaryLangRtl : false;
     this.isDescRtl = primary.getDesc() != null ? primaryLangRtl : false;
     this.isLocationRtl = primary.getLocation() != null ? primaryLangRtl : false;
+    this.isTransitRtl = primary.getTransit() != null ? primaryLangRtl : false;
     this.isUrlRtl = primary.getUrl() != null ? primaryLangRtl : false;
   }
   
@@ -39,6 +42,11 @@ public class TranslationWithFallback extends Translation {
   /** Whether the location is from an RTL language. */
   public boolean isLocationRtl() {
     return this.isLocationRtl;
+  }
+  
+  /** Whether the transit is from an RTL language. */
+  public boolean isTransitRtl() {
+    return this.isTransitRtl;
   }
   
   /** Whether the URL is from an RTL language. */

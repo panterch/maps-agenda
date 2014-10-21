@@ -114,6 +114,11 @@ public class NewsletterStyles {
       "margin:7px 0 0 0",
       "padding:0",
       "font-size:12px");
+  public static final String TRANSIT_CSS = join(
+      "font-style:italic",
+      "margin:7px 0 0 0",
+      "padding:0",
+      "font-size:12px");
   public static final String URL_CSS = join(
       "margin: 7px 0 0 0",
       "padding: 0",

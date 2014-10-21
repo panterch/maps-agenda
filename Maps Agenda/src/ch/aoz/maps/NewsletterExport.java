@@ -18,6 +18,7 @@ import static ch.aoz.maps.NewsletterStyles.MAKE_ABSOLUTE_LINK;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
 import static ch.aoz.maps.NewsletterStyles.RTL_CSS;
 import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
+import static ch.aoz.maps.NewsletterStyles.TRANSIT_CSS;
 import static ch.aoz.maps.NewsletterStyles.URL_CSS;
 import static ch.aoz.maps.NewsletterStyles.WHATS_UP_CSS;
 
@@ -208,6 +209,7 @@ public class NewsletterExport {
         german.getTitle(), false, // All false, german isn't RTL.
         german.getDesc(), false,
         german.getLocation(), false,
+        german.getTransit(), false,
         german.getUrl(), false);
     out.append("</div>");
     
@@ -234,6 +236,7 @@ public class NewsletterExport {
         german.getTitle(), false, // All false, german isn't RTL.
         german.getDesc(), false,
         german.getLocation(), false,
+        german.getTransit(), false,
         german.getUrl(), false);
     out.append("</div>");
 
@@ -247,7 +250,8 @@ public class NewsletterExport {
         translated.getTitle(), translated.isTitleRtl(),
         translated.getDesc(), translated.isDescRtl(),
         translated.getLocation(), translated.isLocationRtl(),
-        translated.getUrl(), translated.isLocationRtl());
+        translated.getTransit(), translated.isTransitRtl(),
+        translated.getUrl(), translated.isUrlRtl());
     out.append("</div>");
     
     out.append("<div style='clear: both;'></div>");
@@ -259,6 +263,7 @@ public class NewsletterExport {
       String title, boolean isTitleRtl, 
       String desc, boolean isDescRtl, 
       String location, boolean isLocationRtl,
+      String transit, boolean isTransitRtl,
       String url, boolean isUrlRtl) {
     out.append(String.format("<h1 style='%s'>%s</h1>",
         DATE_CSS, ESCAPE_TEXT(date)));
@@ -268,6 +273,8 @@ public class NewsletterExport {
         rtlCss(DESC_CSS, isDescRtl), ESCAPE_TEXT(desc)));
     out.append(String.format("<p style='%s'>%s</p>",
         rtlCss(LOCATION_CSS, isLocationRtl), ESCAPE_TEXT(location)));
+    out.append(String.format("<p style='%s'>%s</p>",
+	rtlCss(TRANSIT_CSS, isTransitRtl), ESCAPE_TEXT(transit)));
     out.append(String.format("<p style='%s'>", 
         rtlCss(URL_CSS, isUrlRtl)));
     addLink(url, url);

@@ -94,6 +94,8 @@ public class Maps_DataServlet extends HttpServlet {
           response.append("\"date\":\"").append(dateToString(e.getDate())).append("\",");
           response.append("\"title\":\"").append(Utils.toUnicode(t.getTitle())).append("\",");
           response.append("\"description\":\"").append(Utils.toUnicode(t.getDesc())).append("\",");
+          response.append("\"location\":\"").append(Utils.toUnicode(t.getLocation())).append("\",");
+          response.append("\"transit\":\"").append(Utils.toUnicode(t.getTransit())).append("\",");
           response.append("\"url\":\"").append(Utils.toUnicode(t.getUrl())).append("\"");
           response.append("},");
         }

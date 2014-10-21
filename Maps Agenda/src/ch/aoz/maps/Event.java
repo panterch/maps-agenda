@@ -94,7 +94,7 @@ public class Event implements Comparable<Event> {
     try {
       germanTranslation = Translation.getGermanTranslationForEvent(this);
     } catch (EntityNotFoundException e) {
-      germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "");
+      germanTranslation = new Translation(entity.getKey(), "de", "", "", "", "", "");
       addError("No German translation.");
     }
   }

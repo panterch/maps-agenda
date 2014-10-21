@@ -165,6 +165,9 @@ public class XMLExportEntry {
 			xml += (language.getXMLFormatSupplement() == "_ru" ? language
 					.getXMLFormatSupplement() : "") + "\">";
 			xml += escapeXML(translation.getLocation()) + " ";
+			if (translation.getTransit() != null && translation.getTransit() != "") {
+			    xml += escapeXML(translation.getTransit()) + " ";
+			}
 
 			if (translation.getUrl() != null && translation.getUrl() != "") {
 				xml += translation.getUrl().replace("http://www", "www");

@@ -29,6 +29,7 @@
     div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
     div.append("<div class='edesc' name='eventDescription'>" + de.getDesc() + "</div>");
     div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
+    div.append("<div class='etransit'>&#x21F9; " + de.getTransit() + "</div>");
     div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl()
         + "</a></div>");
     div.append("<div class='eexport'>"
@@ -87,6 +88,7 @@
       form.append("<p>Title: <input type='text' name='title' value=''></p>");
       form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'></textarea>");
       form.append("<p>Location: <input type='text' name='loc' value=''></p>");
+      form.append("<p>Transit directions: <input type='text' name='transit' value=''></p>");
       form.append("<p>Url: <input type='text' name='url' value=''></p>");
     } else {
       Calendar c = Calendar.getInstance();
@@ -109,6 +111,8 @@
           + "</textarea>");
       form.append(
           "<p>Location: <input type='text' name='loc' value='" + de.getLocation() + "'></p>");
+      form.append(
+          "<p>Transit directions: <input type='text' name='transit' value='" + de.getTransit() + "'></p>");
       form.append("<p>Url: <input type='text' name='url' value='" + de.getUrl() + "'></p>");
     }
     form.append(
@@ -407,6 +411,7 @@ function deleteEvent(form) {
       if (isNew) {
         event = new Event(c.getTime(), new Translation("de", request.getParameter("title"),
             request.getParameter("desc"), request.getParameter("loc"),
+            request.getParameter("transit"),
             request.getParameter("url")));
       } else {
         long key = Long.parseLong(request.getParameter("key"));
@@ -420,6 +425,7 @@ function deleteEvent(form) {
         de.setTitle(request.getParameter("title"));
         de.setDesc(request.getParameter("desc"));
         de.setLocation(request.getParameter("loc"));
+        de.setTransit(request.getParameter("transit"));
         de.setUrl(request.getParameter("url"));
       }
 

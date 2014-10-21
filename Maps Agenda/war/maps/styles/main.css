@@ -156,6 +156,10 @@ body > div > div > ul > li {
   font-size: 0.9em;
 }
 
+.event .location p {
+  padding: 0 30px;  
+}
+
 
 /* Calendar styles */
 .cal {
