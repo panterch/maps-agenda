@@ -32,13 +32,13 @@
     div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl()
         + "</a></div>");
     div.append("<div class='eexport'>"
-        + "<input type='checkbox' title='Export' class='ecexport' value='" + e.getKey()
+        + "<input type='checkbox' title='Export' name='XMLExports' class='ecexport' value='" + e.getKey()
         + "' checked form='export' onclick=\"uncheckXMLOtherButtons(this," + e.getKey()
         + ")\" /><b>a</b>"
-        + "<input type='checkbox' title='Highlight (Large)' class='eclarge' value='"
+        + "<input type='checkbox' title='Highlight (Large)' name='XMLExportsLarge' class='eclarge' value='"
         + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey()
         + ")\" /><b>A</b>"
-        + "<input type='checkbox' title='Export as Image Page' class='ecimage' value='"
+        + "<input type='checkbox' title='Export as Image Page'  name='XMLExportsImage' class='ecimage' value='"
         + e.getKey() + "' form='export' onclick=\"checkXMLButton(this," + e.getKey()
         + ")\" />&#x1F307;" + "</div>");
     div.append("</div>");
