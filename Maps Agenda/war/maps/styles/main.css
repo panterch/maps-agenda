@@ -156,8 +156,12 @@ body > div > div > ul > li {
   font-size: 0.9em;
 }
 
-.event .location p {
+.event .details .location p {
   padding: 0 30px;  
+}
+
+.event .details .location a {
+  color: #706f6f; 
 }
 
 
