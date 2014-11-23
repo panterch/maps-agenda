@@ -1,12 +1,14 @@
 package ch.aoz.maps;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /** 
  * This class bundles all the phrases for a given language.
@@ -15,41 +17,54 @@ public class Phrases {
   public static final String entityKind = "Phrases";
 
   private String lang;
-  private List<Phrase> phrases;
+  private Map<String, Phrase> phrases;
   private boolean isOk;
   private String debug;
   
-  public Phrases(List<Phrase> phrases) {
-    this.phrases = phrases;
+  public Phrases(Collection<Phrase> phrases) {
+    this.phrases = new HashMap<String, Phrase>();
     isOk = false;
     if (phrases.isEmpty()) {
       debug = "empty";
       return;
-    }
-    lang = phrases.get(0).getLang();
-    HashSet<String> keys = new HashSet<String>();
+    }    
+    lang = phrases.iterator().next().getLang();
     for (Phrase phrase : phrases) {
       if (!phrase.getLang().equals(lang)) {
-        debug = "diff langs" + lang + " != " + phrase.getLang();
+        debug = "diff langs: " + lang + " != " + phrase.getLang();
         return;
       }
-      if (keys.contains(phrase.getKey())) {
-        debug = "dup keys";
-        return;
+      if (this.phrases.containsKey(phrase.getKey())) {
+        if (phrase.getPhrase().isEmpty()) {
+          // Skip this value.
+          continue;
+        } else {
+          Phrase p = this.phrases.get(phrase.getKey()); 
+          if (!p.getPhrase().isEmpty() &&
+              !p.getPhrase().equals(phrase.getPhrase())) {
+            // Problem: two non-empty phrases. Which one to choose?
+            if (!p.getGroup().isEmpty() && phrase.getGroup().isEmpty()) {
+              continue;
+            } else if (p.getGroup().isEmpty() == phrase.getGroup().isEmpty()) {
+              debug = "dup keys: " + phrase.getKey() + " (" + phrase.getGroup() + ")";
+              return;
+            }
+          }
+        }
       }
-      keys.add(phrase.getKey());
+      this.phrases.put(phrase.getKey(), phrase);
     }
     isOk = true;
   }
   
   public Phrases(Entity entity) {
-    phrases = new ArrayList<Phrase>();
+    phrases = new HashMap<String, Phrase>();
     lang = entity.getKey().getName();
     for (String key : entity.getProperties().keySet()) {
       String s = (String)entity.getProperty(key);
       Phrase p = extractPhrase(lang, key, s);
       if (p != null) {
-        phrases.add(p);
+        phrases.put(key, p);
       }
     }
   }
@@ -61,7 +76,7 @@ public class Phrases {
    */
   public Entity toEntity() {
     Entity phrases = new Entity(entityKind, this.lang);
-    for (Phrase p : this.phrases) {
+    for (Phrase p : this.phrases.values()) {
       phrases.setProperty(p.getKey(), packPhrase(p));
     }
     return phrases;
@@ -85,6 +100,40 @@ public class Phrases {
     return true;
   }
  
+  public static Phrases GetPhrasesForLanguage(String language) {
+    DatastoreService datastore = DatastoreServiceFactory
+            .getDatastoreService();
+    try {
+     Entity e = datastore.get(KeyFactory.createKey(entityKind, language));
+     return new Phrases(e);
+    } catch (EntityNotFoundException e) {
+      return null;
+    }
+  }
+
+  public static Map<String, Phrase> getMergedPhrases(String lang) {
+    Map<String, Phrase> phrases = new HashMap<String, Phrase>();
+    Phrases langPhrases = Phrases.GetPhrasesForLanguage(lang);
+    if (langPhrases != null) {
+      for (Phrase phrase : langPhrases.getPhrases()) {
+        if (phrase.getPhrase().length() > 0) {
+          phrases.put(phrase.getKey(), phrase);
+        }
+      }
+    }
+    if (lang != "de") {
+      Phrases dePhrases = Phrases.GetPhrasesForLanguage("de");
+      if (dePhrases != null) {
+        for (Phrase phrase : dePhrases.getPhrases()) {
+          if (!phrases.containsKey(phrase.getKey())) {
+            phrases.put(phrase.getKey(), phrase);
+          }
+        }
+      }
+    }
+    return phrases;
+  }
+
   /** 
    * Extracts a Phrase from the packed representation in the database.
    * 
@@ -115,8 +164,8 @@ public class Phrases {
     return s.toString();
   }
   
-  public List<Phrase> getPhrases() {
-    return phrases;
+  public Collection<Phrase> getPhrases() {
+    return phrases.values();
   }
   public String getLang() {
     return lang;
