@@ -19,7 +19,12 @@ public class Tmp_Phrases extends HttpServlet {
       Map<String, String> added = new HashMap<String, String>();
       for (String lang : langs.keySet()) {
         List<Phrase> laPhrases = Phrase.GetPhrasesForLanguage(lang);
-        Phrases p = new Phrases(laPhrases);
+        Phrases p;
+        if (laPhrases == null) {
+          p = new Phrases(lang);
+        } else {
+          p = new Phrases(laPhrases);
+        }
         if (!p.isOk()) {
           added.put(lang, p.debug());
         } else {

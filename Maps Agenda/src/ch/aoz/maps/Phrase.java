@@ -6,21 +6,14 @@ import java.util.List;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 /** 
  * A phrase is a word, an abbreviation, or even a full sentence in a given language. 
  * The various translations of a phrase are all grouped using the same key.
  * */
-public class Phrase implements Comparable<Phrase> {
+public class Phrase implements Comparable<Phrase>, java.io.Serializable {
   public static final String entityKind = "Phrase";
+  private static final long serialVersionUID = 161718L;
   
   /** Key that groups all the translations of the same phrase. */
   private String key;
@@ -44,7 +37,7 @@ public class Phrase implements Comparable<Phrase> {
   
   /** A phrase must have a key and a language defined. Otherwise, it is not valid. */
   private boolean isOk;
-  
+
   /** Create a new Phrase */
   public Phrase(String key, String lang, String phrase, String group, boolean isTag) {
     this.key = key;

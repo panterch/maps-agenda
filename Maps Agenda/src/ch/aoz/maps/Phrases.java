@@ -9,23 +9,33 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /** 
  * This class bundles all the phrases for a given language.
  * */
-public class Phrases {
+public class Phrases implements java.io.Serializable {
   public static final String entityKind = "Phrases";
+  private static final long serialVersionUID = 161719L;
 
   private String lang;
   private Map<String, Phrase> phrases;
   private boolean isOk;
   private String debug;
   
+  public Phrases(String lang) {
+    this.phrases = new HashMap<String, Phrase>();
+    this.lang = lang;
+    isOk = true;
+    debug = "ok";
+  }
+  
   public Phrases(Collection<Phrase> phrases) {
     this.phrases = new HashMap<String, Phrase>();
     isOk = false;
-    if (phrases.isEmpty()) {
-      debug = "empty";
+    if (phrases == null || phrases.isEmpty()) {
+      debug = phrases == null ? "null" : "empty";
       return;
     }    
     lang = phrases.iterator().next().getLang();
@@ -97,10 +107,16 @@ public class Phrases {
     } catch (Exception ex) {
       return false;
     }
+    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+    syncCache.put(entityKind + "_" + lang, this);
     return true;
   }
  
   public static Phrases GetPhrasesForLanguage(String language) {
+    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+    if (syncCache.contains(entityKind + "_" + language)) {
+      return (Phrases)syncCache.get(entityKind + "_" + language);
+    }
     DatastoreService datastore = DatastoreServiceFactory
             .getDatastoreService();
     try {
