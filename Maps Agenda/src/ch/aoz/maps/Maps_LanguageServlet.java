@@ -36,14 +36,9 @@ public class Maps_LanguageServlet extends HttpServlet {
     }
         
     public List<Language> getLanguages() {
-      HashMap<String, Language> languages = Language.getAllLanguages();
-      ArrayList<Language> langs = new ArrayList<Language>(languages.size());
-      langs.add(languages.remove("de"));
-      Collections.sort(langs);
-      ArrayList<String> keys = new ArrayList<String>(languages.keySet());
-      for (String lang : keys) {
-        langs.add(languages.remove(lang));
-      }
-      return langs;
+      List<Language> languages = new ArrayList<Language>();
+      languages.addAll(Language.getAllLanguages().values());
+      Collections.sort(languages);
+      return languages;
     }
 }
