@@ -296,14 +296,14 @@ public class Language implements Comparable<Language> {
 	manualOrdering.put("de", 0);
 	manualOrdering.put("al", 1);
 	manualOrdering.put("ar", 2);
-	manualOrdering.put("en", 3);
-	manualOrdering.put("fr", 4);
-	manualOrdering.put("it", 5);
-	manualOrdering.put("ma", 6);
-	manualOrdering.put("pe", 7);
-	manualOrdering.put("po", 8);
-	manualOrdering.put("ru", 9);
-	manualOrdering.put("bo", 10);
+	manualOrdering.put("bo", 3);
+	manualOrdering.put("en", 4);
+	manualOrdering.put("fr", 5);
+	manualOrdering.put("it", 6);
+	manualOrdering.put("ma", 7);
+	manualOrdering.put("pe", 8);
+	manualOrdering.put("po", 9);
+	manualOrdering.put("ru", 10);
 	manualOrdering.put("so", 11);
 	manualOrdering.put("es", 12);
 	manualOrdering.put("ta", 13);
@@ -327,3 +327,4 @@ public class Language implements Comparable<Language> {
 	return thisLang - otherLang;
     }
 }
+
