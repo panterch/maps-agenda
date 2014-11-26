@@ -25,9 +25,9 @@ import static ch.aoz.maps.NewsletterStyles.WHATS_UP_CSS;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
-
 
 /**
  * Generates the HTML for a newsletter of events in a given language.
@@ -152,11 +152,8 @@ public class NewsletterExport {
   
   /** Event list, one row for each event. */
   private void renderEvents() {
-    Phrase wasLauft = Phrase.GetPhrase(lang, "headNL");
-    if (wasLauft == null) {
-      // Fall back to German if we don't have the correct heading.
-      wasLauft = Phrase.GetPhrase("de", "headNL");
-    }
+    Map<String, Phrase> phrases = Phrases.getMergedPhrases(lang);
+    Phrase wasLauft = phrases.get("headNL");
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
     

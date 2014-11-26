@@ -6,6 +6,7 @@
 <%@ page import="java.util.TreeSet" %>
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ page import="ch.aoz.maps.Phrase" %>
+<%@ page import="ch.aoz.maps.Phrases" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
@@ -26,9 +27,9 @@ public static String createLanguageForm(Map<String, Language> languages, String 
 }
 
 public static Map<String, Phrase> getPhrasesForLang(String lang) {
-  List<Phrase> phrases = Phrase.GetPhrasesForLanguage(lang);
+  Phrases phrases = Phrases.GetPhrasesForLanguage(lang);
   Map<String, Phrase> phrasesMap = new HashMap<String, Phrase>();
-  for (Phrase p : phrases) {
+  for (Phrase p : phrases.getPhrases()) {
     phrasesMap.put(p.getKey(), p);
   }
   return phrasesMap;
@@ -193,9 +194,12 @@ function hide(elemId) {
 <body>
 <%
 if (request.getParameter("delete") != null) {
+  /*
   String key = request.getParameter("key");
   Phrase.deleteKey(key);
   out.println("<div class='msg-green'><p>Deleted " + key + "</p></div>");
+  */
+  out.println("<div class='msg-red'><p>Under construction</p></div>");
 }
 Map<String, Language> languages = Language.getAllLanguages();
 Map<String, Phrase> phrasesDE = getPhrasesForLang("de");
@@ -244,6 +248,7 @@ if (request.getParameter("new") != null) {
     }
   }
   if (p_de != null && update_de) {
+    /*
     if (p_de.addToStore()) {
       out.println("<div class='msg-green'><p>German phrase correctly stored.</p></div>");
       phrasesDE.put(key, p_de);
@@ -251,6 +256,9 @@ if (request.getParameter("new") != null) {
       out.println("<div class='msg-red'><p>An error occurred when trying to store the German phrase. Try again later?</p></div>");
       p_de = null;
     }
+    */
+    out.println("<div class='msg-red'><p>Under construction</p></div>");
+    p_de = null;
   }
   // Now check if there is a second language. Also skip this part of p_de is null, i.e. an error occurred.
   if (!lang.equals("de") && p_de != null) {
@@ -278,12 +286,15 @@ if (request.getParameter("new") != null) {
       }
     }
     if (update_ln) {
+      /*
       if (p_ln.addToStore()) {
         out.println("<div class='msg-green'><p>Translated phrase correctly stored.</p></div>");
         phrasesOther.put(key, p_ln);
       } else {
         out.println("<div class='msg-red'><p>An error occurred when trying to store the translated phrase. Try again later?</p></div>");
       }
+      */
+      out.println("<div class='msg-red'><p>Under construction</p></div>");
     }
   }
 }

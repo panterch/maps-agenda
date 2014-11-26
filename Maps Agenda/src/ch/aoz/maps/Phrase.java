@@ -6,20 +6,14 @@ import java.util.List;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /** 
  * A phrase is a word, an abbreviation, or even a full sentence in a given language. 
  * The various translations of a phrase are all grouped using the same key.
  * */
-public class Phrase implements Comparable<Phrase> {
+public class Phrase implements Comparable<Phrase>, java.io.Serializable {
   public static final String entityKind = "Phrase";
+  private static final long serialVersionUID = 161718L;
   
   /** Key that groups all the translations of the same phrase. */
   private String key;
@@ -43,7 +37,7 @@ public class Phrase implements Comparable<Phrase> {
   
   /** A phrase must have a key and a language defined. Otherwise, it is not valid. */
   private boolean isOk;
-  
+
   /** Create a new Phrase */
   public Phrase(String key, String lang, String phrase, String group, boolean isTag) {
     this.key = key;
@@ -107,25 +101,25 @@ public class Phrase implements Comparable<Phrase> {
   }
 
   public static List<Phrase> GetPhrasesForLanguage(String language) {
-    // Create the language filter.
-    Filter langFilter = new FilterPredicate(langProperty,
-        Query.FilterOperator.EQUAL, language);
-    return GetPhrases(langFilter);
+    Phrases phrases = Phrases.GetPhrasesForLanguage(language);
+    if (phrases == null)
+      return null;
+    return new ArrayList<Phrase>(phrases.getPhrases());
   }
 
   public static List<String> GetKeysForTags() {
-    // Create the language filter.
-    Filter tagFilter = CompositeFilterOperator.and(
-            FilterOperator.EQUAL.of(langProperty, "de"),
-            FilterOperator.EQUAL.of(isTagProperty, true));
-    List<Phrase> phrases = GetPhrases(tagFilter);
+    Phrases phrases = Phrases.GetPhrasesForLanguage("de");
+    if (phrases == null)
+      return null;
     ArrayList<String> keys = new ArrayList<String>();
-    for (Phrase p : phrases) {
-      keys.add(p.getKey());
+    for (Phrase p : phrases.getPhrases()) {
+      if (p.isTag()) {
+        keys.add(p.getKey());
+      }
     }
     return keys;
   }
-
+/*
   public static List<Phrase> GetPhrasesForKey(String key) {
     // Create the key filter.
     Filter keyFilter = new FilterPredicate(keyProperty,
@@ -173,6 +167,7 @@ public class Phrase implements Comparable<Phrase> {
     }
     datastore.delete(keys);
   }
+*/
   
   public String getKey() {
     return key;

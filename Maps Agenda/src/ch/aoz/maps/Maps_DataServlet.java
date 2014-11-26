@@ -5,9 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.*;
 
@@ -105,7 +103,7 @@ public class Maps_DataServlet extends HttpServlet {
       }
       
       response.append("], \"strings\": {");
-      for (Phrase phrase : getPhrases(lang).values()) {
+      for (Phrase phrase : Phrases.getMergedPhrases(lang).values()) {
         response.append("\"").append(phrase.getKey()).append("\":");
         response.append("\"").append(Utils.toUnicode(phrase.getPhrase())).append("\",");
       }
@@ -126,25 +124,5 @@ public class Maps_DataServlet extends HttpServlet {
           .append('/')
           .append(c.get(Calendar.YEAR))
           .toString();
-    }
-        
-    public Map<String, Phrase> getPhrases(String lang) {
-      List<Phrase> laPhrases = Phrase.GetPhrasesForLanguage(lang);
-      Map<String, Phrase> phrases = new HashMap<String, Phrase>();
-      for (Phrase phrase : laPhrases) {
-        if (phrase.getPhrase().length() > 0) {
-          phrases.put(phrase.getKey(), phrase);
-        }
-      }
-      
-      if (lang != "de") {
-        for (Phrase phrase : Phrase.GetPhrasesForLanguage("de")) {
-          if (!phrases.containsKey(phrase.getKey())) {
-            phrases.put(phrase.getKey(), phrase);
-          }
-        }
-      }
-      
-      return phrases;
-    }
+    }        
 }
