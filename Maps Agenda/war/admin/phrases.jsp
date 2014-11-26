@@ -248,7 +248,6 @@ if (request.getParameter("new") != null) {
     }
   }
   if (p_de != null && update_de) {
-    /*
     if (p_de.addToStore()) {
       out.println("<div class='msg-green'><p>German phrase correctly stored.</p></div>");
       phrasesDE.put(key, p_de);
@@ -256,9 +255,6 @@ if (request.getParameter("new") != null) {
       out.println("<div class='msg-red'><p>An error occurred when trying to store the German phrase. Try again later?</p></div>");
       p_de = null;
     }
-    */
-    out.println("<div class='msg-red'><p>Under construction</p></div>");
-    p_de = null;
   }
   // Now check if there is a second language. Also skip this part of p_de is null, i.e. an error occurred.
   if (!lang.equals("de") && p_de != null) {
@@ -286,15 +282,12 @@ if (request.getParameter("new") != null) {
       }
     }
     if (update_ln) {
-      /*
       if (p_ln.addToStore()) {
         out.println("<div class='msg-green'><p>Translated phrase correctly stored.</p></div>");
         phrasesOther.put(key, p_ln);
       } else {
         out.println("<div class='msg-red'><p>An error occurred when trying to store the translated phrase. Try again later?</p></div>");
       }
-      */
-      out.println("<div class='msg-red'><p>Under construction</p></div>");
     }
   }
 }

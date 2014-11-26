@@ -64,10 +64,11 @@ public class Phrases implements java.io.Serializable {
       }
       this.phrases.put(phrase.getKey(), phrase);
     }
+    debug = "ok";
     isOk = true;
   }
   
-  public Phrases(Entity entity) {
+  private Phrases(Entity entity) {
     phrases = new HashMap<String, Phrase>();
     lang = entity.getKey().getName();
     for (String key : entity.getProperties().keySet()) {
@@ -77,6 +78,9 @@ public class Phrases implements java.io.Serializable {
         phrases.put(key, p);
       }
     }
+    debug = "ok";
+    isOk = true;
+    addToCache();
   }
 
   /**
@@ -84,7 +88,7 @@ public class Phrases implements java.io.Serializable {
    *
    * @return an Entity with the properties of this Phrases.
    */
-  public Entity toEntity() {
+  private Entity toEntity() {
     Entity phrases = new Entity(entityKind, this.lang);
     for (Phrase p : this.phrases.values()) {
       phrases.setProperty(p.getKey(), packPhrase(p));
@@ -107,8 +111,7 @@ public class Phrases implements java.io.Serializable {
     } catch (Exception ex) {
       return false;
     }
-    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-    syncCache.put(entityKind + "_" + lang, this);
+    addToCache();
     return true;
   }
  
@@ -127,6 +130,11 @@ public class Phrases implements java.io.Serializable {
     }
   }
 
+  /**
+   * 
+   * @param lang Language in which to get the phrases.
+   * @return The map of phrases
+   */
   public static Map<String, Phrase> getMergedPhrases(String lang) {
     Map<String, Phrase> phrases = new HashMap<String, Phrase>();
     Phrases langPhrases = Phrases.GetPhrasesForLanguage(lang);
@@ -150,6 +158,7 @@ public class Phrases implements java.io.Serializable {
     return phrases;
   }
 
+  
   /** 
    * Extracts a Phrase from the packed representation in the database.
    * 
@@ -158,7 +167,7 @@ public class Phrases implements java.io.Serializable {
    * @param value string of the phrase in the language
    * @return a fully constructed Phrase
    */
-  public static Phrase extractPhrase(String lang, String key, String value) {
+  private static Phrase extractPhrase(String lang, String key, String value) {
     String[] values = value.split(",", 3);
     if (values.length != 3) return null;
     boolean isTag = values[0].equals("tag");
@@ -171,7 +180,7 @@ public class Phrases implements java.io.Serializable {
    * @param p the phrase to pack in its database representation.
    * @return the packed representation.
    */
-  public static String packPhrase(Phrase p) {
+  private static String packPhrase(Phrase p) {
     StringBuilder s = new StringBuilder();
     s.append(p.isTag() ? "tag," : "notag,");
     s.append(p.getGroup());
@@ -179,7 +188,17 @@ public class Phrases implements java.io.Serializable {
     s.append(p.getPhrase());
     return s.toString();
   }
+
+  private String getCacheKey() {
+    return entityKind + "_" + lang;
+  }
   
+  private void addToCache() {
+    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+    syncCache.put(getCacheKey(), this);    
+  }
+
+  /** Only setters and getters below. */
   public Collection<Phrase> getPhrases() {
     return phrases.values();
   }
@@ -191,5 +210,11 @@ public class Phrases implements java.io.Serializable {
   }
   public String debug() {
     return debug;
+  }
+  public boolean addPhrase(Phrase p) {
+    if (!lang.equals(p.getLang())) 
+      return false;
+    phrases.put(p.getKey(), p);
+    return true;
   }
 }
