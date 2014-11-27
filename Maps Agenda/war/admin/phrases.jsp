@@ -194,12 +194,12 @@ function hide(elemId) {
 <body>
 <%
 if (request.getParameter("delete") != null) {
-  /*
   String key = request.getParameter("key");
-  Phrase.deleteKey(key);
-  out.println("<div class='msg-green'><p>Deleted " + key + "</p></div>");
-  */
-  out.println("<div class='msg-red'><p>Under construction</p></div>");
+  if (Phrases.deleteKey(key)) {
+    out.println("<div class='msg-green'><p>Deleted " + key + "</p></div>");
+  } else {
+    out.println("<div class='msg-red'><p>Encountered some problems when deleting " + key + "</p></div>");
+  }
 }
 Map<String, Language> languages = Language.getAllLanguages();
 Map<String, Phrase> phrasesDE = getPhrasesForLang("de");

@@ -115,13 +115,19 @@ public class Phrases implements java.io.Serializable {
     return true;
   }
  
+  /** 
+   * Returns the Phrases object for the specified language. The Phrases object
+   * contains all the phrases available in that language.
+   * 
+   * @param language The language in which the phrases should be in. 
+   * @return The phrases object corresponding to the requested language.
+   */
   public static Phrases GetPhrasesForLanguage(String language) {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
     if (syncCache.contains(entityKind + "_" + language)) {
       return (Phrases)syncCache.get(entityKind + "_" + language);
     }
-    DatastoreService datastore = DatastoreServiceFactory
-            .getDatastoreService();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     try {
      Entity e = datastore.get(KeyFactory.createKey(entityKind, language));
      return new Phrases(e);
@@ -131,9 +137,13 @@ public class Phrases implements java.io.Serializable {
   }
 
   /**
+   * Returns a map of all the phrases defined in the system in a given language.
+   * If a phrase is not yet translated in the requested language, the German version
+   * of the phrase is provided.
    * 
    * @param lang Language in which to get the phrases.
-   * @return The map of phrases
+   * @return The map of phrase's key to phrase. If a phrase is not found in the
+   *         requested language, the German version is provided instead.
    */
   public static Map<String, Phrase> getMergedPhrases(String lang) {
     Map<String, Phrase> phrases = new HashMap<String, Phrase>();
@@ -158,6 +168,21 @@ public class Phrases implements java.io.Serializable {
     return phrases;
   }
 
+  public static boolean deleteKey(String key) {
+    Languages langs = Languages.GetLanguages();
+    if (langs == null)
+      return false;
+    boolean allDeleted = true;
+    for (String lang : langs.getSortedLanguageCodes()) {
+      Phrases phrases = Phrases.GetPhrasesForLanguage(lang);
+      if (phrases == null)
+        continue;
+      phrases.phrases.remove(key);
+      if (!phrases.addToStore())
+        allDeleted = false;
+    }
+    return allDeleted;
+  }
   
   /** 
    * Extracts a Phrase from the packed representation in the database.
