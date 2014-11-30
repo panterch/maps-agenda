@@ -59,6 +59,7 @@ body > div > div > ul > li {
 .event-nav {
   background-color: white;
   height: 35px;
+  padding-bottom: 10px;
 }
 
 .event-nav > .prev,
@@ -84,13 +85,26 @@ body > div > div > ul > li {
 
 /* Header */
 
+.header-background {
+  background-color: #ffffff;
+  color: #706f6f;
+  padding: 20px 0 10px 0;
+}
+
 .header {
   background-color: #fe5c6c;
   color: #fff;
   font-family: Open Sans, Verdana;
   font-size: 1.5em;
   font-weight: bolder;
-  margin: 10px 0;
+  padding: 4px 0 4px 0;
+}
+
+.header-subtitle {
+  font-family: Georgia, Times New Roman;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 5px 0 5px 20px;
 }
 
 .header > div {
@@ -98,14 +112,15 @@ body > div > div > ul > li {
   margin: 5px;
 }
 
-.header .letter {
+.header .mapsletter .letter {
   font-family: HouschkaAltPro-Bold;
   font-size: 3em;
   padding: 0 15px;
+  margin: -12px 0 -15px 0;
 }
 
-.header .line {
-  border-right: 3px solid #706f6f;
+.header .mapsletter {
+  border-right: 8px solid #706f6f;
 }
 
 .header .desc {
@@ -258,7 +273,9 @@ body > div > div > ul > li {
 
 
 .newsletter-section-div {
-  background-image: url('/maps/images/perforated_band_2.png');
+/*  background-image: url('/maps/images/perforated_band_2.png');
+  background-repeat: repeat-x;*/
+  background: url('/maps/images/perforated_band_2.png'); repeat-x scroll;
 }
 
 /* A layer for popup like screens */

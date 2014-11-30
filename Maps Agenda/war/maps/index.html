@@ -15,12 +15,15 @@
   <body>
     <div class="background-screen"></div>
     <div class="main-content">
+      <div class="header-background">
       <div class="header">
-        <div class="letter line">M</div>
-        <div class="letter line">A</div>
-        <div class="letter line">P</div>
-        <div class="letter line">S</div>
+        <div class="mapsletter"><div class="letter">M</div></div>
+        <div class="mapsletter"><div class="letter">A</div></div>
+        <div class="mapsletter"><div class="letter">P</div></div>
+        <div class="mapsletter"><div class="letter">S</div></div>
         <div class="desc">ZÜRI<br>AGENDA</div>
+      </div>
+      <div class="header-subtitle">G&uuml;nstige Kultur- und Freizeitangebote</div>
       </div>
 
       <div ng-controller="LanguageMenuCtrl" class="language-menu">
@@ -31,7 +34,6 @@
         </ul>
       </div>
 
-      <div class="section-div"></div>
       <div ng-controller="EventsCtrl" ng-init="queryEvents()">
         <div class="event-nav">
           <div ng-click="showPreviousEvents()" class="prev">
@@ -43,6 +45,7 @@
             <div i18n="Spaeter">next</div>
           </div>          
         </div>
+      <div class="section-div"></div>
 
         <div ng-repeat="event in events">
           <div class="event">
