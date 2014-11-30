@@ -28,6 +28,7 @@ body > div > div > ul > li {
 .background-screen {
   background-image: url('/maps/images/temp-bg.jpg');
   background-position-x: center;
+  background-size: cover;
   height: 100%;
   opacity: 0.6;
   position: fixed;
@@ -50,13 +51,13 @@ body > div > div > ul > li {
 /* Middle section */
 
 .main-content {
-  background-color: white;
   left: 25%;
   position: absolute;
   width: 50%;
 }
 
 .event-nav {
+  background-color: white;
   height: 35px;
 }
 
