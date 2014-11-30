@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.*;
 
@@ -20,6 +21,9 @@ public class Maps_DataServlet extends HttpServlet {
             throws IOException {
       String response = null;
       switch (req.getParameter("type")) {
+      case "languages":
+        response = getLanguages();
+        break;
         case "events":
           response = getEvents(req);
           break;
@@ -124,5 +128,37 @@ public class Maps_DataServlet extends HttpServlet {
           .append('/')
           .append(c.get(Calendar.YEAR))
           .toString();
-    }        
+    }
+    
+    public String getLanguages() {
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"languages\": [");
+
+      Map<String, Language> langs = Language.getAllLanguages();
+      for (String code : langs.keySet()) {
+        Language l = langs.get(code);
+        response.append("{");
+        response.append("\"code\":\"").append(code).append("\",");
+        response.append("\"germanName\":\"").append(Utils.toUnicode(l.getGermanName())).append("\",");
+        response.append("\"name\":\"").append(Utils.toUnicode(l.getName())).append("\",");
+        response.append("\"days\":[");
+        for (String day : l.getDaysOfTheWeek()) {
+          response.append("\"").append(Utils.toUnicode(day)).append("\",");
+        }
+        if (response.charAt(response.length() - 1) == ',') {
+          response.deleteCharAt(response.length() - 1);  // remove the last ,
+        }
+        response.append("],");
+        response.append("\"isRtl\":\"").append(l.isRightToLeft()).append("\",");
+        response.append("\"inAgenda\":\"").append(l.isInAgenda()).append("\",");
+        response.append("\"specificFormat\":\"").append(l.hasSpecificFormat()).append("\"");
+        response.append("},");
+      }
+      if (response.charAt(response.length() - 1) == ',') {
+        response.deleteCharAt(response.length() - 1);  // remove the last ,
+      }
+      
+      response.append("]}");
+      return response.toString();
+    }
 }
