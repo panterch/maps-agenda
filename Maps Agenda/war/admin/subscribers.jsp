@@ -30,9 +30,11 @@ public static String createSubscriberForm(String formName, Subscriber t, Map<Str
   form.append("<p>Name: <input type='text' name='name' value='" + (t == null ? "" : t.getName()) + "'></p>");
 
   form.append("<p>Language: <select name='language'>)");
-  for (Language l : languages.values()) {
-    boolean isSelected = (t != null && t.getLanguage().equals(l.getCode())); 
-    form.append("<option value='" + l.getCode() + (isSelected ? "' selected>" : "'>") + l.getGermanName() + "</option>");
+  if (languages != null) {
+    for (Language l : languages.values()) {
+      boolean isSelected = (t != null && t.getLanguage().equals(l.getCode())); 
+      form.append("<option value='" + l.getCode() + (isSelected ? "' selected>" : "'>") + l.getGermanName() + "</option>");
+    }
   }
   form.append("</select></p><p><input type='submit' value='" + (t == null ? "Add": "Update") + " subscriber'></p>");
   form.append("</form></div>");

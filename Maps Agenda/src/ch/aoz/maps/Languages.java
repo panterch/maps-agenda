@@ -63,7 +63,7 @@ public class Languages implements java.io.Serializable {
       Entity e = datastore.get(KeyFactory.createKey(entityKind, entityKind));
       return new Languages(e);
     } catch (EntityNotFoundException e) {
-      return null;
+      return new Languages();
     }
   }
 

@@ -210,13 +210,15 @@ if (request.getParameter("code") != null) {
 }
 
 Map<String, Language> sorted_languages = new TreeMap<String, Language>();
-for (Language l : languages.values()) {
-  out.println(createLanguageForm("form-" + l.getCode(), l));
-  sorted_languages.put(l.getGermanName(), l);
+if (languages != null) {
+  for (Language l : languages.values()) {
+    out.println(createLanguageForm("form-" + l.getCode(), l));
+    sorted_languages.put(l.getGermanName(), l);
+  }
 }
 out.println(createLanguageForm("newLang", null));
 
-if (languages.isEmpty()) {
+if (languages == null || languages.isEmpty()) {
   out.println("No language is yet defined.");
 } else {
 %>

@@ -16,11 +16,13 @@ public static String createLanguageForm(Map<String, Language> languages, String 
   form.append("<div class='title'>Select language to display</div>");
   form.append("<form name='lang' method='GET' target='content-frame'>");
   form.append("<p><select name='lang'>");
-  for (Language l : languages.values()) {
-    if (l.getCode() == selected) {
-      form.append(l.getCode());
+  if (languages != null) {
+    for (Language l : languages.values()) {
+      if (l.getCode() == selected) {
+        form.append(l.getCode());
+      }
+      form.append("<option value='" + l.getCode() + (l.getCode().equals(selected) ? "' selected>" : "'>") + l.getGermanName() + "</option>");
     }
-    form.append("<option value='" + l.getCode() + (l.getCode().equals(selected) ? "' selected>" : "'>") + l.getGermanName() + "</option>");
   }
   form.append("</select></p><p><input type='submit' value='Show'></p></form>");
   return form.toString();
@@ -29,8 +31,10 @@ public static String createLanguageForm(Map<String, Language> languages, String 
 public static Map<String, Phrase> getPhrasesForLang(String lang) {
   Phrases phrases = Phrases.GetPhrasesForLanguage(lang);
   Map<String, Phrase> phrasesMap = new HashMap<String, Phrase>();
-  for (Phrase p : phrases.getPhrases()) {
-    phrasesMap.put(p.getKey(), p);
+  if (phrases != null) {
+    for (Phrase p : phrases.getPhrases()) {
+      phrasesMap.put(p.getKey(), p);
+    }
   }
   return phrasesMap;
 }
@@ -202,6 +206,10 @@ if (request.getParameter("delete") != null) {
   }
 }
 Map<String, Language> languages = Language.getAllLanguages();
+if (languages == null || languages.isEmpty()) {
+  out.println("Please add a language first.");
+  return;
+}
 Map<String, Phrase> phrasesDE = getPhrasesForLang("de");
 Map<String, Phrase> phrasesOther;
 String lang = request.getParameter("lang");
@@ -295,7 +303,7 @@ if (request.getParameter("new") != null) {
 out.println(createLanguageForm(languages, lang));
 out.println(createPhraseForm("newPhrase", languages.get(lang), null, null));
 
-if (phrasesDE.isEmpty()) {
+if (phrasesDE != null || phrasesDE.isEmpty()) {
   out.println("No phrase is yet defined.");
 } else {
 %>
