@@ -132,7 +132,7 @@ public class Phrases implements java.io.Serializable {
      Entity e = datastore.get(KeyFactory.createKey(entityKind, language));
      return new Phrases(e);
     } catch (EntityNotFoundException e) {
-      return null;
+      return new Phrases(language);
     }
   }
 

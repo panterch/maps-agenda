@@ -303,7 +303,7 @@ if (request.getParameter("new") != null) {
 out.println(createLanguageForm(languages, lang));
 out.println(createPhraseForm("newPhrase", languages.get(lang), null, null));
 
-if (phrasesDE != null || phrasesDE.isEmpty()) {
+if (phrasesDE == null || phrasesDE.isEmpty()) {
   out.println("No phrase is yet defined.");
 } else {
 %>
