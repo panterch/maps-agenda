@@ -30,13 +30,13 @@
     <div id="main">
       <div id="menu">
         <div id="menu_selector"></div>
-        <div class="menu_item" id="translators"><a ui-sref="translators">Translators</a></div>
-        <div class="menu_item" id="subscribers"><a ui-sref="subscribers">Newsletter subscribers</a></div>
-        <div class="menu_item" id="languages"><a ui-sref="languages">Supported languages</a></div>
-        <div class="menu_item" id="phrases"><a ui-sref="phrases">Translations</a></div>
-        <div class="menu_item" id="events"><a ui-sref="events">Events</a></div>
-        <div class="menu_item" id="generate"><a ui-sref="generate">Generate XML</a></div>
-        <div class="menu_item" id="send_newsletter"><a ui-sref="newsletter">Send newsletter</a></div>
+        <div class="menu_item" id="translators" ui-sref="translators">Translators</div>
+        <div class="menu_item" id="subscribers" ui-sref="subscribers">Newsletter subscribers</div>
+        <div class="menu_item" id="languages" ui-sref="languages">Supported languages</div>
+        <div class="menu_item" id="phrases" ui-sref="phrases">Translations</div>
+        <div class="menu_item" id="events" ui-sref="events">Events</div>
+        <div class="menu_item" id="generate" ui-sref="generate">Generate XML</div>
+        <div class="menu_item" id="send_newsletter" ui-sref="newsletter">Send newsletter</div>
       </div>
       <div id="content">
         <section ui-view>
