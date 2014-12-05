@@ -3,6 +3,7 @@
 Search by German name: <input type="text" ng-model="search" class="search-query" 
                               placeholder="Filter">
 </div>
+<div class="mb"><div class="hover" ng-click="edit('')">Add a new language</div></div>
 <table>
   <tr>
     <th>Code</th>
@@ -18,7 +19,6 @@ Search by German name: <input type="text" ng-model="search" class="search-query"
     <th>RTL?</th>
     <th>In Agenda?</th>
     <th>Spec format?</th>
-    <th></th>
   </tr>
   <tr class="hover" ng-repeat="l in languages | filter: {germanName: search}" 
       ng-click="edit(l.code)">
@@ -44,6 +44,5 @@ Search by German name: <input type="text" ng-model="search" class="search-query"
       <span ng-switch-when=true>&#10003;</span>
       <span ng-switch-when=false>&#10007;</span>
     </td>
-    <td>edit</td>
   </tr>
 </table>
