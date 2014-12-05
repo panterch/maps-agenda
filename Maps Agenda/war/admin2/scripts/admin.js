@@ -32,6 +32,10 @@ adminApp.controller('TranslatorCtrl', function ($scope) {});
 adminApp.controller('SubscriberCtrl', function ($scope) {});
 adminApp.controller('LanguageCtrl', function ($scope, languages) {
 	$scope.languages = languages;
+	$scope.edit = function(lang) {
+	  alert("Editing capabilities coming soon.");
+	  console.log("Language: " + lang);
+	}
 });
 adminApp.controller('PhraseCtrl', function ($scope) {});
 adminApp.controller('EventCtrl', function ($scope) {});

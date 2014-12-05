@@ -149,9 +149,9 @@ public class Maps_DataServlet extends HttpServlet {
           response.deleteCharAt(response.length() - 1);  // remove the last ,
         }
         response.append("],");
-        response.append("\"isRtl\":\"").append(l.isRightToLeft()).append("\",");
-        response.append("\"inAgenda\":\"").append(l.isInAgenda()).append("\",");
-        response.append("\"specificFormat\":\"").append(l.hasSpecificFormat()).append("\"");
+        response.append("\"isRtl\":").append(l.isRightToLeft()).append(",");
+        response.append("\"inAgenda\":").append(l.isInAgenda()).append(",");
+        response.append("\"specificFormat\":").append(l.hasSpecificFormat()).append("");
         response.append("},");
       }
       if (response.charAt(response.length() - 1) == ',') {
