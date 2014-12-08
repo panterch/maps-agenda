@@ -68,3 +68,49 @@ body {
     margin: 0;
   }
 }
+
+/* Header */
+
+.header-background {
+  background-color: #ffffff;
+  color: #706f6f;
+  padding: 20px 0 10px 0;
+}
+
+.header {
+  background-color: #fe5c6c;
+  color: #fff;
+  font-family: Open Sans, Verdana;
+  font-size: 1.5em;
+  font-weight: bolder;
+  padding: 4px 0 4px 0;
+}
+
+.header-subtitle {
+  font-family: Georgia, Times New Roman;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 5px 0 5px 20px;
+}
+
+.header > div {
+  display: table-cell;
+  margin: 5px;
+}
+
+.header .mapsletter .letter {
+  font-family: HouschkaAltPro-Bold;
+  font-size: 3em;
+  padding: 0 15px;
+  margin: -12px 0 -15px 0;
+}
+
+.header .mapsletter {
+  border-right: 8px solid #706f6f;
+}
+
+.header .desc {
+  font-family: HouschkaAltPro-Bold;
+  padding-left: 15px;
+  vertical-align: middle;
+}
