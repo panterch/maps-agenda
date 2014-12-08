@@ -132,13 +132,12 @@ public class Maps_DataServlet extends HttpServlet {
     
     public String getLanguages() {
       StringBuilder response = new StringBuilder();
-      response.append("{ \"languages\": [");
+      response.append("{ \"languages\": {");
 
       Map<String, Language> langs = Language.getAllLanguages();
       for (String code : langs.keySet()) {
         Language l = langs.get(code);
-        response.append("{");
-        response.append("\"code\":\"").append(code).append("\",");
+        response.append("\"" + code + "\": {");
         response.append("\"germanName\":\"").append(Utils.toUnicode(l.getGermanName())).append("\",");
         response.append("\"name\":\"").append(Utils.toUnicode(l.getName())).append("\",");
         response.append("\"days\":[");
@@ -158,7 +157,7 @@ public class Maps_DataServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
       
-      response.append("]}");
+      response.append("}}");
       return response.toString();
     }
 }

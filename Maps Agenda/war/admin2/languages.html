@@ -20,9 +20,9 @@ Search by German name: <input type="text" ng-model="search" class="search-query"
     <th>In Agenda?</th>
     <th>Spec format?</th>
   </tr>
-  <tr class="hover" ng-repeat="l in languages | filter: {germanName: search}" 
+  <tr class="hover" ng-repeat="(code, l) in languages | filter: {germanName: search}" 
       ng-click="edit(l.code)">
-    <td>{{l.code}}</td>
+    <td>{{code}}</td>
     <td>{{l.name}}</td>
     <td>{{l.germanName}}</td>
     <td>{{l.days[0]}}</td>
