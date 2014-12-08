@@ -20,8 +20,8 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
 	$stateProvider
 	  .state('main', {
       // onEnter: function() { itemClick("languages") },
-		  url: '/main',
-		  //templateUrl: 'languages.html',
+		  url: '',
+		  templateUrl: 'main.html',
 		  resolve: {
 			  languages: function($http) {
 				  return $http({method: 'GET', url: '/maps/data?type=languages'})
@@ -31,7 +31,6 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
 			  },
 		  },
       controller: 'MainCtrl'
-    })
-  $urlRouterProvider.when('', '/main');
+    });
   }]
 );
