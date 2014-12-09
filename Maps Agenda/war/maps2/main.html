@@ -1,10 +1,29 @@
 <div class="sidebar" >
-  <p class="plink" ng-repeat="(code, l) in languages" ng-click="updateLang(code)">{{l.name}}</p>
+  <p class="plink" ng-repeat="(code, l) in languages" 
+                   ng-click="updateLang(code)">{{l.name}}</p>
 </div><!-- sidebar -->
 
 <div class="sidebar nav">
-  <p>Site links and newsletter sign up lives here.</p>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <p class="plink">{{phrases.UeberMAPS}}</p>
+  <p class="plink">{{phrases.Kontakt}}</p>
+  <p class="plink">{{phrases.Impressum}}</p>
+  
+  <div class="newsletter">{{phrases.Newsletter}}</div>
+  <div class="section-div newsletter-section-div"></div>
+  <div class="newsletter newsletter-text">
+    <span>{{phrases.AnmeldungNewsletter}}</span>
+    <p>
+      <select ng-model="newsletter_lang" 
+              ng-options="code as language.name for (code, language) in languages"></select>
+      <br>
+      <input ng-model="name" type="text" placeholder="Name">
+      <input ng-model="email" type="text" placeholder="Email address">
+    </p>
+  </div>
+  <div class="section-div newsletter-section-div"></div>
+  <div class="newsletter"><a href="" class="menu-item" ng-click="register();">{{phrases.Anmelden}}</a></div>
+  
+  <p class="plink" ng-repeat="tag in tags">{{tag}}</p>
 </div><!-- sidebar -->
 
 <div class="container">

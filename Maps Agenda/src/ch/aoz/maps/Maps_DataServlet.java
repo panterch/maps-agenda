@@ -13,6 +13,7 @@ import javax.servlet.http.*;
 import ch.aoz.maps.Event;
 import ch.aoz.maps.Language;
 import ch.aoz.maps.Phrase;
+import ch.aoz.maps.Phrases;
 
 @SuppressWarnings("serial")
 public class Maps_DataServlet extends HttpServlet {
@@ -21,11 +22,14 @@ public class Maps_DataServlet extends HttpServlet {
             throws IOException {
       String response = null;
       switch (req.getParameter("type")) {
-      case "languages":
-        response = getLanguages();
-        break;
+        case "languages":
+          response = getLanguages();
+          break;
         case "events":
           response = getEvents(req);
+          break;
+        case "phrases":
+          response = getPhrases(req);
           break;
         case "tags":
           response = getTags();
@@ -53,6 +57,25 @@ public class Maps_DataServlet extends HttpServlet {
       return response.toString();
     }
     
+    private String getPhrases(HttpServletRequest req) {
+      String lang = req.getParameter("lang");
+      Map<String, Phrase> phrases = 
+          Phrases.getMergedPhrases(lang == null ? "de" : lang);      
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"phrases\": {");
+      for (String key : phrases.keySet()) {
+        Phrase p = phrases.get(key);
+        response.append("\"" + key + "\":");
+        response.append("\"" + Utils.toUnicode(p.getPhrase()) + "\",");
+      }
+      if (!phrases.isEmpty()) {
+        // Remove the last comma.
+        response.deleteCharAt(response.length() - 1);
+      }
+      response.append("}}");
+      return response.toString();
+    }
+
     private String getEvents(HttpServletRequest req) {
       String lang = req.getParameter("lang");
       if (lang == null) {

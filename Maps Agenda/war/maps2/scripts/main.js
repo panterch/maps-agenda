@@ -11,11 +11,13 @@ mapsApp.run(['$rootScope', '$state', '$stateParams',
   }]
 )
 
-mapsApp.controller('MainCtrl', function ($scope, $location, lang, languages) {
+mapsApp.controller('MainCtrl', function ($scope, $location, $http,lang, 
+                                         languages, phrases, tags) {
   $scope.lang = lang;
-  if (lang == null)
-    $scope.lang = 'de'
+  $scope.newsletter_lang = lang;
 	$scope.languages = languages;
+	$scope.phrases = phrases;
+  $scope.tags = tags;
   
   $scope.updateLang = function(new_lang) {
     if (new_lang == null)
@@ -23,13 +25,30 @@ mapsApp.controller('MainCtrl', function ($scope, $location, lang, languages) {
     else
       $location.path('/' + new_lang);
   }
+  $scope.register = function() {
+    var params = [
+      'lang=' + $scope.newsletter_lang,
+      'name=' + $scope.name,
+      'email=' + $scope.email
+    ];
+    var url = '/maps/subscribe?' + params.join('&');
+    $http.get(url).success(function(data) {
+      if (data.status == "ok") {
+        $scope.name = "";
+        $scope.email = "";
+        alert(data.message);
+      } else {
+        alert("Error: " + data.message);
+      }
+    });   
+  }
 });
 
 mapsApp.config(['$stateProvider', '$urlRouterProvider',
   function ($stateProvider,   $urlRouterProvider) {
   	$stateProvider
+  	  // Parent state that loads the languages and phrases for the entire site. 
   	  .state('main', {
-        // onEnter: function() { itemClick("languages") },
   		  url: '/{lang:[a-z][a-z]}',
   		  templateUrl: 'main.html',
   		  resolve: {
@@ -40,8 +59,24 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   				  return $http({method: 'GET', url: '/maps/data?type=languages'})
   	          .then (function (data) {
   	            return data.data.languages;
-  	          });				  
+  	          }
+  	        );				  
   			  },
+  			  phrases: function($http, lang) {
+            return $http({method: 'GET', 
+                          url: '/maps/data?type=phrases&lang=' + lang})
+              .then (function (data) {
+                return data.data.phrases;
+              }
+            );         
+  			  },
+          tags: function($http) {
+            return $http({method: 'GET', url: '/maps/data?type=tags'})
+              .then (function (data) {
+                return data.data.tags;
+              }
+            );          
+          },
   		  },
         controller: 'MainCtrl'
       });

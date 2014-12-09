@@ -118,3 +118,39 @@ body {
   padding-left: 15px;
   vertical-align: middle;
 }
+
+/* Newsletter */
+
+.newsletter {
+  background-color: #706f6f;
+  color: #fff;
+  overflow-wrap: break-word;
+  padding: 7px 15px;
+  text-align: left;
+  text-decoration: none;
+  width: 250px;
+}
+
+.newsletter > div:first-child,
+.newsletter > div:last-child {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.newsletter-text {
+  font-size: .8em;
+  font-weight: normal;
+}
+
+.newsletter-text input,
+.newsletter-text select {
+  border: 1px solid #fe5c6c;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  outline: none;
+  padding: 3px;
+  width: 95%;
+}
+
+.newsletter-section-div {
+  background: url('/maps/images/perforated_band_2.png'); repeat-x scroll;
+}
