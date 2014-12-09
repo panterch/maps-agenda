@@ -11,26 +11,40 @@ mapsApp.run(['$rootScope', '$state', '$stateParams',
   }]
 )
 
-mapsApp.controller('MainCtrl', function ($scope, languages) {
+mapsApp.controller('MainCtrl', function ($scope, $location, lang, languages) {
+  $scope.lang = lang;
+  if (lang == null)
+    $scope.lang = 'de'
 	$scope.languages = languages;
+  
+  $scope.updateLang = function(new_lang) {
+    if (new_lang == null)
+      $location.path('/' + $scope.lang);
+    else
+      $location.path('/' + new_lang);
+  }
 });
 
 mapsApp.config(['$stateProvider', '$urlRouterProvider',
   function ($stateProvider,   $urlRouterProvider) {
-	$stateProvider
-	  .state('main', {
-      // onEnter: function() { itemClick("languages") },
-		  url: '',
-		  templateUrl: 'main.html',
-		  resolve: {
-			  languages: function($http) {
-				  return $http({method: 'GET', url: '/maps/data?type=languages'})
-	          .then (function (data) {
-	            return data.data.languages;
-	          });				  
-			  },
-		  },
-      controller: 'MainCtrl'
-    });
+  	$stateProvider
+  	  .state('main', {
+        // onEnter: function() { itemClick("languages") },
+  		  url: '/{lang:[a-z][a-z]}',
+  		  templateUrl: 'main.html',
+  		  resolve: {
+  		    lang: ['$stateParams', function($stateParams) {
+            return $stateParams.lang;
+  	      }],
+  			  languages: function($http) {
+  				  return $http({method: 'GET', url: '/maps/data?type=languages'})
+  	          .then (function (data) {
+  	            return data.data.languages;
+  	          });				  
+  			  },
+  		  },
+        controller: 'MainCtrl'
+      });
+  	$urlRouterProvider.when('', '/de');
   }]
 );

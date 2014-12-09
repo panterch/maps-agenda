@@ -1,5 +1,5 @@
 <div class="sidebar" >
-  <p ng-repeat="(code, l) in languages">{{l.name}}</p>
+  <p class="plink" ng-repeat="(code, l) in languages" ng-click="updateLang(code)">{{l.name}}</p>
 </div><!-- sidebar -->
 
 <div class="sidebar nav">
@@ -22,11 +22,11 @@
 
     <form action="." id="language" method="post" name="language">
       <label for="lang">Language</label> 
-      <select ng-model="selectedLang" 
+      <select ng-model="lang" ng-change="updateLang(null)"
               ng-options="code as language.name for (code, language) in languages"></select>
     </form>
 
-    <p>{{selectedLang}} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>{{lang}} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
     <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
 
