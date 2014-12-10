@@ -6,9 +6,9 @@
 </div><!-- sidebar -->
 
 <div class="sidebar nav">
-  <p class="plink">{{phrases.UeberMAPS}}</p>
-  <p class="plink">{{phrases.Kontakt}}</p>
-  <p class="plink">{{phrases.Impressum}}</p>
+  <p class="plink" ui-sref="main.about">{{phrases.UeberMAPS}}</p>
+  <p class="plink" ui-sref="main.contact">{{phrases.Kontakt}}</p>
+  <p class="plink" ui-sref="main.impressum">{{phrases.Impressum}}</p>
   
   <div class="newsletter">{{phrases.Newsletter}}</div>
   <div class="section-div newsletter-section-div"></div>
@@ -47,7 +47,7 @@
               ng-options="code as language.name for (code, language) in languages"></select>
     </form>
 
-    <p>{{lang}} Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <ui-view />
 
     <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
 

@@ -1,4 +1,13 @@
 var mapsApp = angular.module('mapsApp', ['ui.router']);
+var today = function() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1;  // January is 0.
+  var yyyy = today.getFullYear();
+  if(dd < 10) { dd = '0' + dd; }
+  if(mm < 10) { mm = '0' + mm; } 
+  return yyyy + '-' + mm + '-' + dd;    
+}
 
 mapsApp.run(['$rootScope', '$state', '$stateParams',
   function ($rootScope,   $state,   $stateParams) {
@@ -18,12 +27,13 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http,lang,
 	$scope.languages = languages;
 	$scope.phrases = phrases;
   $scope.tags = tags;
-  
+
   $scope.updateLang = function(new_lang) {
+    var path = $location.path();
     if (new_lang == null)
-      $location.path('/' + $scope.lang);
+      $location.path(path.replace(/^.../, '/' + $scope.lang));
     else
-      $location.path('/' + new_lang);
+      $location.path(path.replace(/^.../, '/' + new_lang));
   }
   $scope.register = function() {
     var params = [
@@ -45,10 +55,11 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http,lang,
 });
 
 mapsApp.config(['$stateProvider', '$urlRouterProvider',
-  function ($stateProvider,   $urlRouterProvider) {
+  function ($stateProvider, $urlRouterProvider) {
   	$stateProvider
   	  // Parent state that loads the languages and phrases for the entire site. 
   	  .state('main', {
+  	    abstract: true,
   		  url: '/{lang:[a-z][a-z]}',
   		  templateUrl: 'main.html',
   		  resolve: {
@@ -78,8 +89,49 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
             );          
           },
   		  },
-        controller: 'MainCtrl'
+  		  controller: 'MainCtrl'
+      })
+      .state('main.events', {
+        url: '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
+        templateUrl: 'events.html',
+      })
+      .state('main.about', {
+        url: '/about',
+        /*
+        templateProvider: function(lang, $http) {
+          var template = 'about_' + lang.lang + '.html';
+          console.log('Template: ' + template);
+          console.log($http);
+          $http.get(template,
+            //success
+            function(data){ 
+              console.log('Adding to cache'); 
+              //$templateCache.put(template, data); 
+            },
+            //failure
+            function(){
+              $http.get('about_de.html', function(data){
+                console.log('Adding default to cache');
+                //$templateCache.put(template, data);
+              });
+            });
+          return template; 
+        },
+        */        
+        // templateUrl: function(lang) { return 'about_' + lang.lang + '.html'; },
+        templateUrl: 'about_de.html',        
+      })
+      .state('main.contact', {
+        url: '/contact',
+        templateUrl: 'contact.html',        
+      })
+      .state('main.impressum', {
+        url: '/impressum',
+        templateUrl: 'impressum.html',        
       });
-  	$urlRouterProvider.when('', '/de');
+    $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
+      return $match + '/events';
+    }])
+    $urlRouterProvider.otherwise('/de/events');
   }]
 );
