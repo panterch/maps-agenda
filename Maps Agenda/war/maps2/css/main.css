@@ -119,6 +119,28 @@ body {
   vertical-align: middle;
 }
 
+/* Background */
+
+.background-color {
+  background-color: #fe5c6c;
+  height: 100%;
+  opacity: 1.0;
+  position: fixed;
+  width: 100%;
+  z-index: -2;
+}
+
+.background-screen {
+  background-image: url('/maps2/images/temp-bg.png');
+  background-position-x: center;
+  background-size: cover;
+  height: 100%;
+  opacity: 1.0;
+  position: fixed;
+  width: 100%;
+  z-index: -1;
+}
+
 /* Newsletter */
 
 .newsletter {
@@ -153,17 +175,4 @@ body {
 
 .newsletter-section-div {
   background: url('/maps/images/perforated_band_2.png'); repeat-x scroll;
-}
-
-/* Background */
-
-.background-screen {
-  background-image: url('/maps/images/temp-bg.jpg');
-  background-position-x: center;
-  background-size: cover;
-  height: 100%;
-  opacity: 0.6;
-  position: fixed;
-  width: 100%;
-  z-index: -1;
 }
