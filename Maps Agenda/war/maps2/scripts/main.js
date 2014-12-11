@@ -20,7 +20,7 @@ mapsApp.run(['$rootScope', '$state', '$stateParams',
   }]
 )
 
-mapsApp.controller('MainCtrl', function ($scope, $location, $http,lang, 
+mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
                                          languages, phrases, tags) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
@@ -51,6 +51,10 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http,lang,
         alert("Error: " + data.message);
       }
     });   
+  }
+  // Check if the language is supported. If not, redirect to 'de'.
+  if (!(lang in languages)) {
+    $scope.updateLang('de');
   }
 });
 
@@ -97,29 +101,16 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
       })
       .state('main.about', {
         url: '/about',
-        /*
-        templateProvider: function(lang, $http) {
-          var template = 'about_' + lang.lang + '.html';
-          console.log('Template: ' + template);
-          console.log($http);
-          $http.get(template,
-            //success
-            function(data){ 
-              console.log('Adding to cache'); 
-              //$templateCache.put(template, data); 
-            },
-            //failure
-            function(){
-              $http.get('about_de.html', function(data){
-                console.log('Adding default to cache');
-                //$templateCache.put(template, data);
-              });
-            });
-          return template; 
+        templateProvider: function($templateFactory, $stateParams) {
+          // First try to load the about page for the requested language.
+          var templateUrl = 'about/' + $stateParams.lang + '.html';
+          return $templateFactory.fromUrl(templateUrl).then(
+            function (data) { return data; },
+            function (reason) { 
+              // If not available, return the German about page. 
+              return $templateFactory.fromUrl('about/de.html'); 
+          });
         },
-        */        
-        // templateUrl: function(lang) { return 'about_' + lang.lang + '.html'; },
-        templateUrl: 'about_de.html',        
       })
       .state('main.contact', {
         url: '/contact',
