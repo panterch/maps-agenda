@@ -41,14 +41,15 @@
     </div>
     <div class="header-subtitle">Günstige Kultur- und Freizeitangebote</div>
     </div>
-
-    <form action="." id="language" method="post" name="language">
-      <label for="lang">Language</label> 
-      <select ng-model="lang" ng-change="updateLang(null)"
-              ng-options="code as language.name for (code, language) in languages"></select>
-    </form>
-
-    <ui-view />
+    <div class="section-div"></div>
+    <div class="white">
+      <form action="." id="language" method="post" name="language">
+        <label for="lang">Language</label> 
+        <select ng-model="lang" ng-change="updateLang(null)"
+                ng-options="code as language.name for (code, language) in languages"></select>
+      </form>
+    </div>
+    <div ui-view class="white"></div>
 
     <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
 
