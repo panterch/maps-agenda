@@ -28,8 +28,20 @@ adminApp.run(['$rootScope', '$state', '$stateParams',
   }]
 )
 
-adminApp.controller('TranslatorCtrl', function ($scope) {});
-adminApp.controller('SubscriberCtrl', function ($scope) {});
+adminApp.controller('TranslatorCtrl', function ($scope, translators) {
+	$scope.translators = translators;
+	$scope.edit = function(email) {
+	  alert("Editing capabilities coming soon.");
+	  console.log("Email: " + email);
+	}
+});
+adminApp.controller('SubscriberCtrl', function ($scope, subscribers) {
+	$scope.subscribers = subscribers;
+	$scope.edit = function(email) {
+	  alert("Editing capabilities coming soon.");
+	  console.log("Email: " + email);
+	}
+});
 adminApp.controller('LanguageCtrl', function ($scope, languages) {
 	$scope.languages = languages;
 	$scope.edit = function(lang) {
@@ -47,35 +59,51 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
 	$stateProvider
 	  .state('translators', {
 		  url: '/translators',
-      onEnter: function() { itemClick("translators") },
-      templateUrl: 'translators.html',
-      controller: 'TranslatorCtrl'
+          onEnter: function() { itemClick("translators") },
+          templateUrl: 'translators.html',
+          resolve: {
+        	  translators: function($http) {
+                return $http({method: 'GET', url: '/maps/data?type=translators'})
+  	            .then (function (data) {
+  	              return data.data.translators;
+                });				  
+              },
+  		  },
+          controller: 'TranslatorCtrl'
     })
 	  .state('subscribers', {
 		  url: '/subscribers',
-      onEnter: function() { itemClick("subscribers") },
+          onEnter: function() { itemClick("subscribers") },
 		  templateUrl: 'subscribers.html',
-      controller: 'SubscriberCtrl'
+          resolve: {
+              subscribers: function($http) {
+                return $http({method: 'GET', url: '/maps/data?type=subscribers'})
+  	            .then (function (data) {
+  	              return data.data.subscribers;
+                });				  
+              },
+  		  },
+          controller: 'SubscriberCtrl'
     })
 	  .state('languages', {
 		  url: '/languages',
-      onEnter: function() { itemClick("languages") },
+          onEnter: function() { itemClick("languages") },
 		  templateUrl: 'languages.html',
-		  resolve: {
-			  languages: function($http) {
-				  return $http({method: 'GET', url: '/maps/data?type=languages'})
+          resolve: {
+            languages: function($http) {
+              return $http({method: 'GET', url: '/maps/data?type=languages'})
 	          .then (function (data) {
 	            return data.data.languages;
-	          });				  
-			  },
+              });				  
+            },
 		  },
-      controller: 'LanguageCtrl'
+          controller: 'LanguageCtrl'
     })
 	  .state('phrases', {
-		  url: '/translations',
-		  onEnter: function() { itemClick("phrases") },
-		  templateUrl: 'phrases.html',
-      controller: 'PhraseCtrl'
+          url: '/translations',
+          onEnter: function() { itemClick("phrases") },
+          templateUrl: 'phrases.html',
+          controller: 'PhraseCtrl'
     })
 	  .state('events', {
 		  url: '/events',

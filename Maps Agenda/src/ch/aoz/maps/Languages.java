@@ -106,7 +106,7 @@ public class Languages implements java.io.Serializable {
   private Entity toEntity() {
     Entity languages = new Entity(entityKind, entityKind);
     for (Language l : this.languages.values()) {
-      languages.setProperty(l.getCode(), packLanguage(l));
+      languages.setUnindexedProperty(l.getCode(), packLanguage(l));
     }
     return languages;
   }

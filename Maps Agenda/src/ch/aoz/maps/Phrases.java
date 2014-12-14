@@ -91,7 +91,7 @@ public class Phrases implements java.io.Serializable {
   private Entity toEntity() {
     Entity phrases = new Entity(entityKind, this.lang);
     for (Phrase p : this.phrases.values()) {
-      phrases.setProperty(p.getKey(), packPhrase(p));
+      phrases.setUnindexedProperty(p.getKey(), packPhrase(p));
     }
     return phrases;
   }

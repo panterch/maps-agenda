@@ -151,11 +151,11 @@ if (Boolean.parseBoolean(request.getParameter("delete"))) {
 }
 Map<String, Translator> translators = Translator.getAllTranslators();
 if (request.getParameter("email") != null) {
-  // A new language is to be submitted.
+  // A new translator is to be submitted.
   Translator t = new Translator(
       request.getParameter("email"), 
       request.getParameter("name"), 
-    Translator.parseLanguageString(request.getParameter("langs")));
+      Translator.parseLanguageString(request.getParameter("langs")));
   boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
   // TODO: check that all the language codes actually exist.
   if (isNew && translators.containsKey(t.getEmail())) {

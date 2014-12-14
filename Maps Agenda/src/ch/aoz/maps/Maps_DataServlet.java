@@ -34,6 +34,12 @@ public class Maps_DataServlet extends HttpServlet {
         case "tags":
           response = getTags();
           break;
+        case "subscribers":
+          response = getSubscribers();
+          break;
+        case "translators":
+          response = getTranslators();
+          break;
       }
       if (response == null) {
         
@@ -181,6 +187,52 @@ public class Maps_DataServlet extends HttpServlet {
       }
       
       response.append("}}");
+      return response.toString();
+    }
+    
+    public String getTranslators() {
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"translators\": [");
+
+      Map<String, Translator> translators = Translator.getAllTranslators();
+      for (String email : translators.keySet()) {
+        Translator t = translators.get(email);
+        response.append("{");
+        response.append("\"email\":\"").append(Utils.toUnicode(t.getEmail())).append("\",");
+        response.append("\"name\":\"").append(Utils.toUnicode(t.getName())).append("\",");
+        response.append("\"langs\":[");
+        for (String l : t.getLanguages()) {
+          response.append("\"").append(Utils.toUnicode(l)).append("\",");
+        }
+        if (response.charAt(response.length() - 1) == ',') {
+          response.deleteCharAt(response.length() - 1);  // remove the last ,
+        }
+        response.append("]},");
+      }
+      if (response.charAt(response.length() - 1) == ',') {
+        response.deleteCharAt(response.length() - 1);  // remove the last ,
+      }      
+      response.append("]}");
+      return response.toString();
+    }
+
+    public String getSubscribers() {
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"subscribers\": [");
+
+      Map<String, Subscriber> subscribers = Subscriber.getAllSubscribers();
+      for (String email : subscribers.keySet()) {
+        Subscriber s = subscribers.get(email);
+        response.append("{");
+        response.append("\"email\":\"").append(Utils.toUnicode(s.getEmail())).append("\",");
+        response.append("\"name\":\"").append(Utils.toUnicode(s.getName())).append("\",");
+        response.append("\"lang\":\"").append(Utils.toUnicode(s.getLanguage())).append("\",");
+        response.append("\"hash\":\"").append(Utils.toUnicode(s.getHash())).append("\"},");
+      }
+      if (response.charAt(response.length() - 1) == ',') {
+        response.deleteCharAt(response.length() - 1);  // remove the last ,
+      }      
+      response.append("]}");
       return response.toString();
     }
 }
