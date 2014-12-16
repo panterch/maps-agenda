@@ -52,7 +52,7 @@ public class Subscribers implements java.io.Serializable {
   /** 
    * Returns the Subscribers object. It contains all the subscribers defined in the application.
    */
-  public static Subscribers GetSubscribers() {
+  public static Subscribers getSubscribers() {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
     if (syncCache.contains(entityKind)) {
       return (Subscribers)syncCache.get(entityKind);
@@ -69,7 +69,7 @@ public class Subscribers implements java.io.Serializable {
   public static boolean addSubscriber(Subscriber s) {
     if (s == null || !s.isOk()) 
       return false;
-    Subscribers subs = GetSubscribers();
+    Subscribers subs = getSubscribers();
     if (subs == null) 
       return false;
     subs.subscribers.put(s.getEmail(), s);
@@ -79,12 +79,19 @@ public class Subscribers implements java.io.Serializable {
   public static boolean removeSubscriber(String email) {
     if (email == null)
       return false;
-    Subscribers subs = GetSubscribers();
+    Subscribers subs = getSubscribers();
     if (subs.subscribers.containsKey(email)) {
       subs.subscribers.remove(email);
       return subs.addToStore();
     }
     return true;
+  }
+
+  public static boolean exists(String email) {
+    if (email == null)
+      return false;
+    Subscribers subs = getSubscribers();
+    return subs.subscribers.containsKey(email);
   }
 
   /**
@@ -167,6 +174,16 @@ public class Subscribers implements java.io.Serializable {
     else return null;
   }
   
+  public Subscriber getSubscriberByHash(String hash) {
+    if (hash == null || hash.equals(""))
+      return null;
+    for (Subscriber s : subscribers.values()) {
+      if (s.getHash().equals(hash))
+        return s;
+    }
+    return null;
+  }
+
   public boolean isOk() {
     return isOk;
   }
