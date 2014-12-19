@@ -17,6 +17,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
  * */
 public class Phrases implements java.io.Serializable {
   public static final String entityKind = "Phrases";
+  public static final char RS = 0x1e;  // Record separator.
   private static final long serialVersionUID = 161719L;
 
   private String lang;
@@ -193,7 +194,7 @@ public class Phrases implements java.io.Serializable {
    * @return a fully constructed Phrase
    */
   private static Phrase extractPhrase(String lang, String key, String value) {
-    String[] values = value.split(",", 3);
+    String[] values = value.split("" + RS, 3);
     if (values.length != 3) return null;
     boolean isTag = values[0].equals("tag");
     return new Phrase(key, lang, values[2], values[1], isTag);
@@ -207,9 +208,8 @@ public class Phrases implements java.io.Serializable {
    */
   private static String packPhrase(Phrase p) {
     StringBuilder s = new StringBuilder();
-    s.append(p.isTag() ? "tag," : "notag,");
-    s.append(p.getGroup());
-    s.append(",");
+    s.append((p.isTag() ? "tag" : "notag") + RS);
+    s.append(p.getGroup() + RS);
     s.append(p.getPhrase());
     return s.toString();
   }
