@@ -11,10 +11,23 @@ html, body, #main { height: 96%; }
 
 .left {
   float: left;
+  margin-right: 10px;
 }
 
 .right {
   float: right;
+}
+
+button, input, select {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  height: 28px;
+  vertical-align:middle;
+}
+
+th {
+  background-color: #ba7;
 }
 
 #menu {
@@ -89,13 +102,21 @@ html, body, #main { height: 96%; }
 .hover:hover {
   background-color: #ccc;
 }
+.red-hover:hover {
+  background-color: #c00;
+}
 
 form p {
   padding: 0px;
   margin: 2px;
 }
+.container {
+  width: 500px;
+}
 .mb {
   margin-bottom: 10px;
+  overflow: auto;
+  width: 100%
 }
 #new-lang-link {
   margin-bottom: 10px;

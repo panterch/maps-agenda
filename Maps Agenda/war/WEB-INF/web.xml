@@ -18,6 +18,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>Maps_AdminData</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_AdminDataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Maps_AdminData</servlet-name>
+    <url-pattern>/admin/data</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>Tmp_Phrases</servlet-name>
     <servlet-class>ch.aoz.maps.Tmp_Phrases</servlet-class>
   </servlet>

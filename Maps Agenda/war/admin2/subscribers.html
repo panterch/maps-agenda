@@ -1,14 +1,27 @@
-<table>
-  <tr>
-    <th>Email address</th>
-    <th>Name</th>
-    <th>Language</th>
-    <th>Hash</th>
-  </tr>
-  <tr class="hover" ng-repeat="s in subscribers" ng-click="edit(s.email)">
-    <td>{{s.email}}</td>
-    <td>{{s.name}}</td>
-    <td>langs</td>
-    <td>{{s.hash}}</td>
-  </tr>
-</table>
+<div class='left'>
+  <div class="title">List of the newsletter subscribers</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')">Add a new subscriber</button></div>
+    <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
+                                                  placeholder="Filter" /></div>
+  </div>
+  <table>
+    <tr>
+      <th>Email address</th>
+      <th>Name</th>
+      <th>Language</th>
+      <th>Hash</th>
+      <th><img src="icons/trash.svg" width=16 height=16 title='Delete'></th>
+    </tr>
+    <tr class="hover" ng-repeat="s in subscribers | filter: subs_filter(search)" 
+                      ng-click="edit(s.email)">
+      <td>{{s.email}}</td>
+      <td>{{s.name}}</td>
+      <td>{{s.lang}}</td>
+      <td>{{s.hash}}</td>
+      <td class="red-hover" ng-click="remove(t.email); $event.stopPropagation()">
+        <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+      </td>
+    </tr>
+  </table>
+</div>

@@ -1,1 +1,25 @@
-<h1>The translators page is under construction</h1>
+<div class='left'>
+  <div class="title">List of the translators</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')">Add a new translator</button></div>
+    <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
+                                                  placeholder="Filter" /></div>
+  </div>
+  <table>
+    <tr>
+      <th>Email address</th>
+      <th>Name</th>
+      <th>Languages</th>
+      <th><img src="icons/trash.svg" width=16 height=16 title='Delete'></th>
+    </tr>
+    <tr class="hover" ng-repeat="t in translators | filter: t_filter(search)"
+                      ng-click="edit(t.email)">
+      <td>{{t.email}}</td>
+      <td>{{t.name}}</td>
+      <td>{{getLangStrings(t.langs)}}</td>
+      <td class="red-hover" ng-click="remove(t.email); $event.stopPropagation()">
+        <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+      </td>
+    </tr>
+  </table>
+</div>

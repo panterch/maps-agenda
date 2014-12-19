@@ -1,48 +1,47 @@
-<div class="title">Defined languages:</div>
-<div class="mb">
-Search by German name: <input type="text" ng-model="search" class="search-query" 
-                              placeholder="Filter">
+<div class='left'>
+  <div class="title">List of languages</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')">Add a new language</button></div>
+  </div>
+  <table>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>German name</th>
+      <th>Su</th>
+      <th>Mo</th>
+      <th>Tu</th>
+      <th>We</th>
+      <th>Th</th>
+      <th>Fr</th>
+      <th>Sa</th>
+      <th>RTL?</th>
+      <th>In Agenda?</th>
+      <th>Spec format?</th>
+    </tr>
+    <tr class="hover" ng-repeat="(code, l) in languages" ng-click="edit(l.code)">
+      <td>{{code}}</td>
+      <td>{{l.name}}</td>
+      <td>{{l.germanName}}</td>
+      <td>{{l.days[0]}}</td>
+      <td>{{l.days[1]}}</td>
+      <td>{{l.days[2]}}</td>
+      <td>{{l.days[3]}}</td>
+      <td>{{l.days[4]}}</td>
+      <td>{{l.days[5]}}</td>
+      <td>{{l.days[6]}}</td>
+      <td ng-switch="l.isRtl">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-switch="l.inAgenda">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-switch="l.specificFormat">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+    </tr>
+  </table>
 </div>
-<div class="mb"><div class="hover" ng-click="edit('')">Add a new language</div></div>
-<table>
-  <tr>
-    <th>Code</th>
-    <th>Name</th>
-    <th>German name</th>
-    <th>Su</th>
-    <th>Mo</th>
-    <th>Tu</th>
-    <th>We</th>
-    <th>Th</th>
-    <th>Fr</th>
-    <th>Sa</th>
-    <th>RTL?</th>
-    <th>In Agenda?</th>
-    <th>Spec format?</th>
-  </tr>
-  <tr class="hover" ng-repeat="(code, l) in languages | filter: {germanName: search}" 
-      ng-click="edit(l.code)">
-    <td>{{code}}</td>
-    <td>{{l.name}}</td>
-    <td>{{l.germanName}}</td>
-    <td>{{l.days[0]}}</td>
-    <td>{{l.days[1]}}</td>
-    <td>{{l.days[2]}}</td>
-    <td>{{l.days[3]}}</td>
-    <td>{{l.days[4]}}</td>
-    <td>{{l.days[5]}}</td>
-    <td>{{l.days[6]}}</td>
-    <td ng-switch="l.isRtl">
-      <span ng-switch-when=true>&#10003;</span>
-      <span ng-switch-when=false>&#10007;</span>
-    </td>
-    <td ng-switch="l.inAgenda">
-      <span ng-switch-when=true>&#10003;</span>
-      <span ng-switch-when=false>&#10007;</span>
-    </td>
-    <td ng-switch="l.specificFormat">
-      <span ng-switch-when=true>&#10003;</span>
-      <span ng-switch-when=false>&#10007;</span>
-    </td>
-  </tr>
-</table>
