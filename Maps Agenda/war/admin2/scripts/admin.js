@@ -136,7 +136,7 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
   $scope.updateLang = function() {
     $location.path("/translations/" + $scope.lang);
   }
-  /* Somehow, this does not work. The width is too small.
+  /* Somehow, this does not work. The width is too small. 
   $scope.$on('$viewContentLoaded', function(event) {
     var table = document.getElementById('table');
     console.log("Table: " + table);
