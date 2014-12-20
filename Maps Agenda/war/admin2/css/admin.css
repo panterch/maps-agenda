@@ -102,6 +102,9 @@ th {
 .hover:hover {
   background-color: #ccc;
 }
+.modified {
+  background-color: #ee4;
+}
 .red-hover:hover {
   background-color: #c00;
 }
@@ -153,4 +156,34 @@ table {
 th, td {
   border: 1px solid black;
   padding: 5px;
+}
+
+/* Popup like screens */
+/* A layer for popup like screens */
+.popup-screen {
+  background-color:rgba(0,0,0,0.7);
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  display: none;
+  z-index: 100;
+}
+
+.popup-screen div {
+  background-color: white;
+  top: 20%;
+  display: table;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+  width: 50%;
+  text-align: left;
+  border-bottom: 2px solid black;
+}
+
+.popup-head {
+  font-size: 1.5em;
+  font-weight: bold; 
 }

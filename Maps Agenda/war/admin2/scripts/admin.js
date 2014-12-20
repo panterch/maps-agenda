@@ -32,17 +32,64 @@ adminApp.run(['$rootScope', '$state', '$stateParams',
 adminApp.controller('TranslatorCtrl', function ($scope, languages, 
                                                 translators) {
   $scope.languages = languages;
-	$scope.translators = translators;
-	$scope.edit = function(email) {
-	  alert("Editing capabilities coming soon.");
-	  console.log("Email: " + email);
-	}
+  $scope.translators = translators;
+  $scope.translator = {}
+  $scope.getRowClass = function(t) {
+    if (t.modified)
+      return "hover modified";
+    else return "hover";
+  }
+  $scope.edit = function(email) {
+    if (!email) 
+      $scope.translator = {};
+    else {
+      for (var i = 0; i < $scope.translators.length; ++i) {
+        if ($scope.translators[i].email == email) {
+          $scope.translator = $scope.translators[i];
+          break;
+        }
+      }
+    }
+    $scope.showPopup('edit-popup');
+  }
+  $scope.updateLang = function() {
+    if (!$scope.translator.langs)
+      $scope.translator.langs = [$scope.lang];
+    else if ($scope.translator.langs.indexOf($scope.lang) == -1) {
+      $scope.translator.langs.push($scope.lang);
+    } else {
+      $scope.translator.langs.splice($scope.translator.langs.indexOf($scope.lang), 1);
+    }
+    $scope.lang = '';
+  }
+  $scope.save = function() {
+    $scope.hidePopup('edit-popup');
+    $scope.translator.modified = true;
+    for (var i = 0; i < $scope.translators.length; ++i) {
+      if ($scope.translators[i].email == $scope.translator.email) {
+        $scope.translators[i] = $scope.translator;
+        return;
+      }
+    }
+    $scope.translators.push($scope.translator);
+  }
+  $scope.isAnyModified = function() {
+    for (var i = 0; i < $scope.translators.length; ++i) {
+      if ($scope.translators[i].modified) {
+        return false;
+      }
+    }
+    return true;
+  }
+  $scope.saveAll = function() {
+    alert("Save capabilities coming soon.");
+  }
   $scope.remove = function(email) {
     alert("Deletion capabilities coming soon.");
-    console.log("Delete email: " + email);
   }
-	$scope.toGermanNames = function(langs) {
+  $scope.toGermanNames = function(langs) {
     var german_names = [];
+    if (!langs) return german_names;
     for (var i = 0; i < langs.length; ++i) {
       if (languages[langs[i]] == null) {
         german_names.push(langs[i] + " (unknown)")
@@ -51,10 +98,10 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
       }
     }
     return german_names;
-	}
-	$scope.getLangStrings = function(langs) {
-	  return $scope.toGermanNames(langs).join(", ");
-	}
+  }
+  $scope.getLangStrings = function(langs) {
+    return $scope.toGermanNames(langs).join(", ");
+  }
   $scope.t_filter = function(expr) {
     return function(t) {
       return !expr
@@ -63,15 +110,17 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
           || $scope.toGermanNames(t.langs).join("\n").indexOf(expr) != -1;
     }
   }
+  $scope.showPopup = function(elemId) {
+    document.getElementById(elemId).style.display = "block";
+  }
+  $scope.hidePopup = function(elemId) {
+    document.getElementById(elemId).style.display = "none";
+  }
 });
 
 // Controller for the subscribers page.
 adminApp.controller('SubscriberCtrl', function ($scope, subscribers) {
-	$scope.subscribers = subscribers;
-	$scope.edit = function(email) {
-	  alert("Editing capabilities coming soon.");
-	  console.log("Email: " + email);
-	}
+  $scope.subscribers = subscribers;
   $scope.getLangName = function(lang) {
     if (languages[lang] == null) {
       return lang + " (unknown)";
@@ -136,20 +185,6 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
   $scope.updateLang = function() {
     $location.path("/translations/" + $scope.lang);
   }
-  /* Somehow, this does not work. The width is too small. 
-  $scope.$on('$viewContentLoaded', function(event) {
-    var table = document.getElementById('table');
-    console.log("Table: " + table);
-    var row = table.children[0].children[0];
-    console.log("Row: " + row);
-    var width = 0;
-    for (var i = 0; i < row.children.length; ++i) {
-      width += row.children[i].offsetWidth;
-    }
-    console.log("Width: " + width);
-    table.style.width = width + 'px';
-  });
-  */
   $scope.edit = function(email) {
     alert("Editing capabilities coming soon.");
     console.log("Email: " + email);
