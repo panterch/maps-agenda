@@ -92,7 +92,7 @@ if (sane) {
 	}
 }
 
-languages = Language.getAllLanguages().values();
+languages = Language.getAllLanguages();
 if (languages == null) {
 	sane = Boolean.FALSE;
 }
