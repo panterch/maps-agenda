@@ -12,18 +12,32 @@ body {
   width: 182px;
 }
 
-.sidebar p {
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.sidebar ul a {
   background-color: #706f6f;
   color: #fff;
-  font-size: 1em;
-  font-weight: bold;
-  padding: 7px 15px;
+  display: inline-block;
+  font-size: .8em;
+  font-weight: normal;
+  letter-spacing: 2px;
+  margin: 0 0 4px 0;
+  padding: 5px 11px;
   text-decoration: none;
-  cursor: pointer;
+  text-transform: uppercase;
 }
 
 .sidebar.nav {
   float: right;
+}
+
+.sidebar.nav ul li {
+  text-align: right;
 }
 
 .container {
@@ -34,7 +48,6 @@ body {
   margin: auto;
   max-width: 850px;
   min-height: 400px;
-  padding: 20px;
 }
 
 .white {
@@ -44,7 +57,7 @@ body {
 }
 
 .section-div {
-  background-image: url('/maps/images/perforated_band_1.png');
+  background-image: url('/maps2/images/perforated_band_1.png');
   background-position: center;
   background-repeat: repeat-x; 
   background-size: 12px;
@@ -101,48 +114,31 @@ body {
 
 /* Header */
 
-.header-background {
-  background-color: #ffffff;
-  color: #706f6f;
-  padding: 20px 0 10px 0;
-}
-
-.header {
-  background-color: #fe5c6c;
+h1 {
+  background: #fe5c6c;
+  border-top: 30px solid #fff;
   color: #fff;
   font-family: Open Sans, Verdana;
   font-size: 1.5em;
-  font-weight: bolder;
+  margin: 0;
   padding: 4px 0 4px 0;
 }
 
-.header-subtitle {
-  font-family: Georgia, Times New Roman;
-  font-size: 1.2em;
-  font-weight: bold;
-  padding: 5px 0 5px 20px;
-}
-
-.header > div {
-  display: table-cell;
-  margin: 5px;
-}
-
-.header .mapsletter .letter {
+h1 span {
+  border-right: 8px solid #706f6f;
   font-family: HouschkaAltPro-Bold;
   font-size: 3em;
+  margin: 0 -10px 0 0;
   padding: 0 15px;
-  margin: -12px 0 -15px 0;
 }
 
-.header .mapsletter {
-  border-right: 8px solid #706f6f;
-}
-
-.header .desc {
-  font-family: HouschkaAltPro-Bold;
-  padding-left: 15px;
-  vertical-align: middle;
+h2 {
+  background: #fff;
+  color: #706f6f;
+  font-family: Georgia, Times New Roman;
+  font-size: 1.2em;
+  margin: 0;
+  padding: 5px 0 5px 20px;
 }
 
 /* Background */
@@ -200,5 +196,139 @@ body {
 }
 
 .newsletter-section-div {
-  background: url('/maps/images/perforated_band_2.png'); repeat-x scroll;
+  background: url('/maps2/images/perforated_band_2.png'); 
+  repeat-x scroll;
 }
+
+/* Events header styles */
+
+.event-nav {
+  background-color: white;
+  height: 35px;
+  padding-bottom: 10px;
+}
+
+.event-nav > .prev,
+.event-nav > .next {
+  cursor: pointer;
+  margin: 0 50px;
+  padding: 5px;
+  text-align: center;
+}
+
+.event-nav > .prev {
+  float: left;
+}
+
+.event-nav > .next {
+  float: right;
+}
+
+.event-nav > .prev > div,
+.event-nav > .next > div {
+  font-size: .8em;
+}
+
+/* Event styles*/
+
+/* Event styles */
+.event {
+  background-color: #fff;
+  color: #706f6f;
+  padding: 20px 0;
+}
+
+.event > div {
+  display: table-cell;
+}
+
+.event .date {
+  border-right: 2px solid #d5d5d5;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0 30px;
+  text-align: center;
+  width: 100px;
+}
+
+.event .date span {
+  font-size: 0.7em;
+}
+
+.event .date p {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.event .details {
+  padding: 0 30px;
+}
+
+.event .details .title {
+  font-size: 1.2em;
+  font-weight: bold;  
+}
+
+.event .details .link a {
+  color: #706f6f;
+  font-size: 0.9em;
+}
+
+.event .details .location p {
+  padding: 0 30px;  
+}
+
+.event .details .location a {
+  color: #706f6f; 
+}
+
+/* Calendar styles */
+
+.cal {
+  background-color: #fff;
+  padding: 20px 40px;
+}
+
+.cal-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.cal-title > a {
+  color: red;
+  text-decoration: none;
+}
+
+.cal-title > span {
+  color: #706f6f;
+  font-size: 0.8em;
+  padding: 0 40px;
+}
+
+.cal-grid {
+  empty-cells: hide;
+  font-size: 0.9em;
+  font-weight: bold;
+  width: 100%;
+}
+
+.cal-grid td {
+  text-align: center;
+}
+
+.cal-grid .cal-headers td {
+  color: #bababa;
+}
+
+.cal-grid .cal-body td {
+  background-color: #fe5c6c;
+  color: #fff;
+  cursor: pointer;
+}
+
+.cal-grid .cal-body .selected {
+  background-color: #706f6f;
+}
+

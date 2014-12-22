@@ -1,1 +1,45 @@
-<h1>Events</h1>
+<div class="event-nav">
+  <div ng-click="showPreviousEvents()" class="prev">
+      ⤎ <div>{{phrases.Frueher}}</div>
+  </div>
+  <div ng-click="showNextEvents()" class="next">
+      ⤏ <div>{{phrases.Spaeter}}</div>
+  </div>
+</div>
+
+<div class="section-div"></div>
+
+<div ng-repeat="event in events">
+  <div class="event">
+    <h2 class="date">
+      {{phrases[printDay(event.date)]}}
+      <span>{{printDate(event.date)}}</span>
+    </h2>
+    <div class="details">
+      <h2>{{event.title}}</h2>
+      <p class="desc">{{event.description}}</p>
+      <p class="location"><a title="Auf Google Maps suchen (autogeneriert)" href="https://www.google.ch/maps/search/{{event.location}},Zurich">{{event.location}}</a><br>{{event.transit}}</p>
+      <p class="link">
+        <a href="{{event.url}}" target="_blank">{{event.url}}</a>
+      </p>
+    </div>
+  </div>
+  <div class="section-div"></div>
+</div>
+
+<div ng-init="renderCalendar()" class="cal">
+  <div class="cal-title">
+    <a href="" ng-click="movePivotBack();">⤎</a>
+    <span>{{phrases[getMonth()]}}</span>
+    <a href="" ng-click="movePivotForward();">⤏</a>
+  </div>
+  <table class="cal-grid">
+    <tr class="cal-headers">
+      <td ng-repeat="s in strings">{{phrases[s]}}</td>
+    </tr>
+    <tr ng-repeat="week in weeks" class="cal-body">
+      <td ng-repeat="day in week track by $index" class="{{isSelected(day)}}" 
+          ng-click="selectDate(day);">{{day}}</td>
+    </tr>
+  </table>
+</div>

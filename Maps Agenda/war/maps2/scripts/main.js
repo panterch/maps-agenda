@@ -1,12 +1,14 @@
 var mapsApp = angular.module('mapsApp', ['ui.router']);
-var today = function() {
-  var today = new Date();
-  var dd = today.getDate();
-  var mm = today.getMonth() + 1;  // January is 0.
-  var yyyy = today.getFullYear();
+var dateToString = function(date) {
+  var dd = date.getDate();
+  var mm = date.getMonth() + 1;  // January is 0.
+  var yyyy = date.getFullYear();
   if(dd < 10) { dd = '0' + dd; }
   if(mm < 10) { mm = '0' + mm; } 
   return yyyy + '-' + mm + '-' + dd;    
+}
+var today = function() {
+  return dateToString(new Date());    
 }
 
 mapsApp.run(['$rootScope', '$state', '$stateParams',
@@ -20,11 +22,34 @@ mapsApp.run(['$rootScope', '$state', '$stateParams',
   }]
 )
 
-mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
+var MONTHS = [
+  'mojanuar', 'mofebruar', 'momaerz', 'moapril',
+  'momai', 'mojuni', 'mojuli', 'moaugust',
+  'moseptember', 'mooktober', 'monovember', 'modezember'
+];
+
+var DAYS_OF_WEEK_SHORT = [
+  'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
+  'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
+];
+
+var DAYS_OF_WEEK_LONG = [
+  'Wochentage', 'wtdienstag', 'wtmittwoch', 'wtdonnerstag',
+  'wtfreitag', 'wtsamstag', 'wtsonntag'
+];
+
+mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang, 
                                          languages, phrases, tags) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;
+
+	// Hack for long names. Tell the renderer that it can break after a '/'.
+	for (var code in $scope.languages) {
+	  var l = $scope.languages[code];
+	  l.name_br = $sce.trustAsHtml(l.name.replace(/\//g, '/<wbr>'));
+	}
+	
 	$scope.phrases = phrases;
   $scope.tags = tags;
 
@@ -58,6 +83,95 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
   }
 });
 
+mapsApp.controller('EventsCtrl', function ($scope, $location, date, events) {
+  if (!date) {
+    $location.search('date', today());
+    return;
+  }
+  $scope.events = events;
+  $scope.date_str = date;
+  $scope.date = new Date($scope.date_str);
+  $scope.pivot = new Date($scope.date);
+  $scope.pivot.setDate(1);
+  
+  $scope.printDate = function(dateStr) {
+    var date = new Date(dateStr);
+    return date.getDate() + '. ' + (date.getMonth() + 1) + '.';
+  };
+
+  $scope.printDay = function(dateStr) {
+    var date = new Date(dateStr);
+    return DAYS_OF_WEEK_LONG[date.getDay()];
+  };
+
+  $scope.showPreviousEvents = function() {
+    console.log('Pressed previous');
+  }
+  $scope.showNextEvents = function() {
+    console.log('Pressed next');
+  }
+  
+  $scope.getDaysInMonth = function() {
+    return new Date($scope.pivot.getYear(), $scope.pivot.getMonth() + 1, 0).getDate();
+  };
+
+  $scope.movePivotForward = function() {
+    $scope.pivot.setMonth($scope.pivot.getMonth() + 1);
+    $scope.renderCalendar();
+  };
+
+  $scope.movePivotBack = function() {
+    $scope.pivot.setMonth($scope.pivot.getMonth() - 1);
+    $scope.renderCalendar();
+  };
+
+  $scope.renderCalendar = function() {
+    $scope.strings = DAYS_OF_WEEK_SHORT;
+    var currentWeek = [];
+    var new_weeks = [currentWeek];
+    for (var i = 0; i < $scope.getDaysInMonth(); i++) {
+      var date = new Date($scope.pivot);
+      date.setDate(i + 1);
+
+      var day = date.getDay();
+
+      // Add padding if the month doesn't begin on a Monday.
+      for (var k = 1; i == 0 && k < (day > 0 ? day : 7); k++) {
+        currentWeek.push('');
+      }
+
+      // Wrap to the next week.
+      if ((day - 1) % 7 == 0) {
+        currentWeek = [];
+        new_weeks.push(currentWeek);
+      }
+
+      currentWeek.push(i + 1);
+    }
+    $scope.weeks = new_weeks;
+  };
+
+  $scope.getMonth = function() {
+    return MONTHS[$scope.pivot.getMonth()];
+  }
+
+  $scope.isSelected = function(day) {
+    var d = new Date($scope.pivot);
+    d.setDate(day);
+    if ($scope.date.toDateString() == d.toDateString()) {
+      return 'selected';
+    } else {
+      return '';
+    }
+  }
+
+  $scope.selectDate = function(day) {
+    var date = new Date($scope.pivot);
+    date.setDate(day);
+    $location.search('date', dateToString(date));
+  }
+});
+
 mapsApp.config(['$stateProvider', '$urlRouterProvider',
   function ($stateProvider, $urlRouterProvider) {
   	$stateProvider
@@ -75,7 +189,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   	          .then (function (data) {
   	            return data.data.languages;
   	          }
-  	        );				  
+  	        );
   			  },
   			  phrases: function($http, lang) {
             return $http({method: 'GET', 
@@ -98,6 +212,24 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
       .state('main.events', {
         url: '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
         templateUrl: 'events.html',
+        resolve: {
+          date: ['$stateParams', function($stateParams) {
+            return $stateParams.date;
+          }],
+          events: function($http, lang, date) {
+            var params = [
+              'type=events',
+              'lang=' + lang,
+              'startDate=' + date
+            ];
+            return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
+              .then (function (data) {
+                return data.data.events;
+              }
+            );          
+          },
+        },
+        controller: 'EventsCtrl',
       })
       .state('main.about', {
         url: '/about',
@@ -121,11 +253,11 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
         templateUrl: 'impressum.html',        
       });
     $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
-      return $match + '/events?' + today();
+      return $match + '/events?date=' + today();
     }])
     $urlRouterProvider.when(/^\/[a-z][a-z]\/events.*/, ['$match', function ($match) {
-      return $match + '?' + today();
+      return $match + '?date=' + today();
     }])
-    $urlRouterProvider.otherwise('/de/events?' + today());
+    $urlRouterProvider.otherwise('/de/events?date=' + today());
   }]
 );

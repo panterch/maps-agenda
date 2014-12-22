@@ -2,14 +2,18 @@
 <div class="background-screen"></div>
 
 <div class="sidebar" >
-  <p class="plink" ng-repeat="(code, l) in languages" 
-                   ng-click="updateLang(code)">{{l.name}}</p>
+  <ul>
+    <li ng-repeat="(code, l) in languages">
+      <a href="" ng-click="updateLang(code)" ng-bind-html="l.name_br"></a>
+    </li>
+  </ul>
 </div><!-- sidebar -->
 
 <div class="sidebar nav">
-  <p class="plink" ui-sref="main.about">{{phrases.UeberMAPS}}</p>
-  <p class="plink" ui-sref="main.contact">{{phrases.Kontakt}}</p>
-  <p class="plink" ui-sref="main.impressum">{{phrases.Impressum}}</p>
+  <ul>
+    <li><a ui-sref="main.about">{{phrases.UeberMAPS}}</a></li>
+    <li><a ui-sref="main.contact">{{phrases.Kontakt}}</a></li>
+    <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
   
   <div class="newsletter">{{phrases.Newsletter}}</div>
   <div class="section-div newsletter-section-div"></div>
@@ -26,21 +30,20 @@
   <div class="section-div newsletter-section-div"></div>
   <div class="newsletter"><a href="" class="menu-item" ng-click="register();">{{phrases.Anmelden}}</a></div>
   
-  <p class="plink" ng-repeat="tag in tags">{{phrases[tag]}}</p>
+    <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
+  </ul>
 </div><!-- sidebar -->
 
 <div class="container">
   <div class="content">
-    <div class="header-background">
-    <div class="header">
-      <div class="mapsletter"><div class="letter">M</div></div>
-      <div class="mapsletter"><div class="letter">A</div></div>
-      <div class="mapsletter"><div class="letter">P</div></div>
-      <div class="mapsletter"><div class="letter">S</div></div>
-      <div class="desc">ZÜRI<br>AGENDA</div>
-    </div>
-    <div class="header-subtitle">Günstige Kultur- und Freizeitangebote</div>
-    </div>
+    <h1>
+      <span>M</span>
+      <span>A</span>
+      <span>P</span>
+      <span>S</span>
+      ZÜRI<br>AGENDA
+    </h1>
+    <h2>Günstige Kultur- und Freizeitangebote</h2>
     <div class="section-div"></div>
     <div class="white">
       <form action="." id="language" method="post" name="language">
@@ -49,7 +52,7 @@
                 ng-options="code as language.name for (code, language) in languages"></select>
       </form>
     </div>
-    <div ui-view class="white"></div>
+    <div ui-view></div>
 
     <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
 
