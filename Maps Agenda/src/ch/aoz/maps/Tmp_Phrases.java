@@ -1,14 +1,10 @@
 package ch.aoz.maps;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.*;
 
 import ch.aoz.maps.Language;
-import ch.aoz.maps.Phrase;
 
 @SuppressWarnings("serial")
 public class Tmp_Phrases extends HttpServlet {
@@ -17,9 +13,8 @@ public class Tmp_Phrases extends HttpServlet {
             throws IOException {
       resp.setContentType("text/plain");
       
-      Map<String, Language> langs = Language.getAllLanguages();
-      for (String lang : langs.keySet()) {
-        answer(resp, lang);
+      for (Language l : Language.getAllLanguages()) {
+        answer(resp, l.getCode());
       }
     }
    

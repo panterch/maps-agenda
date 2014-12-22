@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.*;
 
@@ -163,10 +164,9 @@ public class Maps_DataServlet extends HttpServlet {
       StringBuilder response = new StringBuilder();
       response.append("{ \"languages\": {");
 
-      Map<String, Language> langs = Language.getAllLanguages();
-      for (String code : langs.keySet()) {
-        Language l = langs.get(code);
-        response.append("\"" + code + "\": {");
+      Set<Language> langs = Language.getAllLanguages();
+      for (Language l : langs) {
+        response.append("\"" + l.getCode() + "\": {");
         response.append("\"germanName\":\"").append(Utils.toUnicode(l.getGermanName())).append("\",");
         response.append("\"name\":\"").append(Utils.toUnicode(l.getName())).append("\",");
         response.append("\"days\":[");

@@ -36,7 +36,7 @@ public class Maps_LanguageServlet extends HttpServlet {
         
     public List<Language> getLanguages() {
       List<Language> languages = new ArrayList<Language>();
-      languages.addAll(Language.getAllLanguages().values());
+      languages.addAll(Language.getAllLanguages());
       Collections.sort(languages);
       return languages;
     }

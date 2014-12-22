@@ -2,9 +2,8 @@ package ch.aoz.maps;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -19,12 +18,12 @@ public class Languages implements java.io.Serializable {
   public static final char RS = 0x1e;  // Record separator.
   private static final long serialVersionUID = 161720L;
 
-  private SortedMap<String, Language> languages;
+  private SortedSet<Language> languages;
   private boolean isOk;
   private String debug;
 
   public Languages() {
-    languages = new TreeMap<String, Language>();
+    languages = new TreeSet<Language>();
     debug = "ok";
     isOk = true;
   }
@@ -32,17 +31,17 @@ public class Languages implements java.io.Serializable {
   public Languages(Collection<Language> languages) {
     this();
     for (Language l : languages) {
-      this.languages.put(l.getCode(), l);
+      this.languages.add(l);
     }
   }
   
   private Languages(Entity entity) {
-    languages = new TreeMap<String, Language>();
+    this();
     for (String key : entity.getProperties().keySet()) {
       String s = (String)entity.getProperty(key);
       Language l = extractLanguage(key, s);
       if (l != null) {
-        languages.put(key, l);
+        languages.add(l);
       }
     }
     debug = "ok";
@@ -73,7 +72,7 @@ public class Languages implements java.io.Serializable {
     Languages langs = GetLanguages();
     if (langs == null) 
       return false;
-    langs.languages.put(l.getCode(), l);
+    langs.languages.add(l);
     return langs.addToStore();
   }
   
@@ -105,7 +104,7 @@ public class Languages implements java.io.Serializable {
    */
   private Entity toEntity() {
     Entity languages = new Entity(entityKind, entityKind);
-    for (Language l : this.languages.values()) {
+    for (Language l : this.languages) {
       languages.setUnindexedProperty(l.getCode(), packLanguage(l));
     }
     return languages;
@@ -150,19 +149,17 @@ public class Languages implements java.io.Serializable {
     syncCache.put(entityKind, this);    
   }
   
-  /** Only setters and getters below. */
-  public Set<String> getSortedLanguageCodes() {
-    return languages.keySet();
-  }
-  
-  public SortedMap<String, Language> getSortedLanguages() {
+  /** Only setters and getters below. */  
+  public SortedSet<Language> getSortedLanguages() {
     return languages;
   }
   
   public Language getLanguage(String code) {
-    if (languages.containsKey(code))
-      return languages.get(code);
-    else return null;
+    for (Language l : languages) {
+      if (l.getCode().equals(code))
+        return l;
+    }
+    return null;
   }
   
   public boolean isOk() {

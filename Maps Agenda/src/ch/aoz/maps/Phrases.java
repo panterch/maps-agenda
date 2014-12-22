@@ -174,8 +174,8 @@ public class Phrases implements java.io.Serializable {
     if (langs == null)
       return false;
     boolean allDeleted = true;
-    for (String lang : langs.getSortedLanguageCodes()) {
-      Phrases phrases = Phrases.GetPhrasesForLanguage(lang);
+    for (Language l : langs.getSortedLanguages()) {
+      Phrases phrases = Phrases.GetPhrasesForLanguage(l.getCode());
       if (phrases == null)
         continue;
       phrases.phrases.remove(key);

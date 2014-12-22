@@ -3,6 +3,7 @@ package ch.aoz.maps;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class encapsulating a language supported in the Maps Agenda.
@@ -67,13 +68,24 @@ public class Language implements Comparable<Language>, java.io.Serializable {
             && abbreviatedDays.size() == 7 && code.length() == 2;
   }
 
-  public static Map<String, Language> getAllLanguages() {
+  public static Set<Language> getAllLanguages() {
     Languages languages = Languages.GetLanguages();
     if (languages == null)
       return null;
     return languages.getSortedLanguages();
   }
 
+  public static Map<String, Language> getAllLanguagesAsMap() {
+    Languages languages = Languages.GetLanguages();
+    if (languages == null)
+      return null;
+    Map<String, Language> m = new HashMap<String, Language>();
+    for (Language l : languages.getSortedLanguages()) {
+      m.put(l.getCode(), l);
+    }
+    return m;
+  }
+  
   public static boolean AddLanguage(Language lang) {
     if (!lang.isOk())
       return false;

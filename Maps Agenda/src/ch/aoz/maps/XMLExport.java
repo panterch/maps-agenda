@@ -78,7 +78,7 @@ public class XMLExport {
     xml += "<Tag1>";
 
     List<Language> orderedLanguages = new ArrayList<Language>();
-    orderedLanguages.addAll(Language.getAllLanguages().values());
+    orderedLanguages.addAll(Language.getAllLanguages());
     Collections.sort(orderedLanguages);
     for (Language language : orderedLanguages) {
       // For the rendering of the languages, the code must be translated into
@@ -186,7 +186,7 @@ public class XMLExport {
         String imageText = new String();
         
         List<Language> orderedLanguages = new ArrayList<Language>();
-        orderedLanguages.addAll(Language.getAllLanguages().values());
+        orderedLanguages.addAll(Language.getAllLanguages());
         Collections.sort(orderedLanguages);
         for (Language language : orderedLanguages) {
           Translation translation;
