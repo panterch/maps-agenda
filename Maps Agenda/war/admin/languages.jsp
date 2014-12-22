@@ -176,7 +176,7 @@ function hide(elemId) {
 </head>
 <body>
 <%
-Map<String, Language> languages = Language.getAllLanguages();
+Map<String, Language> languages = Language.getAllLanguagesAsMap();
 if (request.getParameter("code") != null) {
   // A new language is to be submitted.
   List<String> abbrevs = new ArrayList<String>();

@@ -137,7 +137,7 @@ th, td {
 </head>
 <body>
 <%
-Map<String, Language> languages = Language.getAllLanguages();
+Map<String, Language> languages = Language.getAllLanguagesAsMap();
 Calendar selected_month = Calendar.getInstance();
 if (request.getParameter("eyear") != null) {
   int year = Integer.parseInt(request.getParameter("eyear")); 

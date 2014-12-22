@@ -141,7 +141,7 @@ function hide(elemId) {
 <body>
 <%
 Map<String, Subscriber> subscribers = Subscriber.getAllSubscribers();
-Map<String, Language> languages = Language.getAllLanguages();
+Map<String, Language> languages = Language.getAllLanguagesAsMap();
 if (request.getParameter("email") != null) {
   // A new language is to be submitted.
   Subscriber t = new Subscriber(

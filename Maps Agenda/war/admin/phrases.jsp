@@ -205,7 +205,7 @@ if (request.getParameter("delete") != null) {
     out.println("<div class='msg-red'><p>Encountered some problems when deleting " + key + "</p></div>");
   }
 }
-Map<String, Language> languages = Language.getAllLanguages();
+Map<String, Language> languages = Language.getAllLanguagesAsMap();
 if (languages == null || languages.isEmpty()) {
   out.println("Please add a language first.");
   return;
