@@ -121,8 +121,11 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
         templateUrl: 'impressum.html',        
       });
     $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
-      return $match + '/events';
+      return $match + '/events?' + today();
     }])
-    $urlRouterProvider.otherwise('/de/events');
+    $urlRouterProvider.when(/^\/[a-z][a-z]\/events.*/, ['$match', function ($match) {
+      return $match + '?' + today();
+    }])
+    $urlRouterProvider.otherwise('/de/events?' + today());
   }]
 );
