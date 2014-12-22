@@ -3,8 +3,8 @@
 
 <div class="sidebar" >
   <ul>
-    <li ng-repeat="(code, l) in languages">
-      <a href="" ng-click="updateLang(code)" ng-bind-html="l.name_br"></a>
+    <li ng-repeat="l in languages">
+      <a href="" ng-click="updateLang(l.code)" ng-bind-html="l.name_br"></a>
     </li>
   </ul>
 </div><!-- sidebar -->
@@ -21,7 +21,7 @@
     <span>{{phrases.AnmeldungNewsletter}}</span>
     <p>
       <select ng-model="newsletter_lang" 
-              ng-options="code as language.name for (code, language) in languages"></select>
+              ng-options="l.code as l.name for l in languages"></select>
       <br>
       <input ng-model="name" type="text" placeholder="Name">
       <input ng-model="email" type="text" placeholder="Email address">
@@ -49,7 +49,7 @@
       <form action="." id="language" method="post" name="language">
         <label for="lang">Language</label> 
         <select ng-model="lang" ng-change="updateLang(null)"
-                ng-options="code as language.name for (code, language) in languages"></select>
+                ng-options="l.code as l.name for l in languages"></select>
       </form>
     </div>
     <div ui-view></div>

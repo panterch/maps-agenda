@@ -12,9 +12,9 @@ public class Tmp_Phrases extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
       resp.setContentType("text/plain");
-      
       for (Language l : Language.getAllLanguages()) {
-        answer(resp, l.getCode());
+        // answer(resp, l.getCode());
+        resp.getWriter().println(l.getCode());      
       }
     }
    

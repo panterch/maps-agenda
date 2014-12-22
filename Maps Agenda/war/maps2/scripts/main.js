@@ -1,27 +1,3 @@
-var mapsApp = angular.module('mapsApp', ['ui.router']);
-var dateToString = function(date) {
-  var dd = date.getDate();
-  var mm = date.getMonth() + 1;  // January is 0.
-  var yyyy = date.getFullYear();
-  if(dd < 10) { dd = '0' + dd; }
-  if(mm < 10) { mm = '0' + mm; } 
-  return yyyy + '-' + mm + '-' + dd;    
-}
-var today = function() {
-  return dateToString(new Date());    
-}
-
-mapsApp.run(['$rootScope', '$state', '$stateParams',
-  function ($rootScope,   $state,   $stateParams) {
-    // It's very handy to add references to $state and $stateParams to the $rootScope
-    // so that you can access them from any scope within your applications. For example,
-    // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
-    // to active whenever 'contacts.list' or one of its decendents is active.
-    $rootScope.$state = $state;
-    $rootScope.$stateParams = $stateParams;
-  }]
-)
-
 var MONTHS = [
   'mojanuar', 'mofebruar', 'momaerz', 'moapril',
   'momai', 'mojuni', 'mojuli', 'moaugust',
@@ -38,18 +14,32 @@ var DAYS_OF_WEEK_LONG = [
   'wtfreitag', 'wtsamstag', 'wtsonntag'
 ];
 
+var dateToString = function(date) {
+  var dd = date.getDate();
+  var mm = date.getMonth() + 1;  // January is 0.
+  var yyyy = date.getFullYear();
+  if(dd < 10) { dd = '0' + dd; }
+  if(mm < 10) { mm = '0' + mm; } 
+  return yyyy + '-' + mm + '-' + dd;    
+}
+
+
+var mapsApp = angular.module('mapsApp', ['ui.router']);
+
+// Small service to keep the date between state transitions. For example,
+// when coming back to the events after looking at the contacts, the selected
+// date remains the same and does not jump back to the current day.
+mapsApp.service('dateKeeper', function() {
+  this.date = new Date();
+  this.getDate = function() { return this.date; }
+  this.setDate = function(new_date) { this.date = new Date(new_date); }
+});
+
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang, 
                                          languages, phrases, tags) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
-	$scope.languages = languages;
-
-	// Hack for long names. Tell the renderer that it can break after a '/'.
-	for (var code in $scope.languages) {
-	  var l = $scope.languages[code];
-	  l.name_br = $sce.trustAsHtml(l.name.replace(/\//g, '/<wbr>'));
-	}
-	
+	$scope.languages = languages;	
 	$scope.phrases = phrases;
   $scope.tags = tags;
 
@@ -77,15 +67,22 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang,
       }
     });   
   }
-  // Check if the language is supported. If not, redirect to 'de'.
-  if (!(lang in languages)) {
-    $scope.updateLang('de');
+
+  // Hack for long names. Tell the renderer that it can break after a '/'.
+  // Also check that the language is supported. If not, redirect to 'de'.
+  var found = false;
+  for (var i = 0; i < $scope.languages.length; ++i) {
+    var l = $scope.languages[i];
+    l.name_br = $sce.trustAsHtml(l.name.replace(/\//g, '/<wbr>'));
+    if (l.code == lang)
+      found = true;
   }
+  if (!found) $scope.updateLang('de');
 });
 
-mapsApp.controller('EventsCtrl', function ($scope, $location, date, events) {
+mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, dateKeeper) {
   if (!date) {
-    $location.search('date', today());
+    $location.search('date', dateToString(dateKeeper.getDate()));
     return;
   }
   $scope.events = events;
@@ -93,6 +90,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events) {
   $scope.date = new Date($scope.date_str);
   $scope.pivot = new Date($scope.date);
   $scope.pivot.setDate(1);
+  dateKeeper.setDate($scope.date);
   
   $scope.printDate = function(dateStr) {
     var date = new Date(dateStr);
@@ -253,11 +251,8 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
         templateUrl: 'impressum.html',        
       });
     $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
-      return $match + '/events?date=' + today();
+      return $match + '/events';
     }])
-    $urlRouterProvider.when(/^\/[a-z][a-z]\/events.*/, ['$match', function ($match) {
-      return $match + '?date=' + today();
-    }])
-    $urlRouterProvider.otherwise('/de/events?date=' + today());
+    $urlRouterProvider.otherwise('/de/events');
   }]
 );

@@ -1,9 +1,6 @@
 package ch.aoz.maps;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.http.*;
 
@@ -16,7 +13,7 @@ public class Maps_LanguageServlet extends HttpServlet {
         response.append("/* version 0.5 */\n");
         response.append("function LanguageMenuCtrl($scope) {\n");
         response.append("  $scope.languages = [\n");
-        for (Language lang : getLanguages()) {
+        for (Language lang : Language.getAllLanguages()) {
           response.append("    {label: '");
           response.append(Utils.toUnicode(lang.getName()));
           response.append("', code: '");
@@ -32,12 +29,5 @@ public class Maps_LanguageServlet extends HttpServlet {
                 
         resp.setContentType("application/javascript");
         resp.getWriter().println(response.toString());
-    }
-        
-    public List<Language> getLanguages() {
-      List<Language> languages = new ArrayList<Language>();
-      languages.addAll(Language.getAllLanguages());
-      Collections.sort(languages);
-      return languages;
     }
 }
