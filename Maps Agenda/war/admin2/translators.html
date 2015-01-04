@@ -2,7 +2,7 @@
   <div class="title">List of the translators</div>
   <div class="mb">
     <div class="left"><button ng-click="edit('')">Add a new translator</button></div>
-    <div class="left"><button ng-click="saveAll()" ng-disabled="isAnyModified()">Save translators</button></div>
+    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save translators</button></div>
     <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
                                                   placeholder="Filter" /></div>
   </div>
@@ -27,15 +27,14 @@
 <div id="edit-popup" class="popup-screen">
   <div class="popup-head">Edit translator</div>
   <div class="popup-body">
-    <form name="edit-form">
+    <form name="edit-form" ng-submit="save()">
       <p>Name: <input type="text" ng-model="translator.name" required /></p>
       <p>E-mail: <input type="email" ng-model="translator.email" required /></p>
-      <p>Languages: {{getLangStrings(translator.langs)}}</p>
-      <p>Add or remove language: <select ng-model="lang" ng-change="updateLang()"
-                 ng-options="code as language.germanName for (code, language) in languages">
-      </select></p>
-      <button ng-click="hidePopup('edit-popup')">Cancel</button>
-      <button ng-click="save()" ng-disabled="edit-form.$invalid">Save</button>
+      <p>Add or remove language: <select id='select' multiple=true style='height: 100%;' ng-model="translator.langs"
+                 ng-options="l.code as l.germanName for l in lang_options">
+      </select></p><p>(hold ctrl to select multiple options)</p>
+      <button ng-click="cancel()">Cancel</button>
+      <input type="submit" ng-disabled="edit-form.$invalid" value="Save" />
     </form>
   </div>
 </div>

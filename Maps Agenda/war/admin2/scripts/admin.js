@@ -33,47 +33,70 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
                                                 translators) {
   $scope.languages = languages;
   $scope.translators = translators;
-  $scope.translator = {}
+  for (var i = 0; i < $scope.translators.length; ++i) {
+    $scope.translators[i].modified = false;
+    $scope.translators[i].is_new = false;
+  }  
+  $scope.translator = { modified: false, is_new: true }
+  
   $scope.getRowClass = function(t) {
     if (t.modified)
       return "hover modified";
     else return "hover";
   }
   $scope.edit = function(email) {
-    if (!email) 
-      $scope.translator = {};
-    else {
+    $scope.lang_options = [];
+    $scope.select_length = 30;
+    for (var i = 0; i < $scope.languages.length; ++i) {
+      $scope.lang_options.push($scope.languages[i]);
+    }
+    if (!email) { 
+      $scope.translator = {modified: false, is_new: true, langs: [] };
+    } else {
       for (var i = 0; i < $scope.translators.length; ++i) {
         if ($scope.translators[i].email == email) {
           $scope.translator = $scope.translators[i];
+          // Make a copy of the object.
+          $scope.old_translator = JSON.parse(JSON.stringify($scope.translator));
+          if ($scope.translator.langs) {
+            for (var j = 0; j < $scope.translator.langs.length; ++j) {
+              if (!$scope.getLang($scope.translator.langs[j])) {
+                $scope.lang_options.push({code: $scope.translator.langs[j], germanName:$scope.translator.langs[j] + " (unknown)"});                
+              }
+            }
+          }
           break;
         }
       }
-    }
+    }    
+    document.getElementById('select').setAttribute('size', $scope.lang_options.length)
     $scope.showPopup('edit-popup');
   }
-  $scope.updateLang = function() {
-    if (!$scope.translator.langs)
-      $scope.translator.langs = [$scope.lang];
-    else if ($scope.translator.langs.indexOf($scope.lang) == -1) {
-      $scope.translator.langs.push($scope.lang);
-    } else {
-      $scope.translator.langs.splice($scope.translator.langs.indexOf($scope.lang), 1);
-    }
-    $scope.lang = '';
-  }
   $scope.save = function() {
-    $scope.hidePopup('edit-popup');
-    $scope.translator.modified = true;
-    for (var i = 0; i < $scope.translators.length; ++i) {
-      if ($scope.translators[i].email == $scope.translator.email) {
-        $scope.translators[i] = $scope.translator;
+    console.log("Email: " + $scope.countEmails($scope.translator.email));
+    if ($scope.translator.is_new) {
+      if ($scope.countEmails($scope.translator.email) > 0) {
+        $scope.translator.email = '';
         return;
       }
+      $scope.translators.push($scope.translator);      
+      $scope.translator.modified = true;
+    } else if ($scope.countEmails($scope.translator.email) > 1) {
+      $scope.translator.email = $scope.old_translator.email;
+      return;
+    } else {
+      $scope.translator.modified = !$scope.sameAsBackup() || $scope.old_translator.modified;
+      $scope.hidePopup('edit-popup');
     }
-    $scope.translators.push($scope.translator);
+    $scope.hidePopup('edit-popup');
   }
-  $scope.isAnyModified = function() {
+  $scope.cancel = function() {
+    $scope.hidePopup('edit-popup');
+    $scope.translator.email = $scope.old_translator.email;
+    $scope.translator.name = $scope.old_translator.name;
+    $scope.translator.langs = $scope.old_translator.langs;
+  }
+  $scope.noneModified = function() {
     for (var i = 0; i < $scope.translators.length; ++i) {
       if ($scope.translators[i].modified) {
         return false;
@@ -87,14 +110,23 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   $scope.remove = function(email) {
     alert("Deletion capabilities coming soon.");
   }
+  $scope.getLang = function(code) {
+    for (var i = 0; i < $scope.languages.length; ++i) {
+      if ($scope.languages[i].code == code) {
+        return $scope.languages[i];
+      }
+    }
+    return null;
+  }
   $scope.toGermanNames = function(langs) {
     var german_names = [];
     if (!langs) return german_names;
     for (var i = 0; i < langs.length; ++i) {
-      if (languages[langs[i]] == null) {
-        german_names.push(langs[i] + " (unknown)")
+      var l = $scope.getLang(langs[i]);
+      if (l) {
+        german_names.push(l.germanName);
       } else {
-        german_names.push(languages[langs[i]].germanName);
+        german_names.push(langs[i] + " (unknown)")
       }
     }
     return german_names;
@@ -115,6 +147,25 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   }
   $scope.hidePopup = function(elemId) {
     document.getElementById(elemId).style.display = "none";
+  }
+  $scope.sameAsBackup = function() {
+    var same = $scope.translator.email == $scope.old_translator.email &&
+                $scope.translator.name == $scope.old_translator.name &&
+                $scope.translator.langs.length == $scope.old_translator.langs.length;
+    if (!same) return false;
+    for (var i = 0; i < $scope.translator.langs.length; ++i) {
+      if ($scope.translator.langs[i] != $scope.old_translator.langs[i])
+        return false;
+    }
+    return true;
+  }
+  $scope.countEmails = function(email) {
+    var count = 0;
+    for (var i = 0; i < $scope.translators.length; ++i) {
+      if ($scope.translators[i].email == email)
+        ++count;
+    }
+    return count;
   }
 });
 
