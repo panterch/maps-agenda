@@ -14,6 +14,7 @@
     <li><a ui-sref="main.about">{{phrases.UeberMAPS}}</a></li>
     <li><a ui-sref="main.contact">{{phrases.Kontakt}}</a></li>
     <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
+  </ul>
   
   <div class="newsletter">{{phrases.Newsletter}}</div>
   <div class="section-div newsletter-section-div"></div>
@@ -30,6 +31,7 @@
   <div class="section-div newsletter-section-div"></div>
   <div class="newsletter"><a href="" class="menu-item" ng-click="register();">{{phrases.Anmelden}}</a></div>
   
+  <ul>
     <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
   </ul>
 </div><!-- sidebar -->
@@ -41,7 +43,7 @@
       <span>A</span>
       <span>P</span>
       <span>S</span>
-      ZÜRI<br>AGENDA
+      <span class="title">ZÜRI<br>AGENDA</span>
     </h1>
     <h2>Günstige Kultur- und Freizeitangebote</h2>
     <div class="section-div"></div>

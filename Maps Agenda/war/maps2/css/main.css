@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Arvo);
+
 body {
   font-family: sans-serif;
   margin: auto;
@@ -10,9 +12,11 @@ body {
   min-height: 400px;
   overflow: visible;
   width: 182px;
+  padding-top: 146px;
 }
 
 .sidebar ul {
+  letter-spacing: 1px;
   list-style: none;
   margin: 0;
   overflow: hidden;
@@ -124,6 +128,7 @@ h1 span {
   border-right: 8px solid #706f6f;
   font-family: HouschkaAltPro-Bold;
   font-size: 3em;
+  font-weight: normal;
   margin: 0 -10px 0 0;
   padding: 0 15px;
 }
@@ -131,10 +136,10 @@ h1 span {
 h2 {
   background: #fff;
   color: #706f6f;
-  font-family: Georgia, Times New Roman;
-  font-size: 1.2em;
+  font-family: 'Arvo', Times New Roman;
+  font-size: 100%;
   margin: 0;
-  padding: 5px 0 5px 20px;
+  padding: 5px 0 .8em 20px;
 }
 
 /* Background */
@@ -200,24 +205,34 @@ h2 {
 
 .event-nav {
   background-color: white;
-  height: 35px;
+  overflow: hidden;
   padding-bottom: 10px;
 }
 
 .event-nav > .prev,
 .event-nav > .next {
   cursor: pointer;
-  margin: 0 50px;
-  padding: 5px;
-  text-align: center;
+  width: 75px;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 35px 10px 0 10px;
+  text-transform: uppercase;
+  color: #707070;
 }
 
 .event-nav > .prev {
   float: left;
+  background-position: right top;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAZAgMAAADGVn8BAAAAA3NCSVQICAjb4U/gAAAACVBMVEX////KysptbW3XKDrrAAAAA3RSTlMA//9EUNYhAAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAADpJREFUCJljYGBgnMAABWxLYCwpOCsLJsu4ygGmbCX5ylaBQAOQtQrOQogh1CH0IsxD2EGWQjgL6l8A7dweLwD1UgkAAAAASUVORK5CYII=);
+  border-right: 2px solid #fe5c6c;
+  text-align: right;
 }
 
 .event-nav > .next {
   float: right;
+  background-position: 10px top;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSVQICAjb4U/gAAAACVBMVEX////MzMxra2sQ7g2LAAAAA3RSTlMA//9EUNYhAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAADdJREFUCJljYGBgnMAABmxLoPRKCM24ygHCyIIqkCJFwSowcIDSDXA+sgEw9VD9jKRJw9wLdj8As60eEZMk7MQAAAAASUVORK5CYII=);
+  border-left: 2px solid #fe5c6c;
 }
 
 .event-nav > .prev > div,
