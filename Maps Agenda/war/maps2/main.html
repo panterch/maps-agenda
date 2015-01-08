@@ -16,20 +16,24 @@
     <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
   </ul>
   
-  <div class="newsletter">{{phrases.Newsletter}}</div>
-  <div class="section-div newsletter-section-div"></div>
-  <div class="newsletter newsletter-text">
-    <span>{{phrases.AnmeldungNewsletter}}</span>
-    <p>
-      <select ng-model="newsletter_lang" 
-              ng-options="l.code as l.name for l in languages"></select>
-      <br>
-      <input ng-model="name" type="text" placeholder="Name">
-      <input ng-model="email" type="text" placeholder="Email address">
-    </p>
-  </div>
-  <div class="section-div newsletter-section-div"></div>
-  <div class="newsletter"><a href="" class="menu-item" ng-click="register();">{{phrases.Anmelden}}</a></div>
+  <form name="newsletter-form" ng-submit="register()">
+	  <div class="newsletter">{{phrases.Newsletter}}</div>
+	  <div class="section-div newsletter-section-div"></div>
+	  <div class="newsletter newsletter-text">
+	    <span>{{phrases.AnmeldungNewsletter}}</span>
+	    <p>
+	      <select ng-model="newsletter_lang" 
+	              ng-options="l.code as l.name for l in languages"></select>
+	      <br>
+	      <input ng-model="name" type="text" placeholder="Name" required>
+	      <input ng-model="email" type="email" placeholder="Email address" required>
+	    </p>
+	  </div>
+	  <div class="section-div newsletter-section-div"></div>
+	  <div class="newsletter">
+	    <input type="submit" ng-disabled="newsletter-form.$invalid" value="{{phrases.Anmelden}}" />
+	  </div>
+	</form>
   
   <ul>
     <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
