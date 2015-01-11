@@ -66,7 +66,7 @@ function EventsCtrl($scope, $http) {
 
   $scope.printDay = function(dateStr) {
     var date = new Date(dateStr);
-    return common.getLanguageString(DAYS_OF_WEEK_LONG[date.getDay()]);
+    return common.getLanguageString(DAYS_OF_WEEK_LONG[(date.getDay() + 6) % 7]);
   };
 
 };
