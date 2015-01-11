@@ -100,7 +100,7 @@ public class Translation {
     }
 
     if (entity.hasProperty("title")) {
-      title = (String) entity.getProperty("title");
+      title = ((String) entity.getProperty("title")).trim();
     } else {
       title = new String("");
     }
@@ -108,29 +108,29 @@ public class Translation {
     if (entity.hasProperty("desc")) {
       Object desc_property = entity.getProperty("desc");
       if (desc_property instanceof Text) {
-        desc = ((Text) desc_property).getValue();
+        desc = ((Text) desc_property).getValue().trim();
       } else {
         // For compatibility
-        desc = (String) desc_property;
+        desc = ((String) desc_property).trim();
       }
     } else {
       desc = new String("");
     }
 
     if (entity.hasProperty("location")) {
-      location = (String) entity.getProperty("location");
+      location = ((String) entity.getProperty("location")).trim();
     } else {
       location = new String("");
     }
 
     if (entity.hasProperty("transit")) {
-      transit = (String) entity.getProperty("transit");
+      transit = ((String) entity.getProperty("transit")).trim();
     } else {
       transit = new String("");
     }
 
     if (entity.hasProperty("url")) {
-      url = (String) entity.getProperty("url");
+      url = ((String) entity.getProperty("url")).trim();
     } else {
       url = new String("");
     }
@@ -144,11 +144,11 @@ public class Translation {
   public Entity toEntity() {
     Entity result = new Entity(entityKind, lang, eventID);
     result.setProperty("lang", lang);
-    result.setProperty("title", title);
-    result.setProperty("desc", new Text(desc));
-    result.setProperty("location", location);
-    result.setProperty("transit", transit);
-    result.setProperty("url", url);
+    result.setProperty("title", title.trim());
+    result.setProperty("desc", new Text(desc.trim()));
+    result.setProperty("location", location.trim());
+    result.setProperty("transit", transit.trim());
+    result.setProperty("url", url.trim());
     return result;
   }
 
