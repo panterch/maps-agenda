@@ -77,6 +77,22 @@ body {
   }
 }
 
+@media screen and (max-width: 950px) {
+  h1 {
+    font-size: 1em;
+  }
+  h1 span {
+    border-width: 5px;
+    margin: 0 -7px 0 0;
+    padding: 0 10px;
+  }
+  h1 .title {
+    font-size: 1em;
+    margin-left: 25px;
+    width: 100px;
+  }
+}
+
 @media screen and (max-width: 920px) {
   .container {
     margin: 0 200px;
@@ -112,11 +128,40 @@ body {
   }
 }
 
+@media screen and (max-width: 360px) {
+  h1 {
+    font-size: .8em;
+  }
+  h1 span {
+    border-width: 4px;
+    margin: 0 -6px 0 0;
+    padding: 0 8px;
+  }
+  h1 .title {
+    font-size: .8em;
+    margin-left: 15px;
+    width: 85px;
+  }
+}
+
+@media screen and (max-width: 280px) {
+  h1 .title {
+    display: none;
+  }
+}
+
 /* Header */
+
+#aoz {
+  background: #fff;
+  padding: 13px, 26px, 13px, 18px;
+  position: absolute;
+  top: 35px;
+}
 
 h1 {
   background: #fe5c6c;
-  border-top: 30px solid #fff;
+  border-top: 25px solid #fff;
   color: #fff;
   font-family: Open Sans, Verdana;
   font-size: 1.5em;
@@ -178,6 +223,14 @@ h2 {
 
 /* Newsletter */
 
+.sidebar form {
+  margin: 26px 0;
+}
+
+.sidebar form input {
+  margin: 5px 0 0 0;
+}
+
 .newsletter {
   background-color: #706f6f;
   color: #fff;
@@ -185,7 +238,7 @@ h2 {
   padding: 7px 15px;
   text-align: left;
   text-decoration: none;
-  width: 250px;
+  width: auto;
 }
 
 .newsletter > div:first-child,
@@ -211,6 +264,15 @@ h2 {
 .newsletter-section-div {
   background: url('/maps2/images/perforated_band_2.png'); 
   repeat-x scroll;
+}
+
+.newsletter:nth-of-type(1) {
+  padding-bottom: .2em;
+  text-transform: uppercase;
+}
+
+.sidebar ul:nth-of-type(2) {
+  font-size: 80%;
 }
 
 /* Events header styles */
