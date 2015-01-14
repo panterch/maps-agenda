@@ -159,7 +159,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     if ($scope.date.toDateString() == d.toDateString()) {
       return 'selected';
     } else {
-      return '';
+      return 'background-color';
     }
   }
 
