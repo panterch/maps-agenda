@@ -172,6 +172,7 @@ h1 {
 }
 
 h1 span {
+  border-color: #aaa;
   border-right: 7px solid #706f6f;
   font-family: HouschkaAltPro-Bold;
   font-size: 3em;

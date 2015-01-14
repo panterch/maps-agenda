@@ -2,7 +2,7 @@
 <div class="background-screen"></div>
 
 <div class="sidebar" >
-  <img src = "/maps2/images/aoz.png" title="aoz">
+  <img src = "/maps2/images/aoz.png" title="aoz" id="aoz">
   <ul>
     <li ng-repeat="l in languages">
       <a href="" ng-click="updateLang(l.code)" ng-bind-html="l.name_br"></a>
@@ -22,13 +22,10 @@
 	  <div class="section-div newsletter-section-div"></div>
 	  <div class="newsletter newsletter-text">
 	    <span>{{phrases.AnmeldungNewsletter}}</span>
-	    <p>
-	      <select ng-model="newsletter_lang" 
-	              ng-options="l.code as l.name for l in languages"></select>
-	      <br>
-	      <input ng-model="name" type="text" placeholder="Name" required>
-	      <input ng-model="email" type="email" placeholder="Email address" required>
-	    </p>
+      <select ng-model="newsletter_lang" 
+              ng-options="l.code as l.name for l in languages"></select>
+      <input ng-model="name" type="text" placeholder="Name" required>
+      <input ng-model="email" type="email" placeholder="Email address" required>
 	  </div>
 	  <div class="section-div newsletter-section-div"></div>
 	  <div class="newsletter">
