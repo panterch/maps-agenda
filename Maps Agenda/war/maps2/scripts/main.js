@@ -4,14 +4,20 @@ var MONTHS = [
   'moseptember', 'mooktober', 'monovember', 'modezember'
 ];
 
+var MONTHS_SHORT = [
+  'moabjanuar', 'moabfebruar', 'moabmaerz', 'moabapril',
+  'moabmai', 'moabjuni', 'moabjuli', 'moabaugust',
+  'moabseptember', 'moaboktober', 'moabnovember', 'moabdezember'
+];
+
 var DAYS_OF_WEEK_SHORT = [
   'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
   'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
 ];
 
 var DAYS_OF_WEEK_LONG = [
-  'Wochentage', 'wtdienstag', 'wtmittwoch', 'wtdonnerstag',
-  'wtfreitag', 'wtsamstag', 'wtsonntag'
+  'wtsonntag', 'Wochentage', 'wtdienstag', 'wtmittwoch',
+  'wtdonnerstag', 'wtfreitag', 'wtsamstag' 
 ];
 
 var dateToString = function(date) {
@@ -95,6 +101,14 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   $scope.printDate = function(dateStr) {
     var date = new Date(dateStr);
     return date.getDate() + '. ' + (date.getMonth() + 1) + '.';
+  };
+
+  $scope.printDate2 = function(dateStr) {
+    if (!dateStr) return '';
+    var date = new Date(dateStr);
+    var month = $scope.phrases[MONTHS_SHORT[date.getMonth()]];
+    if (!month) return $scope.printDate(dateStr);
+    return date.getDate() + ' ' + month;
   };
 
   $scope.printDay = function(dateStr) {
