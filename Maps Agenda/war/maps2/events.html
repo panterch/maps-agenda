@@ -25,9 +25,9 @@
 
 <div ng-init="renderCalendar()" class="cal">
   <div class="cal-title">
-    <a href="" ng-click="movePivotBack();" class="background-color">previous</a>
+    <a href="" ng-click="movePivotBack();" class="background-color">{{phrases.Frueher}}</a>
     <span>{{phrases[getMonth()]}}</span>
-    <a href="" ng-click="movePivotForward();" class="background-color">next</a>
+    <a href="" ng-click="movePivotForward();" class="background-color">{{phrases.Spaeter}}</a>
   </div>
   <table class="cal-grid">
     <tr class="cal-headers">
