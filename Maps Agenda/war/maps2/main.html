@@ -17,23 +17,23 @@
     <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
   </ul>
   
-  <form name="newsletter-form" ng-submit="register()">
-	  <div class="newsletter">{{phrases.Newsletter}}</div>
-	  <div class="section-div newsletter-section-div"></div>
-	  <div class="newsletter newsletter-text">
+  <form name="newsletter-form" ng-submit="register()" class="newsletter">
+	  <h3>{{phrases.Newsletter}}</h3>
+	  <div class="section-div"></div>
+	  <div class="newsletter-text">
 	    <span>{{phrases.AnmeldungNewsletter}}</span>
       <select ng-model="newsletter_lang" 
               ng-options="l.code as l.name for l in languages"></select>
       <input ng-model="name" type="text" placeholder="Name" required>
       <input ng-model="email" type="email" placeholder="Email address" required>
 	  </div>
-	  <div class="section-div newsletter-section-div"></div>
-	  <div class="newsletter">
+	  <div class="section-div"></div>
+	  <div>
 	    <input type="submit" ng-disabled="newsletter-form.$invalid" value="{{phrases.Anmelden}}" />
 	  </div>
 	</form>
   
-  <ul>
+  <ul class="tags">
     <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
   </ul>
 </div><!-- sidebar -->
@@ -44,18 +44,18 @@
       <span>M</span>
       <span>A</span>
       <span>P</span>
-      <span>S</span>
+      <span class="last-letter">S</span>
       <span class="title">ZÜRI<br>AGENDA</span>
     </h1>
-    <h2>Günstige Kultur- und Freizeitangebote</h2>
-    <div class="section-div"></div>
-    <div class="white">
+    <div class="section">
       <form action="." id="language" method="post" name="language">
         <label for="lang">Language</label> 
         <select ng-model="lang" ng-change="updateLang(null)"
                 ng-options="l.code as l.name for l in languages"></select>
       </form>
     </div>
+    <h2 class="subhead">Günstige Kultur- und Freizeitangebote</h2>
+    <div class="section-div"></div>
     <div ui-view></div>
 
     <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>

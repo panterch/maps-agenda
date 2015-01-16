@@ -49,6 +49,9 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang,
 	$scope.phrases = phrases;
   $scope.tags = tags;
 
+  var html = document.body.parentNode;
+  html.setAttribute('lang', lang);
+  
   $scope.updateLang = function(new_lang) {
     var path = $location.path();
     if (new_lang == null)
@@ -80,8 +83,10 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang,
   for (var i = 0; i < $scope.languages.length; ++i) {
     var l = $scope.languages[i];
     l.name_br = $sce.trustAsHtml(l.name.replace(/\//g, '/<wbr>'));
-    if (l.code == lang)
+    if (l.code == lang) {
       found = true;
+      html.setAttribute('dir', l.isRtl? 'rtl' : 'ltr');
+    }
   }
   if (!found) $scope.updateLang('de');
 });
@@ -100,7 +105,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   
   $scope.printDate = function(dateStr) {
     var date = new Date(dateStr);
-    return date.getDate() + '. ' + (date.getMonth() + 1) + '.';
+    return date.getDate() + '.' + (date.getMonth() + 1) + '.';
   };
 
   $scope.printDate2 = function(dateStr) {

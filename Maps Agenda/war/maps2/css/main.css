@@ -1,5 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Arvo);
 
+/* Layout grid ****************************************************************/
 
 body {
   font-family: sans-serif;
@@ -8,13 +9,72 @@ body {
 }
 
 .sidebar {
-  /* background: lime; */
   float: left;
   min-height: 400px;
   overflow: visible;
   width: 182px;
   padding-top: 146px;
 }
+
+.container {
+  margin: 0 242px;
+}
+
+.content {
+  margin: auto;
+  max-width: 850px;
+  min-height: 400px;
+}
+
+.section {
+  background: white;
+  overflow: hidden;
+  padding: 10px;
+  padding-bottom: 20px;
+  margin: 0px;
+}
+
+.section-div {
+  background-image: url('/maps2/images/perforated_band_1.png');
+  background-position: center;
+  background-repeat: repeat-x; 
+  background-size: 12px;
+  padding: 0px;
+  margin: 0px;
+  height: 11px;
+  width: 100%;
+}
+
+
+
+/* Background *****************************************************************/
+
+.background-color {
+  background-color: #08a;
+}
+
+.background-color-screen {
+  height: 100%;
+  opacity: 1.0;
+  position: fixed;
+  width: 100%;
+  z-index: -2;
+}
+
+.background-screen {
+  background-image: url('/maps2/images/temp-bg.png');
+  background-position-x: center;
+  background-size: cover;
+  height: 100%;
+  opacity: 1.0;
+  position: fixed;
+  width: 100%;
+  z-index: -1;
+}
+
+
+
+/* Sidebar content  ***********************************************************/
 
 .sidebar ul {
   letter-spacing: 1px;
@@ -45,48 +105,9 @@ body {
   text-align: right;
 }
 
-.container {
-  margin: 0 242px;
-}
 
-.content {
-  margin: auto;
-  max-width: 850px;
-  min-height: 400px;
-}
 
-.white {
-  background: white;
-  overflow: hidden;
-  padding: 10px;
-  padding-bottom: 20px;
-  margin: 0px;
-}
-
-#language {
-  background: transparent left center no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv3aB7AAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAADjSURBVBiVZVE9DgFhFBwRCRLsBYS4gCtoVWoFTiBxAwo1Cj29Yg+g4AREoUYhGgkSK3ax4+1+fr+d6k3e37x5gIfyjPs+3gh16GFnvHiVCltFY+SKIz7Ins9NLmtujlaFjko7xvyK7i1k+gU1tsLcIMNslJYMPziISiLOFkzXkHiBBAuIcIo0G0jyF2tp/8UZgz9uY34GBhfZ07SB0h2HkyiyvL2iJu+CR2AiNSjdgBQDXK/X5/3vuwb06Hr1e9S9w8+9yo8T8szGPD8Cfn38rCs/ld/jr9/6PwL/Aoryz7YfPQFokPkVOAD3GgAAAABJRU5ErkJggg==");
-  background-size: 20px 20px;
-  float: right;
-  padding: 1px 0 1px 24px;
-}
-
-#language label {
-  left: -999em;
-  position: absolute;
-}
-
-.section-div {
-  background-image: url('/maps2/images/perforated_band_1.png');
-  background-position: center;
-  background-repeat: repeat-x; 
-  background-size: 12px;
-  padding: 0px;
-  margin: 0px;
-  height: 11px;
-  width: 100%;
-}
-
-/* Header */
+/* Header *********************************************************************/
 
 #aoz {
   background: #fff;
@@ -116,7 +137,7 @@ h1 span {
   padding: 0 15px;
 }
 
-h1 span:nth-of-type(4) {
+h1 span.last-letter {
   border: none;
 }
 
@@ -126,12 +147,12 @@ h1 span.title {
   font-size: 123%;
   letter-spacing: 2px;
   line-height: 100%;
-  margin-left: 20px;
+  margin-left: 15px;
   padding: 0;
   width: 150px;
 }
 
-h2 {
+h2.subhead {
   background: #fff;
   color: #706f6f;
   font-family: 'Arvo', Times New Roman;
@@ -140,32 +161,21 @@ h2 {
   padding: 1em 0 1em 17px
 }
 
-/* Background */
-
-.background-color {
-  background-color: #08a;
+#language {
+  background: transparent left center no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv3aB7AAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAADjSURBVBiVZVE9DgFhFBwRCRLsBYS4gCtoVWoFTiBxAwo1Cj29Yg+g4AREoUYhGgkSK3ax4+1+fr+d6k3e37x5gIfyjPs+3gh16GFnvHiVCltFY+SKIz7Ins9NLmtujlaFjko7xvyK7i1k+gU1tsLcIMNslJYMPziISiLOFkzXkHiBBAuIcIo0G0jyF2tp/8UZgz9uY34GBhfZ07SB0h2HkyiyvL2iJu+CR2AiNSjdgBQDXK/X5/3vuwb06Hr1e9S9w8+9yo8T8szGPD8Cfn38rCs/ld/jr9/6PwL/Aoryz7YfPQFokPkVOAD3GgAAAABJRU5ErkJggg==");
+  background-size: 20px 20px;
+  float: right;
+  padding: 1px 0 1px 24px;
 }
 
-.background-color-screen {
-  height: 100%;
-  opacity: 1.0;
-  position: fixed;
-  width: 100%;
-  z-index: -2;
+#language label {
+  left: -999em;
+  position: absolute;
 }
 
-.background-screen {
-  background-image: url('/maps2/images/temp-bg.png');
-  background-position-x: center;
-  background-size: cover;
-  height: 100%;
-  opacity: 1.0;
-  position: fixed;
-  width: 100%;
-  z-index: -1;
-}
 
-/* Newsletter */
+
+/* Newsletter *****************************************************************/
 
 .sidebar form {
   margin: 26px 0;
@@ -175,7 +185,7 @@ h2 {
   margin: 5px 0 0 0;
 }
 
-.newsletter {
+.newsletter div {
   background-color: #706f6f;
   color: #fff;
   overflow-wrap: break-word;
@@ -185,15 +195,23 @@ h2 {
   width: auto;
 }
 
-.newsletter > div:first-child,
-.newsletter > div:last-child {
-  font-size: 1em;
-  font-weight: bold;
+.newsletter h3 {
+  background-color: #706f6f;
+  color: #fff;
+  font-size: 100%;
+  font-weight: normal;
+  margin: 0;
+  padding: 7px 15px 2px 15px;
+  text-transform: uppercase;
 }
 
 .newsletter-text {
   font-size: .8em;
   font-weight: normal;
+}
+
+.newsletter select {
+  margin-top: .5em;
 }
 
 .newsletter-text input,
@@ -205,21 +223,19 @@ h2 {
   width: 95%;
 }
 
-.newsletter-section-div {
-  background: url('/maps2/images/perforated_band_2.png'); 
+.newsletter .section-div {
+  background: url('/maps2/images/perforated_band_2.png');
+  padding: 0;  
   repeat-x scroll;
 }
 
-.newsletter:nth-of-type(1) {
-  padding-bottom: .2em;
-  text-transform: uppercase;
-}
-
-.sidebar ul:nth-of-type(2) {
+.sidebar ul.tags {
   font-size: 80%;
 }
 
-/* Events header styles */
+
+
+/* Events header styles *******************************************************/
 
 .event-nav {
   background-color: white;
@@ -263,7 +279,9 @@ h2 {
   font-size: .4em !important;
 }
 
-/* Event styles */
+
+
+/* Event styles ***************************************************************/
 
 .event {
   background-color: #fff;
@@ -297,6 +315,7 @@ h2 {
 
 .event .date span {
   font-size: 210%;
+  display: block;
 }
 
 .event .date p {
@@ -326,7 +345,9 @@ h2 {
   color: #706f6f; 
 }
 
-/* Calendar styles */
+
+
+/* Calendar styles ************************************************************/
 
 .cal {
   background-color: #fff;
@@ -391,7 +412,9 @@ h2 {
   background-color: #706f6f;
 }
 
-/* Media queries */
+
+
+/* Media queries **************************************************************/
 
 @media screen and (max-width: 1280px) {
   .container {
@@ -409,9 +432,9 @@ h2 {
     padding: 0 10px;
   }
   h1 .title {
-    font-size: 1em;
-    margin-left: 25px;
-    width: 100px;
+    font-size: 125% !important;
+    margin-left: 10px !important;
+    width: 100px !important;
   }
 }
 
@@ -452,7 +475,7 @@ h2 {
 
 @media screen and (max-width: 360px) {
   h1 {
-    font-size: .8em;
+    font-size: 80%;
   }
   h1 span {
     border-width: 4px;
@@ -460,9 +483,9 @@ h2 {
     padding: 0 8px;
   }
   h1 .title {
-    font-size: .8em;
-    margin-left: 15px;
-    width: 85px;
+    font-size: 120% !important;
+    margin-left: 5px !important;
+    width: 85px !important;
   }
 }
 

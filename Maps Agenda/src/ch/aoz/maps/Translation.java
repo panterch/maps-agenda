@@ -118,19 +118,28 @@ public class Translation {
     }
 
     if (entity.hasProperty("location")) {
-      location = ((String) entity.getProperty("location")).trim();
+      String loc = (String) entity.getProperty("location");
+      if (loc == null)
+        location = "";
+      else location = loc.trim();
     } else {
       location = new String("");
     }
 
     if (entity.hasProperty("transit")) {
-      transit = ((String) entity.getProperty("transit")).trim();
+      String t = (String) entity.getProperty("transit");
+      if (t == null)
+        transit = "";
+      else transit = t.trim();
     } else {
       transit = new String("");
     }
 
     if (entity.hasProperty("url")) {
-      url = ((String) entity.getProperty("url")).trim();
+      String u = (String) entity.getProperty("url");
+      if (u == null)
+        url = "";
+      else url = u.trim();
     } else {
       url = new String("");
     }
