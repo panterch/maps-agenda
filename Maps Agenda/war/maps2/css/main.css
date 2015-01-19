@@ -190,7 +190,8 @@ h2.subhead {
   color: #fff;
   overflow-wrap: break-word;
   padding: 7px 15px;
-  text-align: left;
+  text-align: left; /* backup for older browsers */
+  text-align: start;
   text-decoration: none;
   width: auto;
 }
@@ -438,7 +439,7 @@ h2.subhead {
   background-color: #706f6f;
 }
 
-
+/cns/le-d/home/tobulogic/probes_13.txt
 
 /* Media queries **************************************************************/
 
