@@ -72,6 +72,10 @@ public class Languages implements java.io.Serializable {
     Languages langs = GetLanguages();
     if (langs == null) 
       return false;
+    if (langs.languages.contains(l)) {
+      if (!langs.languages.remove(l))
+        return false;
+    }
     langs.languages.add(l);
     return langs.addToStore();
   }

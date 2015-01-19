@@ -3,7 +3,7 @@
 /* Layout grid ****************************************************************/
 
 body {
-  font-family: sans-serif;
+  font-family: Arial, sans-serif !important;
   margin: auto;
   padding: 0;
 }
@@ -28,9 +28,9 @@ body {
 
 .section {
   background: white;
+  float: right;
   overflow: hidden;
-  padding: 10px;
-  padding-bottom: 20px;
+  padding: 13px 10px 0 10px;
   margin: 0px;
 }
 
@@ -124,7 +124,7 @@ h1 {
   font-size: 1.5em;
   font-weight: normal;
   margin: 0;
-  padding: 4px 0 4px 0;
+  padding: 0;
 }
 
 h1 span {
@@ -200,6 +200,7 @@ h2.subhead {
   color: #fff;
   font-size: 100%;
   font-weight: normal;
+  letter-spacing: 1px;
   margin: 0;
   padding: 7px 15px 2px 15px;
   text-transform: uppercase;
@@ -242,7 +243,7 @@ h2.subhead {
   color: #707070;
   font-size: 2em;
   overflow: hidden;
-  padding-bottom: 10px;
+  padding: 10px 0;
   text-align: center;
 }
 
@@ -311,6 +312,31 @@ h2.subhead {
   text-align: left;
   text-transform: uppercase;
   width: 106px;
+}
+
+.date {
+  margin-top: 3px !important;
+}
+
+.details h2 {
+  font-size: 120%;
+  font-weight: normal;
+  margin-top: 0 !important;
+  text-transform: uppercase;
+}
+
+.details p {
+  color: #888;
+  font-size: 90%;
+  line-height: 1.3;
+}
+
+.details .location {
+  font-style: italic;
+}
+
+.details .location a {
+  font-style: normal;
 }
 
 .event .date span {
@@ -422,6 +448,12 @@ h2.subhead {
   }
 }
 
+@media screen and (max-width: 1040px) {
+  .event-nav {
+    font-size: 150%;
+  }
+}
+
 @media screen and (max-width: 950px) {
   h1 {
     font-size: 1em;
@@ -451,6 +483,13 @@ h2.subhead {
   }
 }
 
+@media screen and (max-width: 860px) {
+  .event-nav > .prev,
+  .event-nav > .next {
+    width: inherit;
+  }
+}
+
 @media screen and (max-width: 767px) {
   #language
   .content-nav {
@@ -465,11 +504,26 @@ h2.subhead {
   .content {
     max-width: 570px;
   }
+  .event-nav > .prev,
+  .event-nav > .next {
+    width: 120px;
+  }
 }
 
 @media screen and (max-width: 599px) {
   .container {
     margin: 0;
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .section {
+    padding-bottom: 13px;
+    width: 100%;
+  }
+  .event-nav > .prev,
+  .event-nav > .next {
+    width: inherit;
   }
 }
 
@@ -486,6 +540,12 @@ h2.subhead {
     font-size: 120% !important;
     margin-left: 5px !important;
     width: 85px !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .cal-title > span {
+    padding: 0 10px;
   }
 }
 
