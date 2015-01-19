@@ -82,6 +82,7 @@ body {
   margin: 0;
   overflow: hidden;
   padding: 0;
+  text-align: left;
 }
 
 .sidebar ul a {
