@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -25,18 +27,72 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 /**
  * A MAPS event.
  */
-public class Event implements Comparable<Event> {
+public class Event implements Comparable<Event>, java.io.Serializable {
+  private static final long serialVersionUID = 161727L;
   public static final String entityKind = "Event";
+  
+  // Whether this event has a key assigned to it. If not, it usually means this
+  // is a new event that is not stored. This boolean is not stored.
   private boolean hasKey;
+  
+  // Used to discriminate between events at the same date.
   private long key;
+  
+  // When this event happens.
   private Date date;
+  
+  // Old: German translation for this event.
   private Translation germanTranslation;
+  
+  // New: translation for this event in the requested language.
+  private Translation translation;
+
+  // New: Stuff that is always the same for all the translations of the same event.
+  private String location;
+  private String transit;
+  private String url;
+  private Set<String> tags;
+  
+  // Debugging stuff, not stored.
   private boolean ok;
   private List<String> errors;
   
+  // We only sort the items according to their date. There is no ordering for
+  // events happening at the same date.
   @Override
   public int compareTo(Event other) {
     return getDate().compareTo(other.getDate());
+  }
+  
+  // Two events are equal iff they happen at the same date and they have the
+  // same key. Note that events they have no key assigned yet cannot be equal
+  // to another event.
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Event)) return false;
+    Event e = (Event)o;
+    return this.date.equals(e.date) 
+        && this.hasKey && e.hasKey  // Both must have a key assigned.
+        && this.key == e.key;
+  }
+  
+  /**
+   * Create a new Event with all the info required for the Events object. 
+   */
+  public Event(Date date, long key, String location, String transit, String url, Set<String> tags) {
+    this.date = date;
+    this.key = key;
+    this.hasKey = true;
+    this.location = (location != null ? location : "");
+    this.transit = (transit != null ? transit : "");
+    this.url = (url != null ? url : "");
+    this.tags = (tags != null ? tags : new HashSet<String>());
+    germanTranslation = null;
+    translation = null;
+    this.ok = true;
+    if (date == null) {
+      addError("Date is not defined");
+    }
   }
   
   /**
@@ -312,12 +368,39 @@ public class Event implements Comparable<Event> {
 		return key;
 	}
 
-	/**
+    /**
+     * Sets the key
+     */
+    public void setKey(long key) {
+        this.key = key;
+        this.hasKey = true;
+    }
+
+    /**
 	 * @return If true, this entity already has a key.
 	 */
 	public boolean hasKey() {
 		return hasKey;
 	}
+	
+	public Translation getTranslation() {
+	  return translation;
+	}
+    public void setTranslation(Translation translation) {
+      this.translation = translation;
+    }
+	public String getLocation() {
+	  return location;
+	}
+    public String getTransit() {
+      return transit;
+    }
+    public String getUrl() {
+      return url;
+    }
+    public Set<String> getTags() {
+      return tags;
+    }
 
 	/**
 	 * @return the validation status of this Event
