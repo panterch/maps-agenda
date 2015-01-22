@@ -8,9 +8,7 @@
 
 <div ng-repeat="event in events">
   <div class="event">
-    <h2 class="date">
-      {{phrases[printDay(event.date)]}}
-      <span>{{printDate(event.date)}}</span>
+    <h2 class="date">{{phrases[printDay(event.date)]}}<span>{{printDate(event.date)}}</span>
     </h2>
     <div class="details">
       <h2>{{event.title}}</h2>
