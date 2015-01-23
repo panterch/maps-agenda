@@ -55,6 +55,6 @@ public class Tmp_Phrases extends HttpServlet {
     }
 
     private static String getKey(Calendar c) {
-      return String.format("%4d-%2d", c.get(Calendar.YEAR), c.get(Calendar.MONTH));
+      return String.format("%04d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH));
     }
 }

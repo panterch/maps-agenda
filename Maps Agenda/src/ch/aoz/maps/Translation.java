@@ -30,7 +30,7 @@ import java.util.List;
  * Translations for a certain MAPS event.
  */
 public class Translation implements java.io.Serializable {
-  private static final long serialVersionUID = 161727L;
+  private static final long serialVersionUID = 161728L;
   public static final String entityKind = "Translation";
   private Key eventID;
   private String lang;

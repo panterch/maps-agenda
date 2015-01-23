@@ -68,14 +68,15 @@ public class Events implements java.io.Serializable {
   }
   
   private static String getKey(Calendar c) {
-    return String.format("%4d-%2d", c.get(Calendar.YEAR), c.get(Calendar.MONTH));
+    return String.format("%04d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH));
   }
   private static String getMemcacheKey(Calendar c) {
     return String.format("%s-%s", entityKind, getKey(c));
   }
   
   /** 
-   * Returns the Languages object. It contains all the languages defined in the application.
+   * Returns the Events object. It contains all the events for the month 
+   * specified in the calendar.
    */
   public static Events getEvents(Calendar c) {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
