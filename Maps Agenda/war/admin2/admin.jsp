@@ -10,6 +10,8 @@
     <link href="css/admin.css" rel="stylesheet" type="text/css"></link>
     <script src="scripts/angular.min.js"></script>
     <script src="scripts/angular-ui-router.min.js"></script>
+    <script src="scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+    <script src="scripts/angular-file-upload.min.js"></script> 
     <script src="scripts/admin.js"></script>
     <title>Maps Agenda Admin Console</title>
   </head>
@@ -36,6 +38,7 @@
         <div class="menu_item" id="phrases" ui-sref="phrases({lang: 'de'})">Translations</div>
         <div class="menu_item" id="events" ui-sref="events">Events</div>
         <div class="menu_item" id="generate" ui-sref="generate">Generate XML</div>
+        <div class="menu_item" id="looknfeel" ui-sref="looknfeel">Look &amp; Feel</div>
         <div class="menu_item" id="send_newsletter" ui-sref="newsletter">Send newsletter</div>
       </div>
       <div id="content">

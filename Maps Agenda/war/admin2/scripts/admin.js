@@ -14,8 +14,7 @@ function itemClick(item_id) {
   return true;
 }
 
-
-var adminApp = angular.module('adminApp', ['ui.router']);
+var adminApp = angular.module('adminApp', ['ui.router', 'angularFileUpload']);
 
 adminApp.run(['$rootScope', '$state', '$stateParams',
   function ($rootScope,   $state,   $stateParams) {
@@ -252,6 +251,46 @@ adminApp.controller('EventCtrl', function ($scope) {});
 //Controller for the xml generation page.
 adminApp.controller('GenerateCtrl', function ($scope) {});
 
+//Controller for the look & feel page.
+adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbnails) {
+	$scope.background_thumbnails = background_thumbnails;
+
+	$scope.serve_background = function(blobKey) {
+	  $http({
+		method : 'GET',
+        url : '/admin/background_images?type=serve&blob_key=' + blobKey
+      }).success(function(){
+	    for (var i = 0; i <  $scope.background_thumbnails.length; ++i) {
+		  $scope.background_thumbnails[i].served =
+			  (String)($scope.background_thumbnails[i].key == blobKey);  
+	    }
+      });
+	}
+	
+	$scope.delete_background = function(blobKey) {
+	  $http({
+		  method : 'GET',
+		  url : '/admin/background_images?type=delete&blob_key=' + blobKey
+      }).then(function(data) {
+    	if (data.data.result == "true") {
+  	      for (var i = 0; i <  $scope.background_thumbnails.length; ++i) {
+   	      	if ($scope.background_thumbnails[i].key == blobKey) {
+   	      	  $scope.background_thumbnails.splice(i, 1);
+   	      	  return;
+   	      	}
+          }
+    	}
+      })
+	}
+	
+	$scope.get_upload_url = function(form) {
+	  $http({
+	    method : 'GET',
+	    url : '/admin/background_images?type=get_upload_url'
+	  }).success(function(url) {form.action = url});
+	}
+});
+
 //Controller for the send newsletter page.
 adminApp.controller('NewsletterCtrl', function ($scope) {});
 
@@ -343,6 +382,22 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
 		  templateUrl: 'generate.html',
       controller: 'GenerateCtrl'
     })
+	  .state('looknfeel', {
+		  url: '/looknfeel',
+      onEnter: function() { itemClick("looknfeel") },
+		  templateUrl: 'looknfeel.html',
+	  resolve : {
+	    background_thumbnails : function($http) {
+		  return $http({
+			method : 'GET',
+	        url : '/admin/background_images?type=thumbnails'
+		  }).then(function(data) {
+			return data.data.background_thumbnails;
+     	  });
+        },
+	  },
+      controller: 'LookNFeelCtrl'
+    })
 	  .state('newsletter', {
 		  url: '/send_newsletter',
       onEnter: function() { itemClick("send_newsletter") },
@@ -353,3 +408,25 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     $urlRouterProvider.otherwise('/');
   }]
 );
+
+adminApp.controller('UploadBackgroundCtrl', [ '$scope', '$upload', '$http', '$state', function($scope, $upload, $http, $state) {
+  $scope.onFileSelect = function($files) {
+    for (var i = 0; i < $files.length; i++) {
+      var $file = $files[i];
+      $http({
+        method : 'GET',
+        url : '/admin/background_images?type=get_upload_url&redirect=/admin2/#/looknfeel'
+      }).success(function(data){
+        $upload.upload({
+          url: data.url,
+          file: $file,
+          progress: function(e){}
+        }).then(function(data, status, headers, config) {
+          console.log(data);
+          $state.reload();
+        });
+      });
+    }
+  }
+}]);
+
