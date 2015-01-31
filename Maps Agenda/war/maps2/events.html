@@ -24,16 +24,16 @@
 
 <div ng-init="renderCalendar()" class="cal">
   <div class="cal-title">
-    <a href="" ng-click="movePivotBack();" class="background-color">{{phrases.Frueher}}</a>
+    <a href="" ng-click="movePivotBack();" style="background-color: {{background_color}}">{{phrases.Frueher}}</a>
     <span>{{phrases[getMonth()]}}</span>
-    <a href="" ng-click="movePivotForward();" class="background-color">{{phrases.Spaeter}}</a>
+    <a href="" ng-click="movePivotForward();" style="background-color: {{background_color}}">{{phrases.Spaeter}}</a>
   </div>
   <table class="cal-grid">
     <tr class="cal-headers">
       <td ng-repeat="s in strings">{{phrases[s]}}</td>
     </tr>
     <tr ng-repeat="week in weeks" class="cal-body">
-      <td ng-repeat="day in week track by $index" class="{{isSelected(day)}}" 
+      <td ng-repeat="day in week track by $index" style="background-color: {{isSelected(day)}}" 
           ng-click="selectDate(day);">{{day}}</td>
     </tr>
   </table>

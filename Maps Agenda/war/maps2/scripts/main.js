@@ -42,13 +42,14 @@ mapsApp.service('dateKeeper', function() {
 });
 
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang, 
-                                         languages, phrases, tags, background) {
+                                         languages, phrases, tags, background, background_color) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;	
 	$scope.phrases = phrases;
   $scope.tags = tags;  
   $scope.background = background;
+  $scope.background_color = background_color;
 
   var html = document.body.parentNode;
   html.setAttribute('lang', lang);
@@ -177,9 +178,9 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     var d = new Date($scope.pivot);
     d.setDate(day);
     if ($scope.date.toDateString() == d.toDateString()) {
-      return 'selected';
+      return '#706f6f';
     } else {
-      return 'background-color';
+      return $scope.background_color;
     }
   }
 
@@ -219,7 +220,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   			  },
   			  background: function($http) {
   			    return $http.get('/maps/data?type=background').then(function(data, status) {
-  			      if (status < 200 || status >= 300 || data.data.url == null || data.data.url == '') {
+  			      if (status < 200 || status >= 300 || data == null || data.data == null || data.data.url == null || data.data.url == '') {
   			    	// Fallback to the hardcoded default.
   				    return '/maps2/images/temp-bg.png';
   			      } else {
@@ -228,6 +229,16 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   			      }
   			    });
   			  },
+  			  background_color: function($http) {
+  			    return $http.get('/maps/data?type=background-color').then(function(data, status) {
+  			      if (status < 200 || status >= 300 || data == null || data.data == null || data.data.color == null || data.data.color == '') {
+  			    	// Fallback to the hardcoded default.
+  				    return '#08a';
+  			      } else {
+  			    	return '#' + data.data.color;
+		          }
+  			    });
+  			},
           tags: function($http) {
             return $http({method: 'GET', url: '/maps/data?type=tags'})
               .then (function (data) {

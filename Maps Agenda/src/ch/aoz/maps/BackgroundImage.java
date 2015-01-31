@@ -19,7 +19,7 @@ public class BackgroundImage implements java.io.Serializable {
   
   public BackgroundImage() {
     this.key = "";
-    this.url = "/maps2/images/temp-bg.png";
+    this.url = "";
     this.debug = "invalid";
   }  
   
@@ -55,7 +55,7 @@ public class BackgroundImage implements java.io.Serializable {
   }
   
   /**
-   * Replace the background image in the datastore with this instance.
+   * Replace the BackgroundImage in the datastore with this instance.
    *
    * @return true if this operation succeeded.
    */
@@ -75,9 +75,9 @@ public class BackgroundImage implements java.io.Serializable {
   /** Utilities for storing and caching  */
   
   /**
-   * Returns the Entity representation of this background image.
+   * Returns the Entity representation of this BackgroundImage.
    *
-   * @return an Entity with the properties of this background image.
+   * @return an Entity with the properties of this BackgroundImage.
    */
   private Entity toEntity() {
     Entity entity = new Entity(entityKind, getDatastoreKey());
@@ -86,10 +86,10 @@ public class BackgroundImage implements java.io.Serializable {
   }
 
   /** 
-   * Extracts an Event from the packed representation in the database.
+   * Extracts a BackgroundImage from the packed representation in the database.
    * 
-   * @param packed string representation of a Event in the database.
-   * @return a fully constructed Event
+   * @param packed string representation of a BackgroundImage in the database.
+   * @return a fully constructed BackgroundImage
    */
   private static BackgroundImage fromEntity(Entity entity) {
     String[] fields = ((String)entity.getProperty(getDatastoreKey())).split("" + RS);

@@ -44,6 +44,9 @@ public class Maps_DataServlet extends HttpServlet {
         case "background":
         	response = getBackground();
         	break;
+        case "background-color":
+        	response = getBackgroundColor();
+        	break;
       }
       if (response == null) {
         
@@ -240,7 +243,10 @@ public class Maps_DataServlet extends HttpServlet {
     }
     
     private String getBackground() {
-    	BackgroundImage image = BackgroundImage.fetchFromStore();
-    	return "{\"url\" : \"" + image.getUrl() + "\"}";
+    	return "{\"url\" : \"" + BackgroundImage.fetchFromStore().getUrl() + "\"}";
+    }
+    
+    private String getBackgroundColor() {
+    	return "{\"color\" : \"" + BackgroundColor.fetchFromStore().getColor() + "\"}";
     }
 }

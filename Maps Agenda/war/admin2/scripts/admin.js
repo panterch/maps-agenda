@@ -252,13 +252,14 @@ adminApp.controller('EventCtrl', function ($scope) {});
 adminApp.controller('GenerateCtrl', function ($scope) {});
 
 //Controller for the look & feel page.
-adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbnails) {
+adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbnails, background_color) {
 	$scope.background_thumbnails = background_thumbnails;
+	$scope.background_color = background_color;
 
 	$scope.serve_background = function(blobKey) {
 	  $http({
 		method : 'GET',
-        url : '/admin/background_images?type=serve&blob_key=' + blobKey
+        url : '/admin/background_images?type=serve_image&blob_key=' + blobKey
       }).success(function(){
 	    for (var i = 0; i <  $scope.background_thumbnails.length; ++i) {
 		  $scope.background_thumbnails[i].served =
@@ -288,6 +289,13 @@ adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbna
 	    method : 'GET',
 	    url : '/admin/background_images?type=get_upload_url'
 	  }).success(function(url) {form.action = url});
+	}
+	
+	$scope.apply_bg_color = function() {
+	  $http({
+		method : 'GET',
+		url : '/admin/background_images?type=serve_color&color=' + $scope.background_color
+	  });
 	}
 });
 
@@ -387,6 +395,18 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       onEnter: function() { itemClick("looknfeel") },
 		  templateUrl: 'looknfeel.html',
 	  resolve : {
+		background_color : function($http) {
+		  return $http({
+		    method : 'GET',
+		    url : '/admin/background_images?type=color'
+		  }).then(function(data) {
+			if (data.data.color == null || data.data.color == '') {
+			  return "000000";
+			} else {
+			  return data.data.color;	
+			}
+	      });
+		},
 	    background_thumbnails : function($http) {
 		  return $http({
 			method : 'GET',

@@ -1,15 +1,9 @@
 package ch.aoz.maps;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.http.*;
 
 import com.google.appengine.api.blobstore.BlobInfo;
@@ -21,11 +15,6 @@ import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
 
-import ch.aoz.maps.Event;
-import ch.aoz.maps.Language;
-import ch.aoz.maps.Phrase;
-import ch.aoz.maps.Phrases;
-
 @SuppressWarnings("serial")
 public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
     @Override
@@ -33,9 +22,12 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
             throws IOException {
       String response = null;
       switch (req.getParameter("type")) {
-        case "serve":
+        case "serve_image":
         	serveBackground(req.getParameter("blob_key"));
           break;
+        case "serve_color":
+        	serveColor(req.getParameter("color"));
+        	break;
         case "delete":
         	if (deleteBackground(req.getParameter("blob_key"))) {
         		response = "{\"result\" : \"true\"}";
@@ -45,6 +37,9 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
           break;
         case "thumbnails":
         	response = getThumbnails();
+        	break;
+        case "color":
+        	response = "{\"color\" : \"" + BackgroundColor.fetchFromStore().getColor() + "\"}";
         	break;
         case "get_upload_url":
         	response = "{\"url\" : \"" + getUploadUrl(req.getParameter("redirect")) + "\"}";
@@ -73,7 +68,6 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
   		resp.sendRedirect("/admin2/looknfeel.html");
     }
 
-    
     private void serveBackground(String blobKey) {
     	BlobKey key = new BlobKey(blobKey);
     	ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(key);
@@ -120,5 +114,10 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
     private String getUploadUrl(String redirect) {
     	BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
     	return blobstoreService.createUploadUrl(redirect);
+    }
+    
+    private void serveColor(String color) {
+    	BackgroundColor background_color = new BackgroundColor(color);
+    	background_color.addToStore();
     }
 }
