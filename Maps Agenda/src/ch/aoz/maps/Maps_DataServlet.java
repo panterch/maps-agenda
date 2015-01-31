@@ -41,6 +41,9 @@ public class Maps_DataServlet extends HttpServlet {
         case "translators":
           response = getTranslators();
           break;
+        case "background":
+        	response = getBackground();
+        	break;
       }
       if (response == null) {
         
@@ -234,5 +237,10 @@ public class Maps_DataServlet extends HttpServlet {
       }      
       response.append("]}");
       return response.toString();
+    }
+    
+    private String getBackground() {
+    	BackgroundImage image = BackgroundImage.fetchFromStore();
+    	return "{\"url\" : \"" + image.getUrl() + "\"}";
     }
 }

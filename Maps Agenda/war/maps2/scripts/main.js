@@ -42,12 +42,13 @@ mapsApp.service('dateKeeper', function() {
 });
 
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang, 
-                                         languages, phrases, tags) {
+                                         languages, phrases, tags, background) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;	
 	$scope.phrases = phrases;
-  $scope.tags = tags;
+  $scope.tags = tags;  
+  $scope.background = background;
 
   var html = document.body.parentNode;
   html.setAttribute('lang', lang);
@@ -215,6 +216,17 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
                 return data.data.phrases;
               }
             );         
+  			  },
+  			  background: function($http) {
+  			    return $http.get('/maps/data?type=background').then(function(data, status) {
+  			      if (status < 200 || status >= 300 || data.data.url == null || data.data.url == '') {
+  			    	// Fallback to the hardcoded default.
+  				    return '/maps2/images/temp-bg.png';
+  			      } else {
+  			    	// TODO consider allowing the admins to scale the image.
+  			    	return data.data.url + "=s1280";
+  			      }
+  			    });
   			  },
           tags: function($http) {
             return $http({method: 'GET', url: '/maps/data?type=tags'})

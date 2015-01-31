@@ -66,7 +66,7 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
     	List<BlobKey> blobKeys = blobs.get("backgroundImage");
 
     	if (blobKeys != null && !blobKeys.isEmpty()) {
-    		ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0)).imageSize(200);
+    		ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0));
     		BackgroundImage image = new BackgroundImage(blobKeys.get(0).getKeyString(), imagesService.getServingUrl(options));
     		image.addToStore();
     	}
@@ -103,7 +103,7 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
       response.append("{ \"background_thumbnails\": [");
       while(iterator.hasNext()){
     	  BlobKey nextBlobKey = iterator.next().getBlobKey();
-    	  ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(nextBlobKey).imageSize(200);
+    	  ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(nextBlobKey);
     	  response.append("{");
     	  response.append("\"url\": \"").append(imagesService.getServingUrl(options)).append("\", ");
     	  response.append("\"key\": \"").append(nextBlobKey.getKeyString()).append("\", ");
