@@ -44,8 +44,8 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   // Old: German translation for this event.
   private Translation germanTranslation;
 
-  // New: translation for this event in the requested language.
-  private Translation translation;
+  // New: description for this event (title and description in a given lang).
+  private EventDescription description;
 
   // New: Stuff that is always the same for all the translations of the same event.
   private String location;
@@ -90,7 +90,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     this.url = (url != null ? url : "");
     this.tags = (tags != null ? tags : new HashSet<String>());
     germanTranslation = null;
-    translation = null;
+    description = null;
     this.ok = true;
     if (calendar == null) {
       this.calendar = null;
@@ -398,12 +398,12 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     return hasKey;
   }
 
-  public Translation getTranslation() {
-    return translation;
+  public EventDescription getDescription() {
+    return description;
   }
 
-  public void setTranslation(Translation translation) {
-    this.translation = translation;
+  public void setDescription(EventDescription description) {
+    this.description = description;
   }
 
   public String getLocation() {
