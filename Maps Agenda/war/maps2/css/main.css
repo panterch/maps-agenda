@@ -102,6 +102,9 @@ body {
 
 .sidebar.nav {
   float: right;
+  position: absolute;
+  right: 0%;  
+  top: 0px;
 }
 
 .sidebar.nav ul li {

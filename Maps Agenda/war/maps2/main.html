@@ -10,6 +10,31 @@
   </ul>
 </div><!-- sidebar -->
 
+<div class="container">
+  <div class="content">
+    <h1 style="background-color: {{background_color}}">
+      <span>M</span>
+      <span>A</span>
+      <span>P</span>
+      <span class="last-letter">S</span>
+      <span class="title">ZÜRI<br>AGENDA</span>
+    </h1>
+    <div class="section">
+      <form action="." id="language" method="post" name="language">
+        <label for="lang">Language</label> 
+        <select ng-model="lang" ng-change="updateLang(null)"
+                ng-options="l.code as l.name for l in languages"></select>
+      </form>
+    </div>
+    <h2 class="subhead">Günstige Kultur- und Freizeitangebote</h2>
+    <div class="section-div"></div>
+    <div ui-view></div>
+
+    <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
+
+  </div><!-- content -->
+</div><!-- container -->
+
 <div class="sidebar nav">
   <ul>
     <li><a ui-sref="main.about">{{phrases.UeberMAPS}}</a></li>
@@ -37,28 +62,3 @@
     <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
   </ul>
 </div><!-- sidebar -->
-
-<div class="container">
-  <div class="content">
-    <h1 style="background-color: {{background_color}}">
-      <span>M</span>
-      <span>A</span>
-      <span>P</span>
-      <span class="last-letter">S</span>
-      <span class="title">ZÜRI<br>AGENDA</span>
-    </h1>
-    <div class="section">
-      <form action="." id="language" method="post" name="language">
-        <label for="lang">Language</label> 
-        <select ng-model="lang" ng-change="updateLang(null)"
-                ng-options="l.code as l.name for l in languages"></select>
-      </form>
-    </div>
-    <h2 class="subhead">Günstige Kultur- und Freizeitangebote</h2>
-    <div class="section-div"></div>
-    <div ui-view></div>
-
-    <p class="content-nav"><strong>Use JS to move the right column content to the footer area</strong></p>
-
-  </div><!-- content -->
-</div><!-- container -->
