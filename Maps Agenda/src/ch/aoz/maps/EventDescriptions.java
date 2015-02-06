@@ -14,7 +14,7 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class EventDescriptions implements java.io.Serializable {
-  private static final long serialVersionUID = 161729L;
+  private static final long serialVersionUID = 161732L;
   public static final String entityKind = "EventDescriptions";
   public static final char RS = 0x1e;  // Record separator.
 
@@ -25,8 +25,7 @@ public class EventDescriptions implements java.io.Serializable {
   /** Language the descriptions are in */
   private String lang;
   /** Debug stuff */
-  private boolean isOk;
-  private String debug;
+  private StringBuilder debug;
 
   public EventDescriptions(String lang, Calendar c) {
     this.lang = lang;
@@ -37,14 +36,15 @@ public class EventDescriptions implements java.io.Serializable {
     month.set(Calendar.DATE, 1);
     
     descriptions = new TreeMap<Long, EventDescription>();
-    debug = "ok";
-    isOk = true;
+    debug = new StringBuilder();
   }
   
   public EventDescriptions(String lang, Calendar c, Set<Event> events) {
     this(lang, c);
     for (Event e : events) {
-      this.descriptions.put(e.getKey(), e.getDescription());
+      if (e.getDescription() != null || e.getDescription().getLang().equals(lang)) {
+        this.descriptions.put(e.getKey(), e.getDescription());
+      }
     }
   }
   
@@ -56,16 +56,17 @@ public class EventDescriptions implements java.io.Serializable {
         key = Long.parseLong(keyStr);
       } catch (NumberFormatException e) {
         // Should not happen...
-        debug = "Got wrong key: " + keyStr;
+        debug.append("Got wrong key: " + keyStr + "; ");
         continue;
       }
       String s = (String)entity.getProperty(keyStr);
       EventDescription d = extractDescription(lang, s);
       if (d != null) {
         descriptions.put(key, d);
+      } else {
+        debug.append("Get null description for event " + key + "; ");
       }
     }
-    isOk = true;
     addToCache();
   }
   
@@ -96,8 +97,8 @@ public class EventDescriptions implements java.io.Serializable {
     }
   }
   
-  public static boolean add(Event e) {
-    if (e == null || !e.hasKey() || e.getDescription() == null || !e.getDescription().isOk()) 
+  public static boolean addDescription(Event e) {
+    if (e == null || !e.hasKey()) 
       return false;
     
     Long key = e.getKey();
@@ -106,12 +107,6 @@ public class EventDescriptions implements java.io.Serializable {
       return false;
     
     EventDescriptions descriptions = getDescriptions(d.getLang(), e.getCalendar());
-    if (descriptions == null) {
-      return false;
-    }
-    if (descriptions.descriptions.containsKey(key)) {
-      descriptions.descriptions.remove(key);
-    }
     descriptions.descriptions.put(key, d);
     return descriptions.addToStore();
   }
@@ -122,16 +117,14 @@ public class EventDescriptions implements java.io.Serializable {
    * @return true if this operation succeeded.
    */
   public boolean addToStore() {
-    if (!this.isOk()) {
-      // debug = "not ok";
-      return false;
-    }
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     try {
       datastore.put(this.toEntity());
     } catch (Exception ex) {
       ex.printStackTrace();
-      debug = "exception (datastore null? " + (datastore == null) + "): " + ex.toString();
+      debug.append("exception (datastore null? ");
+      debug.append(datastore == null);
+      debug.append("): " + ex.toString());
       return false;
     }
     addToCache();
@@ -196,10 +189,9 @@ public class EventDescriptions implements java.io.Serializable {
   public String getLang() {
     return lang;
   }
-  public boolean isOk() {
-    return isOk;
-  }
   public String debug() {
-    return debug;
+    if (debug.length() == 0)
+      return "ok";
+    else return debug.toString();
   }
 }

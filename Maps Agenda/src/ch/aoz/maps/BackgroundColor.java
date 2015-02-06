@@ -85,7 +85,7 @@ public class BackgroundColor implements java.io.Serializable {
   /** 
    * Extracts a BackgroundColor from the packed representation in the database.
    * 
-   * @param packed string representation of a BackgroundColor in the database.
+   * @param entity representation of a BackgroundColor in the database.
    * @return a fully constructed BackgroundColor
    */
   private static BackgroundColor fromEntity(Entity entity) {

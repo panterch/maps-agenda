@@ -52,6 +52,7 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
       resp.getWriter().println(response);
     }
     
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws IOException {
     	BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();

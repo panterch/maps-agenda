@@ -88,7 +88,9 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     this.location = (location != null ? location : "");
     this.transit = (transit != null ? transit : "");
     this.url = (url != null ? url : "");
-    this.tags = (tags != null ? tags : new HashSet<String>());
+    this.tags = new HashSet<String>();
+    if (tags != null)
+      this.tags.addAll(tags);
     germanTranslation = null;
     description = null;
     this.ok = true;
@@ -170,6 +172,18 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     this.tags = new HashSet<String>();
   }
 
+  @Override
+  public Event clone() {
+    Event e = new Event(calendar, key, location, transit, url, tags);
+    e.hasKey = hasKey;
+    e.germanTranslation = germanTranslation;
+    e.description = description;
+    e.ok = ok;
+    if (errors != null)
+      e.errors.addAll(errors);    
+    return e;
+  }
+  
   public boolean addToStore() {
     if (!this.germanTranslation.isOk()) {
       this.errors.addAll(this.germanTranslation.getErrors());

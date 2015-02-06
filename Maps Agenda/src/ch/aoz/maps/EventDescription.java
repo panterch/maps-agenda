@@ -4,7 +4,7 @@ package ch.aoz.maps;
  * Describes an event (title + description) in a given language.
  */
 public class EventDescription implements java.io.Serializable {
-  private static final long serialVersionUID = 161729L;
+  private static final long serialVersionUID = 161731L;
   public static final String entityKind = "EventDescription";
 
   /** Language the description is in */

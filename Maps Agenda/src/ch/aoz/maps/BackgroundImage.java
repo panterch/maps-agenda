@@ -88,7 +88,7 @@ public class BackgroundImage implements java.io.Serializable {
   /** 
    * Extracts a BackgroundImage from the packed representation in the database.
    * 
-   * @param packed string representation of a BackgroundImage in the database.
+   * @param entity representation of a BackgroundImage in the database.
    * @return a fully constructed BackgroundImage
    */
   private static BackgroundImage fromEntity(Entity entity) {
