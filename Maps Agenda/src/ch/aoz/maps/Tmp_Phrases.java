@@ -18,10 +18,10 @@ public class Tmp_Phrases extends HttpServlet {
             throws IOException {
       resp.setContentType("text/plain");
       
-      Set<String> languages = Language.getAllLanguagesAsMap().keySet();
       Map<String, Calendar> dates = new TreeMap<String, Calendar>();
-      Map<String, String> langs = new TreeMap<String, String>();
       Map<String, Set<Event>> events = new TreeMap<String, Set<Event>>();
+      Set<String> languages = Language.getAllLanguagesAsMap().keySet();
+      Map<String, String> langs = new TreeMap<String, String>();
       Map<String, Set<Event>> descriptions = new TreeMap<String, Set<Event>>();
       for (Event e : Event.GetAllEvents()) {
         String key = getKey(e.getCalendar());
@@ -29,12 +29,14 @@ public class Tmp_Phrases extends HttpServlet {
           events.put(key, new HashSet<Event>());
           dates.put(key, (Calendar)e.getCalendar().clone());
         }
+        long newKey = events.get(key).size();
         for (String lang : languages) {
           try {
             Translation t = Translation.getTranslationForEvent(e, lang);
             EventDescription d = new EventDescription(lang, t.getTitle(), t.getDesc());
             Event e2 = e.clone();
             e2.setDescription(d);
+            e2.setKey(newKey);
             String dKey = getKey(lang, e.getCalendar());
             if (!descriptions.containsKey(dKey)) {
               descriptions.put(dKey, new HashSet<Event>());
@@ -45,6 +47,7 @@ public class Tmp_Phrases extends HttpServlet {
             }
           } catch (EntityNotFoundException ex) {}          
         }
+        e.setKey(newKey);
         if (!events.get(key).add(e)) {
           resp.getWriter().println("Failed to add event: " + key + "-" + e.getCalendar().get(Calendar.DATE) + " " + e.getGermanTranslation().getTitle());
         }

@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
@@ -59,8 +60,8 @@ public class EventDescriptions implements java.io.Serializable {
         debug.append("Got wrong key: " + keyStr + "; ");
         continue;
       }
-      String s = (String)entity.getProperty(keyStr);
-      EventDescription d = extractDescription(lang, s);
+      Text t = (Text)entity.getProperty(keyStr);
+      EventDescription d = extractDescription(lang, t.getValue());
       if (d != null) {
         descriptions.put(key, d);
       } else {
@@ -142,7 +143,7 @@ public class EventDescriptions implements java.io.Serializable {
     Entity descriptions = new Entity(entityKind, getKey(this.lang, this.month));
     for (Long key : this.descriptions.keySet()) {
       EventDescription d = this.descriptions.get(key);
-      descriptions.setUnindexedProperty(Long.toString(key), packDescription(d));
+      descriptions.setUnindexedProperty(Long.toString(key), new Text(packDescription(d)));
     }
     return descriptions;
   }
