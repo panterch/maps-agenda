@@ -30,7 +30,7 @@ var dateToString = function(date) {
 }
 
 
-var mapsApp = angular.module('mapsApp', ['ui.router']);
+var mapsApp = angular.module('mapsApp', ['ui.router', 'ngSanitize']);
 
 // Small service to keep the date between state transitions. For example,
 // when coming back to the events after looking at the contacts, the selected
@@ -41,7 +41,7 @@ mapsApp.service('dateKeeper', function() {
   this.setDate = function(new_date) { this.date = new Date(new_date); }
 });
 
-mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang, 
+mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
                                          languages, phrases, tags,
                                          background_image, background_color) {
   $scope.lang = lang;
@@ -85,7 +85,7 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, $sce, lang,
   var found = false;
   for (var i = 0; i < $scope.languages.length; ++i) {
     var l = $scope.languages[i];
-    l.name_br = $sce.trustAsHtml(l.name.replace(/\//g, '/<wbr>'));
+    l.name_br = l.name.replace(/\//g, '/<wbr>');
     if (l.code == lang) {
       found = true;
       html.setAttribute('dir', l.isRtl? 'rtl' : 'ltr');
@@ -125,10 +125,10 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   };
 
   $scope.showPreviousEvents = function() {
-    console.log('Pressed previous');
+    //console.log('Pressed previous');
   }
   $scope.showNextEvents = function() {
-    console.log('Pressed next');
+    //console.log('Pressed next');
   }
   
   $scope.getDaysInMonth = function() {
@@ -197,72 +197,72 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   	$stateProvider
   	  // Parent state that loads the languages and phrases for the entire site. 
   	  .state('main', {
-  	    abstract: true,
-  		  url: '/{lang:[a-z][a-z]}',
-  		  templateUrl: 'main.html',
-  		  resolve: {
-  		    lang: ['$stateParams', function($stateParams) {
+        'abstract': true,
+        'url': '/{lang:[a-z][a-z]}',
+        'templateUrl': 'main.html',
+        'resolve': {
+          'lang': ['$stateParams', function($stateParams) {
             return $stateParams.lang;
-  	      }],
-  			  languages: function($http) {
-  				  return $http({method: 'GET', url: '/maps/data?type=languages'})
-  	          .then (function (data) {
-  	            return data.data.languages;
-  	          }
-  	        );
-  			  },
-  			  phrases: function($http, lang) {
-            return $http({method: 'GET', 
-                          url: '/maps/data?type=phrases&lang=' + lang})
+          }],
+          'languages': function($http) {
+            return $http({'method': 'GET', 'url': '/maps/data?type=languages'})
+              .then (function (data) {
+                return data.data.languages;
+              }
+            );
+          },
+          'phrases': function($http, lang) {
+            return $http({'method': 'GET', 
+                          'url': '/maps/data?type=phrases&lang=' + lang})
               .then (function (data) {
                 return data.data.phrases;
               }
             );         
-  			  },
-  			  background_image: function($http, $window) {
-  			    return $http.get('/maps/data?type=background-image').then(function(data, status) {
-  			      if (status < 200 || status >= 300 || data == null || data.data == null || data.data.url == null || data.data.url == '') {
-  			    	// Fallback to the hardcoded default.
-  				    return '/maps2/images/temp-bg.png';
-  			      } else {
-  			    	// This code assumes that the browser window size would never be resized, which
-  			    	// is not true of course. However, this assumption helps to minimize the data traffic
-  			    	// from the site. Clients with smaller screens will only ever fetch a small version
-  			    	// (think, mobile devices), while clients with huge screens will always get the 1280 px
-  			    	// version. At the worst, a viewer decides to maximize a window that was initially loaded
-  			    	// at a lower resolution, in which case the background would not be crispy until reload.
-  			    	return data.data.url + "=s" + (($window.innerWidth < 1280) ? $window.innerWidth : 1280);
-  			      }
-  			    });
-  			  },
-  			  background_color: function($http) {
-  			    return $http.get('/maps/data?type=background-color').then(function(data, status) {
-  			      if (status < 200 || status >= 300 || data == null || data.data == null || data.data.color == null || data.data.color == '') {
-  			    	// Fallback to the hardcoded default.
-  				    return '#08a';
-  			      } else {
-  			    	return '#' + data.data.color;
-		          }
-  			    });
-  			},
-          tags: function($http) {
-            return $http({method: 'GET', url: '/maps/data?type=tags'})
+          },
+          'background_image': function($http, $window) {
+            return $http.get('/maps/data?type=background-image').then(function(data, status) {
+              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.url == null || data.data.url == '') {
+              // Fallback to the hardcoded default.
+              return '/maps2/images/temp-bg.png';
+              } else {
+              // This code assumes that the browser window size would never be resized, which
+              // is not true of course. However, this assumption helps to minimize the data traffic
+              // from the site. Clients with smaller screens will only ever fetch a small version
+              // (think, mobile devices), while clients with huge screens will always get the 1280 px
+              // version. At the worst, a viewer decides to maximize a window that was initially loaded
+              // at a lower resolution, in which case the background would not be crispy until reload.
+              return data.data.url + "=s" + (($window.innerWidth < 1280) ? $window.innerWidth : 1280);
+              }
+            });
+          },
+          'background_color': function($http) {
+            return $http.get('/maps/data?type=background-color').then(function(data, status) {
+              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.color == null || data.data.color == '') {
+              // Fallback to the hardcoded default.
+              return '#08a';
+              } else {
+              return '#' + data.data.color;
+              }
+            });
+          },
+          'tags': function($http) {
+            return $http({'method': 'GET', 'url': '/maps/data?type=tags'})
               .then (function (data) {
                 return data.data.tags;
               }
             );          
-          },
-  		  },
-  		  controller: 'MainCtrl'
+          }
+        },
+  		  'controller': "MainCtrl"
       })
       .state('main.events', {
-        url: '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
-        templateUrl: 'events.html',
-        resolve: {
-          date: ['$stateParams', function($stateParams) {
+        'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
+        'templateUrl': 'events.html',
+        'resolve': {
+          'date': ['$stateParams', function($stateParams) {
             return $stateParams.date;
           }],
-          events: function($http, lang, date) {
+          'events': function($http, lang, date) {
             var params = [
               'type=events',
               'lang=' + lang,
@@ -273,9 +273,9 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
                 return data.data.events;
               }
             );          
-          },
+          }
         },
-        controller: 'EventsCtrl',
+        controller: 'EventsCtrl'
       })
       .state('main.about', {
         url: '/about',
@@ -288,15 +288,15 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
               // If not available, return the German about page. 
               return $templateFactory.fromUrl('about/de.html'); 
           });
-        },
+        }
       })
       .state('main.contact', {
         url: '/contact',
-        templateUrl: 'contact.html',        
+        templateUrl: 'contact.html'        
       })
       .state('main.impressum', {
         url: '/impressum',
-        templateUrl: 'impressum.html',        
+        templateUrl: 'impressum.html'        
       });
     $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
       return $match + '/events';
