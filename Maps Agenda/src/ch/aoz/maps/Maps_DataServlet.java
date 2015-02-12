@@ -124,9 +124,7 @@ public class Maps_DataServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
       
-      response.append("]");
-      response.append(", \"debug\":\"" + events.getSortedEvents().size() + "\"");
-      response.append("}");
+      response.append("]}");
       return response.toString();
     }
 

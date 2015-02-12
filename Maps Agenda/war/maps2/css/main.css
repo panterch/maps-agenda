@@ -639,6 +639,8 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABHNCSV
 
 [dir=rtl] .sidebar.nav {
   float: left;
+  left: 0%;
+  right: inherit;
 }
 
 [dir=rtl] .sidebar.nav ul li {

@@ -125,10 +125,14 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   };
 
   $scope.showPreviousEvents = function() {
-    //console.log('Pressed previous');
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() - 1);
+    $location.search('date', dateToString(new_date));
   }
   $scope.showNextEvents = function() {
-    //console.log('Pressed next');
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() + 1);
+    $location.search('date', dateToString(new_date));
   }
   
   $scope.getDaysInMonth = function() {
