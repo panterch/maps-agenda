@@ -1,6 +1,6 @@
  <div class="event-nav">
   <div ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
-  <span class="date">{{printDate2(events[0].date)}} - {{printDate2(events[events.length - 1].date)}}</span>
+  <span class="date"><bdi>{{printDate2(events[0].date)}}</bdi> - <bdi>{{printDate2(events[events.length - 1].date)}}</bdi></span>
   <div ng-click="showNextEvents()" class="next">{{phrases.Spaeter}}</div>
 </div>
 

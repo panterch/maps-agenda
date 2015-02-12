@@ -202,6 +202,9 @@ url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCS
 .event .date {
   font-family: 'Roboto', Arial, sans-serif;
   font-weight: 500;
+}
+
+.event .date {
   direction: ltr;
 }
 
