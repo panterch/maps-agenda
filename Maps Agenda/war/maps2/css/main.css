@@ -59,7 +59,7 @@ body {
 }
 
 .background-screen {
-  /* background-image: Set dynamically in main. */
+  background-image: url('/maps2/images/temp-bg.png');
   background-position-x: center;
   background-size: cover;
   height: 100%;
