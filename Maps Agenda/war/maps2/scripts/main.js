@@ -266,7 +266,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
             var params = [
               'type=events',
               'lang=' + lang,
-              'startDate=' + date
+              'month=' + date
             ];
             return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
               .then (function (data) {

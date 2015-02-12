@@ -76,7 +76,7 @@ public class Events implements java.io.Serializable {
   
   /** 
    * Returns the Events object. It contains all the events for the month 
-   * specified in the calendar.
+   * specified in the calendar, but does not populate the EventDescription field.
    */
   public static Events getEvents(Calendar c) {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
@@ -92,6 +92,25 @@ public class Events implements java.io.Serializable {
     }
   }
   
+  /** 
+   * Returns the Events object. It contains all the events for the month 
+   * specified in the calendar, and populates the EventDescription field
+   * of those events that have a description in the requested language.
+   */
+  public static Events getEvents(Calendar c, String lang) {
+    Events events = getEvents(c);
+    if (events.events.isEmpty())
+      return events;
+    
+    EventDescriptions descriptions = EventDescriptions.getDescriptions(lang, c);
+    for (Event e : events.events) {
+      // getDescription returns null if no description is there, keeping the
+      // assumption that an event has a null description in such a case.
+      e.setDescription(descriptions.getDescription(e.getKey()));
+    }
+    return events;
+  }
+
   public static boolean addEvent(Event e) {
     if (e == null || !e.isOk()) 
       return false;
@@ -106,7 +125,13 @@ public class Events implements java.io.Serializable {
       }
     }
     events.events.add(e);
-    return events.addToStore();
+    // First add the event to the store so that a key is chosen for the event.
+    if (!events.addToStore())
+      return false;
+    if (e.getDescription() != null) {
+      return EventDescriptions.addDescription(e);
+    }
+    return true;
   }
 
   /**
@@ -156,11 +181,12 @@ public class Events implements java.io.Serializable {
    */
   private static Event extractEvent(String keyStr, Calendar c, String packed) {
     String[] fields = packed.split("" + RS);
-    if (fields.length < 4) return null;
+    if (fields.length < 4)
+      return null;
     int date;
     long key;
     try {
-      date = Integer.parseInt(fields[0]);
+      date = Integer.parseInt(fields[3]);
       key = Long.parseLong(keyStr);
     } catch (NumberFormatException e) {
       return null;
@@ -172,7 +198,7 @@ public class Events implements java.io.Serializable {
     for (int i = 4; i < fields.length; ++i) {
       tags.add(fields[i]);
     }
-    return new Event(cal, key, fields[1], fields[2], fields[3], tags);
+    return new Event(cal, key, fields[0], fields[1], fields[2], tags);
   }
   
   /**
@@ -183,10 +209,11 @@ public class Events implements java.io.Serializable {
    */
   private static String packEvent(Event e) {
     StringBuilder s = new StringBuilder();
-    s.append(e.getCalendar().get(Calendar.DATE) + RS);
     s.append(e.getLocation() + RS);
     s.append(e.getTransit() + RS);
     s.append(e.getUrl() + RS);
+    // Make it last so that no field that can be empty is at the end.
+    s.append(Integer.toString(e.getCalendar().get(Calendar.DATE)) + RS);
     for (String tag : e.getTags()) {
       s.append(tag + RS);
     }
@@ -202,6 +229,13 @@ public class Events implements java.io.Serializable {
   /** Only setters and getters below. */  
   public SortedSet<Event> getSortedEvents() {
     return events;
+  }
+  public Event getEvent(long key) {
+    for (Event e : events) {
+      if (e.getKey() == key)
+        return e;
+    }
+    return null;
   }
   public Calendar getCalendar() {
     return calendar;

@@ -2,7 +2,6 @@ package ch.aoz.maps;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,11 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.*;
-
-import ch.aoz.maps.Event;
-import ch.aoz.maps.Language;
-import ch.aoz.maps.Phrase;
-import ch.aoz.maps.Phrases;
 
 @SuppressWarnings("serial")
 public class Maps_DataServlet extends HttpServlet {
@@ -90,23 +84,13 @@ public class Maps_DataServlet extends HttpServlet {
     }
 
     private String getEvents(HttpServletRequest req) {
-      String lang = req.getParameter("lang");
+      Language lang = Language.GetByCode(req.getParameter("lang"));
       if (lang == null) {
-        lang = "de";
+        lang = Language.GetByCode(req.getParameter("de"));
       }
-
-      int num_events;
-      try {
-        num_events = Integer.parseInt(req.getParameter("numEvents"));
-      } catch (Exception e) {
-        num_events = 15;
-      }
-
-      // Can be null.
-      String startCursor = req.getParameter("cursor");
       
       Calendar date = Calendar.getInstance();
-      String requested_date = req.getParameter("startDate");
+      String requested_date = req.getParameter("month");
       if (requested_date != null) {
         try {
           date.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
@@ -119,22 +103,20 @@ public class Maps_DataServlet extends HttpServlet {
       date.set(Calendar.MINUTE, 0);
       date.set(Calendar.HOUR_OF_DAY, 0);
 
-      Language l = Language.GetByCode(lang);
-      List<Event> events = new ArrayList<Event>(num_events);
-      String cursor = Event.GetNextEvents(date, num_events, startCursor, events);
+      Events events = Events.getEvents(date, lang.getCode());
       
       StringBuilder response = new StringBuilder();
       response.append("{ \"events\": [");
-      for (Event e : events) {
-        Translation t = e.getTranslation(l);
-        if (t != null) {
+      for (Event e : events.getSortedEvents()) {
+        EventDescription d = e.getDescription();
+        if (d != null) {
           response.append("{");
           response.append("\"date\":\"").append(dateToString(e.getDate())).append("\",");
-          response.append("\"title\":\"").append(Utils.toUnicode(t.getTitle())).append("\",");
-          response.append("\"description\":\"").append(Utils.toUnicode(t.getDesc())).append("\",");
-          response.append("\"location\":\"").append(Utils.toUnicode(t.getLocation())).append("\",");
-          response.append("\"transit\":\"").append(Utils.toUnicode(t.getTransit())).append("\",");
-          response.append("\"url\":\"").append(Utils.toUnicode(t.getUrl())).append("\"");
+          response.append("\"title\":\"").append(Utils.toUnicode(d.getTitle())).append("\",");
+          response.append("\"description\":\"").append(Utils.toUnicode(d.getDesc())).append("\",");
+          response.append("\"location\":\"").append(Utils.toUnicode(e.getLocation())).append("\",");
+          response.append("\"transit\":\"").append(Utils.toUnicode(e.getTransit())).append("\",");
+          response.append("\"url\":\"").append(Utils.toUnicode(e.getUrl())).append("\"");
           response.append("},");
         }
       }
@@ -142,15 +124,9 @@ public class Maps_DataServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }
       
-      response.append("], \"strings\": {");
-      for (Phrase phrase : Phrases.getMergedPhrases(lang).values()) {
-        response.append("\"").append(phrase.getKey()).append("\":");
-        response.append("\"").append(Utils.toUnicode(phrase.getPhrase())).append("\",");
-      }
-      if (response.charAt(response.length() - 1) == ',') {
-        response.deleteCharAt(response.length() - 1);  // remove the last ,
-      }
-      response.append("}, \"cursor\": \"").append(cursor).append("\"}");
+      response.append("]");
+      response.append(", \"debug\":\"" + events.getSortedEvents().size() + "\"");
+      response.append("}");
       return response.toString();
     }
 

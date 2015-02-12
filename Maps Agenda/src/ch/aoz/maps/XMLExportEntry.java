@@ -5,7 +5,7 @@ import java.util.Calendar;
 public class XMLExportEntry {
 	private Event event;
 	private Language language;
-	private Translation translation;
+	private EventDescription description;
 	private boolean dateChanged;
 	private boolean enlarge;
 	private boolean topicOfMonth;
@@ -17,8 +17,8 @@ public class XMLExportEntry {
 	 *            The event to render.
 	 * @param language
 	 *            The language to use.
-	 * @param translation
-	 *            The translation of event in language. TODO retrieve.
+	 * @param description
+	 *            The description of event in language.
 	 * @param dateChanged
 	 *            A flag that specifies if the date has changed and the full
 	 *            date must be printed.
@@ -29,11 +29,11 @@ public class XMLExportEntry {
 	 *            A flag that specifies if this is the topic of the month.
 	 */
 	public XMLExportEntry(Event event, Language language,
-			Translation translation, boolean dateChanged, boolean enlarge,
+	        EventDescription description, boolean dateChanged, boolean enlarge,
 			boolean topicOfMonth) {
 		this.event = event;
 		this.language = language;
-		this.translation = translation;
+		this.description = description;
 		this.dateChanged = dateChanged;
 		this.enlarge = enlarge;
 		this.topicOfMonth = topicOfMonth;
@@ -70,7 +70,7 @@ public class XMLExportEntry {
 			xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"3\" aid5:cellstyle=\"cs_desc_gross\">";
 			xml += "<Inhalttag aid:pstyle=\"inhalt_gross"
 					+ language.getXMLFormatSupplement() + "\">";
-			xml += escapeXML(translation.getDesc());
+			xml += escapeXML(description.getDesc());
 			xml += "</Inhalttag>\n";
 			xml += getXMLLocation();
 			xml += "</Tag_inside>";
@@ -85,11 +85,11 @@ public class XMLExportEntry {
 		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + width + "\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += escapeXML(translation.getTitle());
+		xml += escapeXML(description.getTitle());
 		xml += "</title>\n";
 		xml += "<Inhalttag aid:pstyle=\"inhalt"
 				+ language.getXMLFormatSupplement() + "\">";
-		xml += escapeXML(translation.getDesc());
+		xml += escapeXML(description.getDesc());
 		xml += "</Inhalttag>\n";
 		xml += getXMLLocation();
 		xml += "</Tag_inside>";
@@ -139,7 +139,7 @@ public class XMLExportEntry {
 				+ "\" aid5:cellstyle=\"cs_titel_gross\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += escapeXML(translation.getTitle());
+		xml += escapeXML(description.getTitle());
 		xml += "</title>";
 		xml += "</Tag_inside>";
 		return xml;
@@ -147,7 +147,7 @@ public class XMLExportEntry {
 
 	private String getXMLLocation() {
 		String xml = new String();
-		if (translation.getLocation() != "") {
+		if (event.getLocation() != "") {
 			if (enlarge) {
 				if (language.isRightToLeft()) {
 					xml += "<Orttag aid:pstyle=\"ort_gross_rtl";
@@ -164,13 +164,13 @@ public class XMLExportEntry {
 			// TODO remove special hack for _ru.
 			xml += (language.getXMLFormatSupplement() == "_ru" ? language
 					.getXMLFormatSupplement() : "") + "\">";
-			xml += escapeXML(translation.getLocation()) + " ";
-			if (translation.getTransit() != null && translation.getTransit() != "") {
-			    xml += escapeXML(translation.getTransit()) + " ";
+			xml += escapeXML(event.getLocation()) + " ";
+			if (event.getTransit() != null && event.getTransit() != "") {
+			    xml += escapeXML(event.getTransit()) + " ";
 			}
 
-			if (translation.getUrl() != null && translation.getUrl() != "") {
-				xml += translation.getUrl().replace("http://www", "www");
+			if (event.getUrl() != null && event.getUrl() != "") {
+				xml += event.getUrl().replace("http://www", "www");
 			}
 			xml += "</Orttag>";
 		}

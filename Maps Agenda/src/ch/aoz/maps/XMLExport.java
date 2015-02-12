@@ -3,69 +3,58 @@ package ch.aoz.maps;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import com.google.appengine.api.datastore.EntityNotFoundException;
+import java.util.Map;
 
 public class XMLExport {
+  private Calendar selected_month;
   private List<Event> events;
   private List<Event> topicOfMonth;
   private List<Event> images;
   private List<Long> highlighted;
-
+  private Map<String, EventDescriptions> descriptions;
+  
   /**
    * Creates a new XML export of a given list of events.
    *
    * @param events
    */
-  public XMLExport(List<Event> events) {
-    this.events = events;
-    this.highlighted = new ArrayList<Long>();
-  }
-
-  public List<Event> getTopicOfMonth() {
-    return topicOfMonth;
-  }
-
-  public void setTopicOfMonth(List<Event> topicOfMonth) {
-    this.topicOfMonth = topicOfMonth;
-  }
-
-  public List<Event> getImages() {
-    return images;
-  }
-
-  public void setImageList(List<Event> images) {
-    this.images = images;
-  }
-
-  public void setHighlighted(List<Event> highlightedEvents) {
-    for (Event event : highlightedEvents) {
-      if (event.hasKey()) {
-        highlighted.add(event.getKey());
-      }
+  public XMLExport(Calendar selected_month, 
+                   List<Long> events, 
+                   List<Long> topicOfMonth,
+                   List<Long> images,
+                   List<Long> highlightedEvents) {
+    this.selected_month = selected_month;
+    Events all_events = Events.getEvents(selected_month);
+    this.events = new ArrayList<Event>();
+    for (Long key : events) {
+      Event e = all_events.getEvent(key);
+      if (e != null)
+        this.events.add(e);
     }
+    
+    this.topicOfMonth = new ArrayList<Event>();
+    for (Long key : topicOfMonth) {
+      Event e = all_events.getEvent(key);
+      if (e != null)
+        this.topicOfMonth.add(e);
+    }
+
+    this.images = new ArrayList<Event>();
+    for (Long key : images) {
+      Event e = all_events.getEvent(key);
+      if (e != null)
+        this.images.add(e);
+    }
+    
+    this.highlighted = highlightedEvents;
+    if (highlighted == null)
+      highlighted = new ArrayList<Long>();
+    
+    descriptions = new HashMap<String, EventDescriptions>();
   }
   
-  /**
-   * TODO Remove. This will probably not be used anymore.
-   * Filters a list of languages for the ones the InDesign template supports. Preserves order.
-   * @param languages is the unfiltered list of languages.
-   * @return the filtered version of languages in preserved order.
-   */
-    static public List<Language> FilterLanguagesForExport(
-	    List<Language> languages) {
-	List<Language> filteredLanguages = new ArrayList<Language>();
-	for (Language language : languages) {
-	    if (!language.getCode().equals("ma")
-		    && !language.getCode().equals("ti")
-		    && !language.getCode().equals("so")) {
-		filteredLanguages.add(language);
-	    }
-	}
-	return filteredLanguages;
-    }
-
   /**
    * Render this Event into an XML tag.
    *
@@ -87,16 +76,11 @@ public class XMLExport {
       xml += "<inh>";
 
       // Topic of the month.
-      if (getTopicOfMonth() != null) {
-        for (Event event : getTopicOfMonth()) {
-          Translation translation;
-          try {
-            translation = getTranslation(event, language);
-          } catch (EntityNotFoundException e) {
-            continue;
-          }
-          xml += new XMLExportEntry(event, language, translation, true, true, false).getXML();
-        }
+      for (Event event : topicOfMonth) {
+        EventDescription description = getDescription(event, language);
+        if (description == null)
+          continue;
+        xml += new XMLExportEntry(event, language, description, true, true, false).getXML();
       }
 
       // Log the date to detect when the day changes.
@@ -106,12 +90,9 @@ public class XMLExport {
 
       // Each entry.
       for (Event event : events) {
-        Translation translation;
-        try {
-          translation = getTranslation(event, language);
-        } catch (EntityNotFoundException e) {
+        EventDescription description = getDescription(event, language);
+        if (description == null)
           continue;
-        }
 
         // Find out if the date changed between events.
         Calendar newDay = Calendar.getInstance();
@@ -125,7 +106,7 @@ public class XMLExport {
         // Add the entry for this event.
         xml += new XMLExportEntry(event,
             language,
-            translation,
+            description,
             dateChanged,
             highlighted.contains(event.getKey()),
             true).getXML();
@@ -146,24 +127,17 @@ public class XMLExport {
   }
 
   /**
-   * Retrieve the translation of an event in a particular language.
+   * Retrieve the description of an event in a particular language.
    *
-   * @param event The event for which the translation is requested.
-   * @param language The language which the translation should be in.
-   * @return The translation of event in language.
-   * @throws EntityNotFoundException
+   * @param event The event for which the description is requested.
+   * @param language The language which the description should be in.
+   * @return The description of event in language or null if no description is found
    */
-  private static Translation getTranslation(Event event, Language language)
-      throws EntityNotFoundException {
-    Translation translation;
-    // Attempt to fetch the appropriate translation, and fall back to the German version if it
-    // cannot be found.
-    try {
-      translation = Translation.getTranslationForEvent(event, language.getCode());
-    } catch (EntityNotFoundException e) {
-      translation = Translation.getGermanTranslationForEvent(event);
+  private EventDescription getDescription(Event event, Language language) {
+    if (!descriptions.containsKey(language.getCode())) {
+      descriptions.put(language.getCode(), EventDescriptions.getDescriptions(language.getCode(), selected_month));
     }
-    return translation;
+    return descriptions.get(language.getCode()).getDescription(event.getKey());
   }
 
   /**
@@ -175,36 +149,30 @@ public class XMLExport {
   private String getXMLImages() {
     String xml = new String();
     xml += "<bildtexte>";
-    if (getImages() != null) {
-      for (Event event : getImages()) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(event.getDate());
-        String day = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
-        String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-        xml += "<bild_" + day + "_" + month + ">";
+    for (Event event : images) {
+      Calendar calendar = event.getCalendar();
+      String day = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+      String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
+      xml += "<bild_" + day + "_" + month + ">";
 
-        String imageText = new String();
-        
-        List<Language> orderedLanguages = new ArrayList<Language>();
-        orderedLanguages.addAll(Language.getAllLanguages());
-        Collections.sort(orderedLanguages);
-        for (Language language : orderedLanguages) {
-          Translation translation;
-          try {
-            translation = getTranslation(event, language);
-          } catch (EntityNotFoundException e) {
-            continue;
-          }
-          String translatedTitle = new String("<b_titel aid:cstyle=\"bildtitel"
-              + language.getXMLFormatSupplement() + "\">" + XMLExportEntry.escapeXML(translation.getDesc()) + "</b_titel>");
-          if (imageText.length() > 0) {
-            imageText += "<space aid:cstyle=\"space\" > </space>";
-          }
-          imageText += translatedTitle;
+      String imageText = new String();
+      
+      List<Language> orderedLanguages = new ArrayList<Language>();
+      orderedLanguages.addAll(Language.getAllLanguages());
+      Collections.sort(orderedLanguages);
+      for (Language language : orderedLanguages) {
+        EventDescription description = getDescription(event, language);
+        if (description == null)
+          continue;
+        String translatedTitle = new String("<b_titel aid:cstyle=\"bildtitel"
+            + language.getXMLFormatSupplement() + "\">" + XMLExportEntry.escapeXML(description.getDesc()) + "</b_titel>");
+        if (imageText.length() > 0) {
+          imageText += "<space aid:cstyle=\"space\" > </space>";
         }
-        xml += getXMLImageTag(day, month, imageText);
-        xml += "</bild_" + day + "_" + month + ">";
+        imageText += translatedTitle;
       }
+      xml += getXMLImageTag(day, month, imageText);
+      xml += "</bild_" + day + "_" + month + ">";
     }
 
     xml += "<individuell>";

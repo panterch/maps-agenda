@@ -1,6 +1,8 @@
 <%@ page contentType="text/xml;charset=UTF-8" language="java"
 %><%@ page import="ch.aoz.maps.Event"
-%><%@ page import="ch.aoz.maps.Translation"
+%><%@ page import="ch.aoz.maps.EventDescription"
+%><%@ page import="ch.aoz.maps.EventDescriptions"
+%><%@ page import="ch.aoz.maps.Events"
 %><%@ page import="ch.aoz.maps.XMLExport"
 %><%@ page import="java.util.ArrayList"
 %><%@ page import="java.util.Calendar"
@@ -22,45 +24,49 @@
 %><%@ page import="com.google.appengine.api.datastore.Query.SortDirection"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%
 
-	  // Read POST arguments.
+	    // Read POST arguments.
+      int year = Integer.parseInt(request.getParameter("year"));
+      int month = Integer.parseInt(request.getParameter("month"));
+      Calendar selected_month = Calendar.getInstance();
+      selected_month.clear();
+      selected_month.set(year, month, 1);
+      
       String[] paramEventKeys = request.getParameterValues("XMLExports");
-      ArrayList<Key> eventKeys = new ArrayList<Key>();
+      ArrayList<Long> eventKeys = new ArrayList<Long>();
       if (paramEventKeys != null) {
         for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeys.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+          eventKeys.add(Long.parseLong(paramEventKeys[i]));
         }
       }
 
       paramEventKeys = request.getParameterValues("XMLExportsLarge");
-      ArrayList<Key> eventKeysLarge = new ArrayList<Key>();
+      ArrayList<Long> eventKeysLarge = new ArrayList<Long>();
       if (paramEventKeys != null) {
         for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysLarge.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+          eventKeysLarge.add( Long.parseLong(paramEventKeys[i]));
         }
       }
 
       paramEventKeys = request.getParameterValues("XMLExportsTopicOfMonth");
-      ArrayList<Key> eventKeysTopicOfMonth = new ArrayList<Key>();
+      ArrayList<Long> eventKeysTopicOfMonth = new ArrayList<Long>();
       if (paramEventKeys != null) {
         for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysTopicOfMonth.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+          eventKeysTopicOfMonth.add(Long.parseLong(paramEventKeys[i]));
         }
       }
       
       paramEventKeys = request.getParameterValues("XMLExportsImage");
-      ArrayList<Key> eventKeysImage = new ArrayList<Key>();
+      ArrayList<Long> eventKeysImage = new ArrayList<Long>();
       if (paramEventKeys != null) {
         for (int i = 0; i < paramEventKeys.length; i++) {
-          eventKeysImage.add(KeyFactory.createKey(Event.entityKind, Long.parseLong(paramEventKeys[i])));
+          eventKeysImage.add(Long.parseLong(paramEventKeys[i]));
         }
       }
 
       // Offer this as a downloadable file rather than as a displayable page.
       response.setHeader("Content-Disposition", "attachment; filename=MAPS_agenda.xml");
 
-	  XMLExport export = new XMLExport(Event.GetEventListFromKeyList(eventKeys));
-	  export.setImageList(Event.GetEventListFromKeyList(eventKeysImage));
-	  export.setTopicOfMonth(Event.GetEventListFromKeyList(eventKeysTopicOfMonth));
-	  export.setHighlighted(Event.GetEventListFromKeyList(eventKeysLarge));
+	  XMLExport export = new XMLExport(selected_month, eventKeys, eventKeysImage,
+                             	       eventKeysTopicOfMonth, eventKeysLarge);
 
       out.print(export.getXML());%>
