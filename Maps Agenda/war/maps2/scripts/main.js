@@ -43,14 +43,13 @@ mapsApp.service('dateKeeper', function() {
 
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
                                          languages, phrases, tags,
-                                         background_image, background_color) {
+                                         background_image) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;	
 	$scope.phrases = phrases;
   $scope.tags = tags;  
   $scope.background_image = background_image;
-  $scope.background_color = background_color;
 
   var html = document.body.parentNode;
   html.setAttribute('lang', lang);
@@ -183,9 +182,9 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     var d = new Date($scope.pivot);
     d.setDate(day);
     if ($scope.date.toDateString() == d.toDateString()) {
-      return '#706f6f';
+      return 'selected';
     } else {
-      return $scope.background_color;
+      return 'background-color';
     }
   }
 
@@ -236,16 +235,6 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
               // version. At the worst, a viewer decides to maximize a window that was initially loaded
               // at a lower resolution, in which case the background would not be crispy until reload.
               return data.data.url + "=s" + (($window.innerWidth < 1280) ? $window.innerWidth : 1280);
-              }
-            });
-          },
-          'background_color': function($http) {
-            return $http.get('/maps/data?type=background-color').then(function(data, status) {
-              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.color == null || data.data.color == '') {
-              // Fallback to the hardcoded default.
-              return '#08a';
-              } else {
-              return '#' + data.data.color;
               }
             });
           },

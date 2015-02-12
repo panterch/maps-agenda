@@ -1,3 +1,5 @@
+<%@ page contentType="text/css" language="java" %>
+<%@ page import="ch.aoz.maps.BackgroundColor" %>
 /* Layout grid ****************************************************************/
 
 body {
@@ -48,7 +50,9 @@ body {
 
 /* Background *****************************************************************/
 
-/* background-color: Set dynamically in main. */
+.background-color {
+  background-color: #<% out.print(BackgroundColor.fetchFromStore().getColor()); %>;
+}
 
 .background-color-screen {
   height: 100%;
@@ -481,6 +485,10 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABHNCSV
 .cal-grid .cal-body td {
   color: #fff;
   cursor: pointer;
+}
+
+.cal-grid .cal-body .selected {		
+  background-color: #706f6f;		
 }
 
 [lang=ta] p,
