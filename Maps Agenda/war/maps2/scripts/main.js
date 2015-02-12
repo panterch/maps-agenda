@@ -42,14 +42,12 @@ mapsApp.service('dateKeeper', function() {
 });
 
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
-                                         languages, phrases, tags,
-                                         background_image) {
+                                         languages, phrases, tags) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;	
 	$scope.phrases = phrases;
-  $scope.tags = tags;  
-  $scope.background_image = background_image;
+  $scope.tags = tags;
 
   var html = document.body.parentNode;
   html.setAttribute('lang', lang);
@@ -221,22 +219,6 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
                 return data.data.phrases;
               }
             );         
-          },
-          'background_image': function($http, $window) {
-            return $http.get('/maps/data?type=background-image').then(function(data, status) {
-              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.url == null || data.data.url == '') {
-              // Fallback to the hardcoded default.
-              return '/maps2/images/temp-bg.png';
-              } else {
-              // This code assumes that the browser window size would never be resized, which
-              // is not true of course. However, this assumption helps to minimize the data traffic
-              // from the site. Clients with smaller screens will only ever fetch a small version
-              // (think, mobile devices), while clients with huge screens will always get the 1280 px
-              // version. At the worst, a viewer decides to maximize a window that was initially loaded
-              // at a lower resolution, in which case the background would not be crispy until reload.
-              return data.data.url + "=s" + (($window.innerWidth < 1280) ? $window.innerWidth : 1280);
-              }
-            });
           },
           'tags': function($http) {
             return $http({'method': 'GET', 'url': '/maps/data?type=tags'})

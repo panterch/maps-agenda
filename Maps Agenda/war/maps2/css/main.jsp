@@ -1,5 +1,6 @@
 <%@ page contentType="text/css" language="java" %>
 <%@ page import="ch.aoz.maps.BackgroundColor" %>
+<%@ page import="ch.aoz.maps.BackgroundImage" %>
 /* Layout grid ****************************************************************/
 
 body {
@@ -63,7 +64,14 @@ body {
 }
 
 .background-screen {
-  background-image: url('/maps2/images/temp-bg.png');
+  background-image: url('<%
+		  String image = BackgroundImage.fetchFromStore().getUrl();
+          if (image == null || image.equals("")) {
+            out.print("/maps2/images/temp-bg.png");
+          } else {
+        	out.print(image + "=s1280");
+          }
+  %>');
   background-position-x: center;
   background-size: cover;
   height: 100%;
