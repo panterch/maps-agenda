@@ -389,8 +389,13 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSV
   line-height: 1.3;
 }
 
+[dir=rtl] .details {
+  text-align: right;
+}
+
 .details .location {
   font-style: italic;
+  direction: ltr;
 }
 
 .details .location a {
@@ -415,6 +420,10 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSV
 .event .details .title {
   font-size: 1.2em;
   font-weight: bold;
+}
+
+.event .details .link {
+  direction: ltr;
 }
 
 .event .details .link a {
