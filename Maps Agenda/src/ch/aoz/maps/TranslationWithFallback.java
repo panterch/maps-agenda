@@ -5,6 +5,7 @@ package ch.aoz.maps;
  * fallback language (assumed to be German) used when the first is missing data.
  */
 public class TranslationWithFallback extends Translation {
+  private static final long serialVersionUID = 161780L;
   // Markers for field-level RTL.
   private final boolean isTitleRtl;
   private final boolean isDescRtl;

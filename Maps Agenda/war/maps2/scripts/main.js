@@ -82,7 +82,7 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
   var found = false;
   for (var i = 0; i < $scope.languages.length; ++i) {
     var l = $scope.languages[i];
-    l.name_br = l.name.replace(/\//g, '/<wbr>');
+    l.name_br = l.name.replace(/\//g, '/&#x200b;');
     if (l.code == lang) {
       found = true;
       html.setAttribute('dir', l.isRtl? 'rtl' : 'ltr');
@@ -98,7 +98,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   }
   $scope.events = events;
   $scope.date_str = date;
-  $scope.date = new Date($scope.date_str.replace(/-/g, '/'););
+  $scope.date = new Date($scope.date_str.replace(/[-]/g, '/'));
   $scope.pivot = new Date($scope.date);
   $scope.pivot.setDate(1);
   dateKeeper.setDate($scope.date);
