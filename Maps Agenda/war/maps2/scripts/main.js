@@ -101,7 +101,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   }
   $scope.events = events;
   $scope.date_str = date;
-  $scope.date = new Date($scope.date_str);
+  $scope.date = new Date($scope.date_str.replace(/-/g, '/'););
   $scope.pivot = new Date($scope.date);
   $scope.pivot.setDate(1);
   dateKeeper.setDate($scope.date);
