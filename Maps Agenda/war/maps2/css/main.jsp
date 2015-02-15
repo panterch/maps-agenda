@@ -95,6 +95,7 @@ body {
 }
 
 .sidebar ul a {
+  background: rgb(111, 111, 111); /* The fallback color for IE */
   background: rgba(111, 111, 111, .8);
   color: #fff;
   display: inline-block;
