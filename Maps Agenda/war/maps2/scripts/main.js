@@ -42,15 +42,12 @@ mapsApp.service('dateKeeper', function() {
 });
 
 mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
-                                         languages, phrases, tags,
-                                         background_image, background_color) {
+                                         languages, phrases, tags) {
   $scope.lang = lang;
   $scope.newsletter_lang = lang;
 	$scope.languages = languages;	
 	$scope.phrases = phrases;
-  $scope.tags = tags;  
-  $scope.background_image = background_image;
-  $scope.background_color = background_color;
+  $scope.tags = tags;
 
   var html = document.body.parentNode;
   html.setAttribute('lang', lang);
@@ -125,10 +122,14 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   };
 
   $scope.showPreviousEvents = function() {
-    //console.log('Pressed previous');
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() - 1);
+    $location.search('date', dateToString(new_date));
   }
   $scope.showNextEvents = function() {
-    //console.log('Pressed next');
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() + 1);
+    $location.search('date', dateToString(new_date));
   }
   
   $scope.getDaysInMonth = function() {
@@ -179,9 +180,9 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     var d = new Date($scope.pivot);
     d.setDate(day);
     if ($scope.date.toDateString() == d.toDateString()) {
-      return '#706f6f';
+      return 'selected';
     } else {
-      return $scope.background_color;
+      return 'background-color';
     }
   }
 
@@ -219,32 +220,6 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
               }
             );         
           },
-          'background_image': function($http, $window) {
-            return $http.get('/maps/data?type=background-image').then(function(data, status) {
-              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.url == null || data.data.url == '') {
-              // Fallback to the hardcoded default.
-              return '/maps2/images/temp-bg.png';
-              } else {
-              // This code assumes that the browser window size would never be resized, which
-              // is not true of course. However, this assumption helps to minimize the data traffic
-              // from the site. Clients with smaller screens will only ever fetch a small version
-              // (think, mobile devices), while clients with huge screens will always get the 1280 px
-              // version. At the worst, a viewer decides to maximize a window that was initially loaded
-              // at a lower resolution, in which case the background would not be crispy until reload.
-              return data.data.url + "=s" + (($window.innerWidth < 1280) ? $window.innerWidth : 1280);
-              }
-            });
-          },
-          'background_color': function($http) {
-            return $http.get('/maps/data?type=background-color').then(function(data, status) {
-              if (status < 200 || status >= 300 || data == null || data.data == null || data.data.color == null || data.data.color == '') {
-              // Fallback to the hardcoded default.
-              return '#08a';
-              } else {
-              return '#' + data.data.color;
-              }
-            });
-          },
           'tags': function($http) {
             return $http({'method': 'GET', 'url': '/maps/data?type=tags'})
               .then (function (data) {
@@ -266,7 +241,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
             var params = [
               'type=events',
               'lang=' + lang,
-              'startDate=' + date
+              'month=' + date
             ];
             return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
               .then (function (data) {

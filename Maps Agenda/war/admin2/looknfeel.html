@@ -4,7 +4,7 @@
   Select the background image you want to serve, or click on X to delete images from the store. The currently served image cannot be deleted.<br><br>
   <div ng-repeat="thumbnail in background_thumbnails" style="display: inline-block;">
     <div class="thumbnail-container">
-      <img src="{{thumbnail.url}}=s200" style="background-color: #{{background_color}};">
+      <div class="ie_thumbnail_wrapper"><img src="{{thumbnail.url}}=s200" style="background-color: #{{background_color}}; margin-bottom: -4px;"></div>
       <div ng-show="thumbnail.served == 'false'" class="image-overlay-container">
         <a href="" title="Serve" ng-click="serve_background(thumbnail.key);" class="image-overlay bg-green">&#x2713</a>
         <a href="" title="Delete" ng-click="delete_background(thumbnail.key);" class="image-overlay bg-red">&#x2717</a>

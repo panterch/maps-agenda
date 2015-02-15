@@ -103,6 +103,30 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   }
 
   /**
+   * Create a new Event without key.
+   */
+  public Event(Calendar calendar, String location, String transit,
+               String url, Set<String> tags, EventDescription d) {
+    this.key = 0;
+    this.hasKey = false;
+    this.location = (location != null ? location : "");
+    this.transit = (transit != null ? transit : "");
+    this.url = (url != null ? url : "");
+    this.tags = new HashSet<String>();
+    if (tags != null)
+      this.tags.addAll(tags);
+    germanTranslation = null;
+    description = d;
+    this.ok = true;
+    if (calendar == null) {
+      this.calendar = null;
+      addError("Date is not defined");
+    } else {
+      this.calendar = (Calendar) calendar.clone();
+    }
+  }
+
+  /**
    * Create a new Event with the specified parameters and key.
    *
    * @param date day at which the event takes place
@@ -120,6 +144,10 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     this.url = germanTranslation.getUrl();
     this.transit = germanTranslation.getTransit();
     this.tags = new HashSet<String>();
+    this.description = new EventDescription(
+        germanTranslation.getLang(), 
+        germanTranslation.getTitle(), 
+        germanTranslation.getDesc());
   }
 
   /**
@@ -213,6 +241,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
       addError("Failed to save translation");
       this.errors.addAll(germanTranslation.getErrors());
     }
+    Events.addEvent(new Event(this.getDate(), this.getGermanTranslation()));
     return result;
   }
 
@@ -332,29 +361,6 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Entity entity = datastore.get(KeyFactory.createKey(entityKind, key));
     return new Event(entity);
-  }
-
-  public static String getXML(int yearFrom,
-      int monthFrom,
-      int dayFrom,
-      int yearTo,
-      int monthTo,
-      int dayTo) {
-    // DEPRECATED.
-
-    // Set up range to export.
-    Calendar from = Calendar.getInstance();
-    from.clear();
-    from.set(yearFrom, monthFrom, dayFrom);
-    Calendar to = Calendar.getInstance();
-    to.clear();
-    to.set(yearTo, monthTo, dayTo);
-
-    XMLExport export = new XMLExport(GetEventListForTimespan(from, to));
-    export.setImageList(GetEventListForTimespan(from, to));
-    export.setTopicOfMonth(GetEventListForTimespan(from, to));
-    // export.setHighlighted(GetEventListForTimespan(from, to));
-    return export.getXML();
   }
 
   /**

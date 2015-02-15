@@ -5,14 +5,17 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Map"%>
+<%@ page import="java.util.Set"%>
 <%@ page import="ch.aoz.maps.Event"%>
-<%@ page import="ch.aoz.maps.Translation"%>
+<%@ page import="ch.aoz.maps.EventDescription"%>
+<%@ page import="ch.aoz.maps.EventDescriptions"%>
+<%@ page import="ch.aoz.maps.Events"%>
 <%@ page import="ch.aoz.maps.Strings"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%!
   public static String createEventDiv(Event e) {
-    Translation de = e.getGermanTranslation();
+    EventDescription de = e.getDescription();
     StringBuilder div = new StringBuilder();
     div.append("<div class='event'>");
     div.append("<div class='eactions'>");
@@ -28,9 +31,9 @@
     div.append("<div class='ebody'>");
     div.append("<div class='etitle'>\"" + de.getTitle() + "\"</div>");
     div.append("<div class='edesc' name='eventDescription'>" + de.getDesc() + "</div>");
-    div.append("<div class='eloc'><b>@ </b>" + de.getLocation() + "</div>");
-    div.append("<div class='etransit'>&#x21F9; " + de.getTransit() + "</div>");
-    div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + de.getUrl() + "'>" + de.getUrl()
+    div.append("<div class='eloc'><b>@ </b>" + e.getLocation() + "</div>");
+    div.append("<div class='etransit'>&#x21F9; " + e.getTransit() + "</div>");
+    div.append("<div class='eurl'><b>&#x21D2; </b><a href='" + e.getUrl() + "'>" + e.getUrl()
         + "</a></div>");
     div.append("<div class='eexport'>"
         + "<input type='checkbox' title='Export' name='XMLExports' class='ecexport' value='" + e.getKey()
@@ -48,7 +51,7 @@
   }
 
   public static String createEventForm(String formName, Event e, Calendar selected_month) {
-    Translation de = null;
+    EventDescription de = null;
     StringBuilder form = new StringBuilder();
     if (e == null) {
       form.append("<div id='event-new' class='eventdiv'>");
@@ -56,7 +59,7 @@
       form.append(
           "<a onclick=\"hide_box('event-new'); show('new-event-link')\" href='javascript:void(0);''>(hide)</a></div>");
     } else {
-      de = e.getGermanTranslation();
+      de = e.getDescription();
       form.append("<div id='event-" + e.getKey() + "' class='eventdiv'>");
       form.append("<div class='title'>Update " + de.getTitle() + " ");
       form.append("<a onclick=\"hide_box('event-" + e.getKey()
@@ -110,10 +113,10 @@
       form.append("<p>Description:<p> <textarea rows='10' cols='50' name='desc'>" + de.getDesc()
           + "</textarea>");
       form.append(
-          "<p>Location: <input type='text' name='loc' value='" + de.getLocation() + "'></p>");
+          "<p>Location: <input type='text' name='loc' value='" + e.getLocation() + "'></p>");
       form.append(
-          "<p>Transit directions: <input type='text' name='transit' value='" + de.getTransit() + "'></p>");
-      form.append("<p>Url: <input type='text' name='url' value='" + de.getUrl() + "'></p>");
+          "<p>Transit directions: <input type='text' name='transit' value='" + e.getTransit() + "'></p>");
+      form.append("<p>Url: <input type='text' name='url' value='" + e.getUrl() + "'></p>");
     }
     form.append(
         "<p><input type='submit' value='" + (e == null ? "Add" : "Update") + " event'></p>");
@@ -385,48 +388,42 @@ function deleteEvent(form) {
   <%
     if (request.getParameter("delete-key") != null) {
       long key = Long.parseLong(request.getParameter("delete-key"));
-      Event.DeleteEvent(key);
+      // TODO(tobulogic): Event.DeleteEvent(key);
+      out.println("<div class='msg-green'><p>Deleting events is currently unavailable.</p></div>");
     }
-    List<Event> events;
     Calendar selected_month = Calendar.getInstance();
     if (request.getParameter("eyear") != null) {
       int year = Integer.parseInt(request.getParameter("eyear"));
       int month = Integer.parseInt(request.getParameter("emonth"));
-      events = Event.GetEventListForMonth(year, month);
+      selected_month.clear();
       selected_month.set(year, month, 1);
     } else {
       int year = selected_month.get(Calendar.YEAR);
       int month = selected_month.get(Calendar.MONTH);
-      events = Event.GetEventListForMonth(year, month);
     }
+
     if (request.getParameter("new") != null) {
       // An event is to be submitted.
       boolean isNew = Boolean.parseBoolean(request.getParameter("new"));
       Calendar c = Calendar.getInstance();
+      c.clear();
       c.set(Integer.parseInt(request.getParameter("year")),
-          Integer.parseInt(request.getParameter("month")),
-          Integer.parseInt(request.getParameter("day")));
+            Integer.parseInt(request.getParameter("month")),
+            Integer.parseInt(request.getParameter("day")));
 
-      Event event = null;
-      if (isNew) {
-        event = new Event(c.getTime(), new Translation("de", request.getParameter("title"),
-            request.getParameter("desc"), request.getParameter("loc"),
-            request.getParameter("transit"),
-            request.getParameter("url")));
-      } else {
+      Event event = new Event(
+        c,
+        request.getParameter("loc"), 
+        request.getParameter("transit"),
+        request.getParameter("url"),
+        null,
+        new EventDescription(
+            "de", 
+            request.getParameter("title"),
+            request.getParameter("desc")));
+      if (request.getParameter("key") != null && request.getParameter("key").length() > 0) {
         long key = Long.parseLong(request.getParameter("key"));
-        for (Event e : events) {
-          if (e.getKey() == key) {
-            event = e;
-          }
-        }
-        event.setDate(c.getTime());
-        Translation de = event.getGermanTranslation();
-        de.setTitle(request.getParameter("title"));
-        de.setDesc(request.getParameter("desc"));
-        de.setLocation(request.getParameter("loc"));
-        de.setTransit(request.getParameter("transit"));
-        de.setUrl(request.getParameter("url"));
+        event.setKey(key);
       }
 
       if (!event.isOk()) {
@@ -435,7 +432,7 @@ function deleteEvent(form) {
           out.print("<p>" + error + "</p>");
         }
         out.println("</div>");
-      } else if (!event.addToStore()) {
+      } else if (!Events.addEvent(event)) {
         out.println(
             "<div class='msg-red'><p>A problem occurred when trying to store the new event. Try later?</p>");
         for (String error : event.getErrors()) {
@@ -444,23 +441,23 @@ function deleteEvent(form) {
         out.println("</div>");
       } else {
         out.println("<div class='msg-green'><p>Event correctly stored.</p></div>");
-        // Add the event such that the list remains sorted.
-        if (isNew) {
-          events.add(event);
-        }
       }
     }
+    Events events = Events.getEvents(selected_month, "de");
 
     // Initialize the submit form for XML export and newsletter preselections.
-    out.println("<form id='export' action='' method='post'></form>");
+    out.println("<form id='export' action='' method='post'>");
+    out.println("<input type='hidden' name='year' value='" + selected_month.get(Calendar.YEAR) + "'>");
+    out.println("<input type='hidden' name='month' value='" + selected_month.get(Calendar.MONTH) + "'>");
+    out.println("</form>");
 
     out.println(createSelectForm(selected_month));
-    for (Event e : events) {
+    for (Event e : events.getSortedEvents()) {
       out.println(createEventForm("form-" + e.getKey(), e, selected_month));
     }
     out.println(createEventForm("newEvent", null, selected_month));
 
-    if (events.isEmpty()) {
+    if (events.getSortedEvents().isEmpty()) {
       out.println("No event is yet defined.");
     } else {
   %>
@@ -471,7 +468,7 @@ function deleteEvent(form) {
   <div>
     <div class="title">Defined events:</div>
     <%
-      for (Event e : events) {
+      for (Event e : events.getSortedEvents()) {
           out.println(createEventDiv(e));
         }
       }

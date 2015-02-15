@@ -1,15 +1,17 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="ch.aoz.maps.Translator" %>
-<%@ page import="ch.aoz.maps.Translation" %>
-<%@ page import="ch.aoz.maps.Language" %>
-<%@ page import="ch.aoz.maps.Event" %>
-<%@ page import="ch.aoz.maps.Strings"%>
-<%@ page import="com.google.appengine.api.users.User" %>
-<%@ page import="com.google.appengine.api.users.UserService" %>
-<%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
-<%@ page import="java.util.Calendar" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@page contentType="text/html;charset=UTF-8" language="java"%>
+<%@page import="java.util.List" %>
+<%@page import="ch.aoz.maps.Event" %>
+<%@page import="ch.aoz.maps.EventDescriptions"%>
+<%@page import="ch.aoz.maps.EventDescription"%>
+<%@page import="ch.aoz.maps.Events"%>
+<%@page import="ch.aoz.maps.Translator" %>
+<%@page import="ch.aoz.maps.Language" %>
+<%@page import="ch.aoz.maps.Strings"%>
+<%@page import="com.google.appengine.api.users.User" %>
+<%@page import="com.google.appengine.api.users.UserService" %>
+<%@page import="com.google.appengine.api.users.UserServiceFactory" %>
+<%@page import="java.util.Calendar" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
       
@@ -24,36 +26,30 @@ public static String escapeHTML(String raw) {
 }
 
 public static String formatTranslation(
-    Translation translation, String cls, boolean rtl) {
+    EventDescription d, String cls, boolean rtl) {
   String result = "";
   if (rtl) {
     cls = cls + " rtl";
   }
   result += "<div class='translation " + cls + "'>";
-  if (translation == null) {
+  if (d == null) {
     result += "<div class='no-translation'>No translation</div>";
   } else { // edit ==  false
-    result += "<div class='title'>&quot;" + translation.getTitle() + "&quot;</div>";
-    result += "<div class='desc'>" + translation.getDesc() + "</div>";
-    result += "<div class='location'>Location: " + translation.getLocation() + "</div>";
-    result += "<div class='url'>URL: " + translation.getUrl() + "</div>";
+    result += "<div class='title'>&quot;" + d.getTitle() + "&quot;</div>";
+    result += "<div class='desc'>" + d.getDesc() + "</div>";
   }
   result += "</div>";
   return result;
 }
 
 public static String formatTranslationForm(
-    Translation translation, long event_id, String div_name, boolean rtl) {
+    EventDescription d, long event_id, String div_name, boolean rtl) {
   String result = "";
   String title = "";
   String desc = ""; 
-  String location = ""; 
-  String url = ""; 
-  if (translation != null) {
-    title = translation.getTitle();
-    desc = translation.getDesc();
-    location = translation.getLocation();
-    url = translation.getUrl();
+  if (d != null) {
+    title = d.getTitle();
+    desc = d.getDesc();
   }
   String form_name = "form-" + event_id;
   if (rtl) {
@@ -65,9 +61,6 @@ public static String formatTranslationForm(
   result += "<input type='hidden' name='event_id' value='" + event_id + "'>";
   result += "<div class='title'><input type='text' name='title' value='" + escapeHTML(title) + "' placeholder='Title'></input></div>";
   result += "<div class='desc'><textarea rows='4' cols='50' name='desc' placeholder='Description'>" + escapeHTML(desc) + "</textarea></div>";
-  // Should not edit location and url in translation.
-  // result += "<div class='location'><input type='text' name='location' value='" + escapeHTML(location) + "' placeholder='Location'></input></div>";
-  // result += "<div class='url'><input type='text' name='url' value='" + escapeHTML(url) + "' placeholder='URL'></input></div>";
   result += "<div class='form-actions'><span class='save button' onclick='save(\""
     + form_name + "\");'>Save</span><span class='cancel button' onclick='mode(\"" 
     + div_name + "\", \"expanded\");'>Cancel</span></div>";
@@ -156,6 +149,17 @@ if (user == null) {
   if (selected_language == null) {
     selected_language = languages.get(0);
   }
+  Calendar selected_month = Calendar.getInstance();
+  if (request.getParameter("eyear") != null) {
+    int year = Integer.parseInt(request.getParameter("eyear"));
+    int month = Integer.parseInt(request.getParameter("emonth"));
+    selected_month.clear();
+    selected_month.set(year, month, 1);
+  } else {
+    int year = selected_month.get(Calendar.YEAR);
+    int month = selected_month.get(Calendar.MONTH);
+  }
+  Events events = Events.getEvents(selected_month);
   long active_event_id = -1;
   if (request.getParameter("event_id") != null) {
     try {
@@ -163,9 +167,13 @@ if (user == null) {
       active_event_id = event_id;
       String title = request.getParameter("title");
       String desc = request.getParameter("desc");
-      String location = request.getParameter("location");
-      String url = request.getParameter("url");
-      Event event = Event.GetByKey(event_id);
+      Event event = null;
+      for (Event e : events.getSortedEvents()) {
+        if (e.getKey() == event_id) {
+          event = e;
+          break;
+        }
+      }
       if (event == null) {
         throw new Exception("Unknown event");
       }
@@ -173,26 +181,19 @@ if (user == null) {
       if (language == null) {
         throw new Exception("Unknown language");
       }
-      Translation translation = event.getTranslation(language);
-      if (translation == null) {
-        translation = new Translation(event, language);
-      }
-      translation.setTitle(title);
-      translation.setDesc(desc);
-      translation.setLocation(location);
-      translation.setUrl(url);
-      if (!translation.addToStore()) {
+      EventDescription d = new EventDescription(language.getCode(), title, desc);
+      event.setDescription(d);
+      if (!EventDescriptions.addDescription(event)) {
         out.print("<div class='error'>");
-        out.print("Error saving translation:<br>");
-        for (String error : translation.getErrors()) {
-          out.print(error + "<br>");
-        } 
+        out.print("Error saving event description:<br>");
         out.print("</div>");
       }
     } catch (Exception ex) {
       out.print("<div class='error'>Error saving translation: " + ex.toString() + "</div>");
     }
   }
+  EventDescriptions german_descriptions = EventDescriptions.getDescriptions("de", selected_month);
+  EventDescriptions local_descriptions = EventDescriptions.getDescriptions(selected_language, selected_month);
   %>
   <div>
     Select language:
@@ -210,18 +211,6 @@ if (user == null) {
   </div>
   <div>
     <%
-    List<Event> events;
-    Calendar selected_month = Calendar.getInstance();
-    if (request.getParameter("eyear") != null) {
-      int year = Integer.parseInt(request.getParameter("eyear"));
-      int month = Integer.parseInt(request.getParameter("emonth"));
-      events = Event.GetEventListForMonth(year, month);
-      selected_month.set(year, month, 1);
-    } else {
-      int year = selected_month.get(Calendar.YEAR);
-      int month = selected_month.get(Calendar.MONTH);
-      events = Event.GetEventListForMonth(year, month);
-    }
     out.println(createSelectForm(selected_month));
     %>
   </div>
@@ -232,11 +221,11 @@ if (user == null) {
       if (language == null) {
         out.print("<div>Unknown language: " + selected_language + "</div>");
       } else {
-        for (Event event : events) {
+        for (Event event : events.getSortedEvents()) {
           long event_id = event.getKey();
           String div_id = "event-" + event_id;
-          Translation german = event.getGermanTranslation();
-          Translation local = event.getTranslation(language);
+          EventDescription german = german_descriptions.getDescription(event.getKey());
+          EventDescription local = local_descriptions.getDescription(event.getKey());
           out.print("<div class='event'>");
           out.print("<div class='collapsed' id='" + div_id + "'>");
           out.print(formatTranslation(german, "original", false));
