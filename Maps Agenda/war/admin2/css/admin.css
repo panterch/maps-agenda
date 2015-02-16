@@ -200,6 +200,7 @@ th, td {
   position: relative;
   display: inline-block;
   margin: 3px;
+  background-color: #000000;
 }
 
 .image-overlay-container {

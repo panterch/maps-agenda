@@ -47,7 +47,7 @@ public class BackgroundColor implements java.io.Serializable {
       Entity e = datastore.get(KeyFactory.createKey(entityKind, getDatastoreKey()));
       return fromEntity(e);
     } catch (EntityNotFoundException e) {
-      return new BackgroundColor();
+      return new BackgroundColor("08a");
     }
   }
   

@@ -1,3 +1,6 @@
+<%@ page contentType="text/css" language="java" %>
+<%@ page import="ch.aoz.maps.BackgroundColor" %>
+<%@ page import="ch.aoz.maps.BackgroundImage" %>
 /* Layout grid ****************************************************************/
 
 body {
@@ -48,7 +51,9 @@ body {
 
 /* Background *****************************************************************/
 
-/* background-color: Set dynamically in main. */
+.background-color {
+  background-color: #<% out.print(BackgroundColor.fetchFromStore().getColor()); %>;
+}
 
 .background-color-screen {
   height: 100%;
@@ -59,7 +64,14 @@ body {
 }
 
 .background-screen {
-  background-image: url('/maps2/images/temp-bg.png');
+  background-image: url('<%
+		  String image = BackgroundImage.fetchFromStore().getUrl();
+          if (image == null || image.equals("")) {
+            out.print("/maps2/images/temp-bg.png");
+          } else {
+        	out.print(image + "=s1280");
+          }
+  %>');
   background-position-x: center;
   background-size: cover;
   height: 100%;
@@ -83,6 +95,7 @@ body {
 }
 
 .sidebar ul a {
+  background: rgb(111, 111, 111); /* The fallback color for IE */
   background: rgba(111, 111, 111, .8);
   color: #fff;
   display: inline-block;
@@ -190,6 +203,9 @@ url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCS
 .event .date {
   font-family: 'Roboto', Arial, sans-serif;
   font-weight: 500;
+}
+
+.event .date {
   direction: ltr;
 }
 
@@ -377,8 +393,13 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSV
   line-height: 1.3;
 }
 
+[dir=rtl] .details {
+  text-align: right;
+}
+
 .details .location {
   font-style: italic;
+  direction: ltr;
 }
 
 .details .location a {
@@ -403,6 +424,10 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSV
 .event .details .title {
   font-size: 1.2em;
   font-weight: bold;
+}
+
+.event .details .link {
+  direction: ltr;
 }
 
 .event .details .link a {
@@ -481,6 +506,10 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABHNCSV
 .cal-grid .cal-body td {
   color: #fff;
   cursor: pointer;
+}
+
+.cal-grid .cal-body .selected {		
+  background-color: #706f6f;		
 }
 
 [lang=ta] p,
