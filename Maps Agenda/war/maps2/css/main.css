@@ -551,6 +551,25 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAABHNCSV
   .content {
     max-width: 570px;
   }
+  .sidebar.nav {
+    display: block;
+    float: none;
+    margin: 0 auto;
+    max-width: 570px;
+    min-height: 0px;
+    overflow: hidden;
+    padding-top: 0;
+    position: relative;
+    right: auto;
+    top: auto;
+    width: auto;
+  }
+  .sidebar.nav > ul {
+    display: none !important;
+  }
+  .sidebar form {
+    margin: 0;
+  }
 }
 
 @media screen and (max-width: 599px) {
