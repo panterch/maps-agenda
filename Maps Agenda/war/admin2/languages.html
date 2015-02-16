@@ -19,8 +19,8 @@
       <th>In Agenda?</th>
       <th>Spec format?</th>
     </tr>
-    <tr class="hover" ng-repeat="(code, l) in languages" ng-click="edit(l.code)">
-      <td>{{code}}</td>
+    <tr class="hover" ng-repeat="l in languages" ng-click="edit(l.code)">
+      <td>{{l.code}}</td>
       <td>{{l.name}}</td>
       <td>{{l.germanName}}</td>
       <td>{{l.days[0]}}</td>
