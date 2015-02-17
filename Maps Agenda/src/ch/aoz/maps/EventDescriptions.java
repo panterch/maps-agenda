@@ -112,6 +112,24 @@ public class EventDescriptions implements java.io.Serializable {
     return descriptions.addToStore();
   }
 
+  // Remove the descriptions for this event in all the supported languages. 
+  public static boolean removeDescriptions(Event e) {
+    if (e == null || !e.hasKey())
+      return false;
+    
+    Languages langs = Languages.GetLanguages();
+    
+    boolean allRemoved = true;
+    for (Language l : langs.getSortedLanguages()) {
+      EventDescriptions descriptions = getDescriptions(l.getCode(), e.getCalendar());
+      if (descriptions.descriptions.containsKey(e.getKey())) {
+        descriptions.descriptions.remove(e.getKey());
+        if (!descriptions.addToStore())
+          allRemoved = false;
+      }
+    }
+    return allRemoved;
+  }
   /**
    * Add this EventDescriptions to the datastore.
    *

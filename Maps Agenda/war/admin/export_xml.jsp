@@ -66,7 +66,7 @@
       // Offer this as a downloadable file rather than as a displayable page.
       response.setHeader("Content-Disposition", "attachment; filename=MAPS_agenda.xml");
 
-	  XMLExport export = new XMLExport(selected_month, eventKeys, eventKeysImage,
-                             	       eventKeysTopicOfMonth, eventKeysLarge);
+	  XMLExport export = new XMLExport(selected_month, eventKeys, eventKeysTopicOfMonth,
+	                                   eventKeysImage, eventKeysLarge);
 
       out.print(export.getXML());%>

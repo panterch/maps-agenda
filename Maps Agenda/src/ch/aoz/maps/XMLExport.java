@@ -165,7 +165,7 @@ public class XMLExport {
         if (description == null)
           continue;
         String translatedTitle = new String("<b_titel aid:cstyle=\"bildtitel"
-            + language.getXMLFormatSupplement() + "\">" + XMLExportEntry.escapeXML(description.getDesc()) + "</b_titel>");
+            + language.getXMLFormatSupplement() + "\">" + XMLExportEntry.escapeXML(description.getTitle()) + "</b_titel>");
         if (imageText.length() > 0) {
           imageText += "<space aid:cstyle=\"space\" > </space>";
         }

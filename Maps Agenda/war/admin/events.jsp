@@ -16,14 +16,21 @@
 <%!
   public static String createEventDiv(Event e) {
     EventDescription de = e.getDescription();
+    if (de == null) {
+      de = new EventDescription("de", "", "");
+    }
     StringBuilder div = new StringBuilder();
     div.append("<div class='event'>");
     div.append("<div class='eactions'>");
     div.append("<div class='eedit'><a onclick=\"show_box('event-" + e.getKey()
         + "');\" href='javascript:void(0);'>Edit</a></div>");
     div.append("<div class='edelete'><form name='delete-" + e.getKey() + "' id='delete-"
-        + e.getKey() + "' method='POST'>" + "<input type='hidden' name='delete-key' value='"
-        + e.getKey() + "'>" + "<a onclick=\"deleteEvent('delete-" + e.getKey()
+        + e.getKey() + "' method='POST'>" 
+        + "<input type='hidden' name='delete-key' value='" + e.getKey() + "'>" 
+        + "<input type='hidden' name='year' value='" + e.getCalendar().get(Calendar.YEAR) + "'>" 
+        + "<input type='hidden' name='month' value='" + e.getCalendar().get(Calendar.MONTH) + "'>" 
+        + "<input type='hidden' name='day' value='" + e.getCalendar().get(Calendar.DATE) + "'>" 
+        + "<a onclick=\"deleteEvent('delete-" + e.getKey()
         + "');\" href='javascript:void(0);'>Delete</a>" + "</form></div>");
     div.append("</div>");
     div.append(
@@ -60,6 +67,9 @@
           "<a onclick=\"hide_box('event-new'); show('new-event-link')\" href='javascript:void(0);''>(hide)</a></div>");
     } else {
       de = e.getDescription();
+      if (de == null) {
+        de = new EventDescription("de", "", "");
+      }
       form.append("<div id='event-" + e.getKey() + "' class='eventdiv'>");
       form.append("<div class='title'>Update " + de.getTitle() + " ");
       form.append("<a onclick=\"hide_box('event-" + e.getKey()
@@ -386,11 +396,6 @@ function deleteEvent(form) {
 </head>
 <body onload='countEventCharacters()'>
   <%
-    if (request.getParameter("delete-key") != null) {
-      long key = Long.parseLong(request.getParameter("delete-key"));
-      // TODO(tobulogic): Event.DeleteEvent(key);
-      out.println("<div class='msg-green'><p>Deleting events is currently unavailable.</p></div>");
-    }
     Calendar selected_month = Calendar.getInstance();
     if (request.getParameter("eyear") != null) {
       int year = Integer.parseInt(request.getParameter("eyear"));
@@ -400,6 +405,18 @@ function deleteEvent(form) {
     } else {
       int year = selected_month.get(Calendar.YEAR);
       int month = selected_month.get(Calendar.MONTH);
+    }
+    if (request.getParameter("delete-key") != null) {
+      long key = Long.parseLong(request.getParameter("delete-key"));
+      Calendar c = Calendar.getInstance();
+      c.clear();
+      c.set(Integer.parseInt(request.getParameter("year")),
+            Integer.parseInt(request.getParameter("month")),
+            Integer.parseInt(request.getParameter("day")));
+      if (Events.removeEvent(key, c))
+        out.println("<div class='msg-green'><p>Successfully deleted event.</p></div>");
+      else
+        out.println("<div class='msg-red'><p>Failed to delete event with key=" + key + "</p></div>");
     }
 
     if (request.getParameter("new") != null) {

@@ -57,11 +57,13 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   private boolean ok;
   private List<String> errors;
 
-  // We only sort the items according to their date. There is no ordering for
-  // events happening at the same date.
+  // First sort according to their date. Then to key. 
   @Override
   public int compareTo(Event other) {
-    return getDate().compareTo(other.getDate());
+    int c = getDate().compareTo(other.getDate());
+    if (c != 0) return c;
+
+    return Long.compare(this.key, other.key);
   }
 
   // Two events are equal iff they happen at the same date and they have the

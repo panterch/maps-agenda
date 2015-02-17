@@ -119,6 +119,11 @@ public class Events implements java.io.Serializable {
     if (events == null) {
       return false;
     }
+    
+    if (!e.hasKey()) {
+      e.setKey(events.nextEventKey++);
+    }
+    
     if (events.events.contains(e)) {
       if (!events.events.remove(e)) {
         return false;
@@ -134,6 +139,30 @@ public class Events implements java.io.Serializable {
     return true;
   }
 
+  public static boolean removeEvent(long key, Calendar c) {
+    Events events = Events.getEvents(c);
+    if (events == null) {
+      return false;
+    }
+    
+    for (Event e : events.events) {
+      if (e.getKey() == key) {
+        if (!events.events.remove(e))
+          return false;        
+
+        if (!events.addToStore())
+          return false;
+
+        // We don't check if it is successful because it is not important. Nothing
+        // bad will happen if there is a description with no corresponding key
+        // for the event.
+        EventDescriptions.removeDescriptions(e);
+        return true;
+      }
+    }
+    // The key does not exist, so there is no event to delete.
+    return true;
+  }
   /**
    * Add this Languages to the datastore.
    *
@@ -166,8 +195,9 @@ public class Events implements java.io.Serializable {
   private Entity toEntity() {
     Entity events = new Entity(entityKind, getKey(this.calendar));
     for (Event e : this.events) {
-      if (!e.hasKey())
+      if (!e.hasKey()) {
         e.setKey(nextEventKey++);
+      }
       events.setUnindexedProperty(Long.toString(e.getKey()), packEvent(e));
     }
     return events;
