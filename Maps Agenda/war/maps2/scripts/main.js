@@ -91,11 +91,12 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
   if (!found) $scope.updateLang('de');
 });
 
-mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, dateKeeper) {
+mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events, dateKeeper) {
   if (!date) {
     $location.search('date', dateToString(dateKeeper.getDate()));
     return;
   }
+  $scope.lang = lang;
   $scope.events = events;
   $scope.date_str = date;
   $scope.date = new Date($scope.date_str.replace(/[-]/g, '/'));
@@ -105,7 +106,10 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
   
   $scope.printDate = function(dateStr) {
     var date = new Date(dateStr);
-    return date.getDate() + '.' + (date.getMonth() + 1) + '.';
+    if (lang == "ma")
+      return (date.getMonth() + 1) + '.' + date.getDate() + '.';
+    else
+      return date.getDate() + '.' + (date.getMonth() + 1) + '.';
   };
 
   $scope.printDate2 = function(dateStr) {
