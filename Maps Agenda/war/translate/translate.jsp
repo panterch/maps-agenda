@@ -163,6 +163,7 @@ if (user == null) {
     selected_month.clear();
     selected_month.set(year, month, 1);
   } else {
+    selected_month.add(Calendar.MONTH, 1);
     int year = selected_month.get(Calendar.YEAR);
     int month = selected_month.get(Calendar.MONTH);
   }
