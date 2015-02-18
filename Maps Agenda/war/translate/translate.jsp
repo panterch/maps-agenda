@@ -69,7 +69,7 @@ public static String formatTranslationForm(
   return result;
 }
 
-public static String createSelectForm(Calendar selected_month) {
+public static String createSelectForm(Calendar selected_month, String selected_lang) {
   if (selected_month == null) {
     selected_month = Calendar.getInstance();
   }
@@ -84,6 +84,7 @@ public static String createSelectForm(Calendar selected_month) {
     form.append("<option value='" + i + (i == month? "' selected>" : "'>") + Strings.months_de[i] + "</option>");
   }
   form.append("</select>");
+  form.append("<input type='hidden' name='lang' value='" + selected_lang + "'>");
   form.append("<input type='submit' value='Show'></form>");
   form.append("<form name='date_all' method='GET' target='content-frame'><input type='submit' value='Show all'>");
   form.append("</form></p></div>");
@@ -211,7 +212,7 @@ if (user == null) {
   </div>
   <div>
     <%
-    out.println(createSelectForm(selected_month));
+    out.println(createSelectForm(selected_month, selected_language));
     %>
   </div>
   <div>
