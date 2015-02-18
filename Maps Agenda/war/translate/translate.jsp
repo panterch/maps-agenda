@@ -69,25 +69,35 @@ public static String formatTranslationForm(
   return result;
 }
 
-public static String createSelectForm(Calendar selected_month, String selected_lang) {
+public static String createSelectForm(Calendar selected_month, String selected_lang, List<String> languages) {
   if (selected_month == null) {
     selected_month = Calendar.getInstance();
   }
   int month = selected_month.get(Calendar.MONTH);
   StringBuilder form = new StringBuilder();
+  
   form.append("<div id='event-date'>");
   form.append("<form name='date' method='GET' style='display:inline'>");
-  form.append("Month to display (Year-Month): ");
+  form.append("<p>Select language: ");
+  form.append("<select name='lang'>");
+  for (String language_code : languages) {
+    Language language = Language.GetByCode(language_code);
+    form.append("<option value='" + language_code + 
+      ((language_code.equals(selected_lang)) ? "' selected>" : "'>") +
+      (language == null ? "Unknown language: " + language_code 
+                        : language.getName()) + "</option>");
+  }  
+  form.append("</select></p>");
+  form.append("<p>Month to display (Year-Month): ");
   form.append("<input type='text' name='eyear' value='" + selected_month.get(Calendar.YEAR) + "' maxlength='4' size='4'>");
   form.append("-<select name='emonth'>");
   for (int i = 0; i < 12; ++i) {
     form.append("<option value='" + i + (i == month? "' selected>" : "'>") + Strings.months_de[i] + "</option>");
   }
-  form.append("</select>");
-  form.append("<input type='hidden' name='lang' value='" + selected_lang + "'>");
-  form.append("<input type='submit' value='Show'></form>");
-  form.append("<form name='date_all' method='GET' target='content-frame'><input type='submit' value='Show all'>");
-  form.append("</form></p></div>");
+  form.append("</select></p>");
+  //form.append("<input type='hidden' name='lang' value='" + selected_lang + "'>");
+  form.append("<p><input type='submit' value='Show'></p></form>");
+  form.append("</div>");
   return form.toString();
 }
 %>
@@ -102,10 +112,6 @@ User user = userService.getCurrentUser();
     <title>Maps Agenda Translation Console</title>
     <link href="translate.css" rel="stylesheet" type="text/css"></link>
     <script>
-      function changeLanguage(sel) {
-        var language = sel.options[sel.selectedIndex].value;
-        window.open("?lang=" + language, "_self");
-      }
       function mode(div_id, mode) {
         var div = document.getElementById(div_id);
         div.className = mode;
@@ -197,25 +203,18 @@ if (user == null) {
   EventDescriptions local_descriptions = EventDescriptions.getDescriptions(selected_language, selected_month);
   %>
   <div>
-    Select language:
-    <select name='language' onchange='changeLanguage(this)'>
     <%
-    for (String language_code : translator.getLanguages()) {
-      Language language = Language.GetByCode(language_code);
-      out.print("<option value='" + language_code + 
-        ((language_code.equals(selected_language)) ? "' selected>" : "'>") +
-        (language == null ? "Unknown language: " + language_code 
-                          : language.getName()) + "</option>");
-    }
-    %>
-    </select>
-  </div>
-  <div>
-    <%
-    out.println(createSelectForm(selected_month, selected_language));
+    out.println(createSelectForm(selected_month, selected_language, translator.getLanguages()));
     %>
   </div>
   <div>
+    <% 
+    if (events.getSortedEvents().size() == 0) {
+    %>
+    No events to translate for this month.
+    <%
+    } else {
+    %>
     Events:
     <%
       Language language = Language.GetByCode(selected_language);
@@ -241,6 +240,7 @@ if (user == null) {
           out.print("</div>"); // event        
         }
       }
+    }
     %>
   </div>
   <%

@@ -50,6 +50,14 @@
   height: 200px;
 }
 
+#event-date {
+  margin-bottom: 20px;
+}
+
+#event-date p {
+  margin: 0px;
+}
+
 .collapsed .desc, .collapsed .less, .collapsed .form, .collapsed .location, .collapsed .url {
   display: none;
 }
