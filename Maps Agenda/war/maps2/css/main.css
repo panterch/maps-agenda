@@ -1,6 +1,3 @@
-<%@ page contentType="text/css" language="java" %>
-<%@ page import="ch.aoz.maps.BackgroundColor" %>
-<%@ page import="ch.aoz.maps.BackgroundImage" %>
 /* Layout grid ****************************************************************/
 
 body {
@@ -46,42 +43,6 @@ body {
   height: 11px;
   width: 100%;
 }
-
-
-
-/* Background *****************************************************************/
-
-.background-color {
-  background-color: #<% out.print(BackgroundColor.fetchFromStore().getColor()); %>;
-}
-
-.background-color-screen {
-  height: 100%;
-  opacity: 1.0;
-  position: fixed;
-  width: 100%;
-  z-index: -2;
-}
-
-.background-screen {
-  background-image: url('<%
-		  String image = BackgroundImage.fetchFromStore().getUrl();
-          if (image == null || image.equals("")) {
-            out.print("/maps2/images/temp-bg.png");
-          } else {
-        	out.print(image + "=s1280");
-          }
-  %>');
-  background-position-x: center;
-  background-size: cover;
-  height: 100%;
-  opacity: 1.0;
-  position: fixed;
-  width: 100%;
-  z-index: -1;
-}
-
-
 
 /* Sidebar content  ***********************************************************/
 

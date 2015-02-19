@@ -2,12 +2,12 @@
   
   
   <servlet>
-    <servlet-name>Maps_Languages</servlet-name>
-    <servlet-class>ch.aoz.maps.Maps_LanguageServlet</servlet-class>
+    <servlet-name>Servlet_CSS</servlet-name>
+    <servlet-class>ch.aoz.maps.Servlet_CSS</servlet-class>
   </servlet>
   <servlet-mapping>
-     <servlet-name>Maps_Languages</servlet-name>
-     <url-pattern>/maps/scripts/menu.js</url-pattern>
+     <servlet-name>Servlet_CSS</servlet-name>
+     <url-pattern>/maps2/css/look_and_feel.css</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -34,13 +34,6 @@
   </servlet><servlet-mapping>
   	<servlet-name>Maps_AdminBackgroundImages</servlet-name>
   	<url-pattern>/admin/background_images</url-pattern>
-  </servlet-mapping><servlet>
-    <servlet-name>Tmp_Phrases</servlet-name>
-    <servlet-class>ch.aoz.maps.Tmp_Phrases</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Tmp_Phrases</servlet-name>
-    <url-pattern>/admin/phrases</url-pattern>
   </servlet-mapping>
 
   <servlet>
