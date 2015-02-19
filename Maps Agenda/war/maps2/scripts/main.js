@@ -116,8 +116,12 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events
     if (!dateStr) return '';
     var date = new Date(dateStr);
     var month = $scope.phrases[MONTHS_SHORT[date.getMonth()]];
-    if (!month) return $scope.printDate(dateStr);
-    return date.getDate() + ' ' + month;
+    if (!month) 
+      return $scope.printDate(dateStr);
+    else if (lang == "ma") 
+      return month + ' ' + date.getDate();
+    else 
+      return date.getDate() + ' ' + month;
   };
 
   $scope.printDay = function(dateStr) {
