@@ -22,9 +22,6 @@ import static ch.aoz.maps.NewsletterStyles.TRANSIT_CSS;
 import static ch.aoz.maps.NewsletterStyles.URL_CSS;
 import static ch.aoz.maps.NewsletterStyles.WHATS_UP_CSS;
 
-import com.google.appengine.api.datastore.EntityNotFoundException;
-
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -38,8 +35,8 @@ import javax.annotation.Nullable;
  */
 public class NewsletterExport {
   // For field details, see the parameter docs in the constructor.
-  private final List<Event> events;
-  private final String lang;
+  private final Events eventsDe;
+  private final Events eventsLang;
   private final Language language;
   private final String urlRoot;
   private final String themeId;
@@ -60,12 +57,12 @@ public class NewsletterExport {
    * @param subscriber The subscriber this newsletter is for -
    *     or null for when rendering the public website version.
    */
-  public NewsletterExport(List<Event> events, String lang,
+  public NewsletterExport(Events eventsDe, @Nullable Events eventsLang, String lang,
       String urlRoot, String themeId,
       int year, int month,
       @Nullable Subscriber subscriber) {
-    this.events = events;
-    this.lang = lang;
+    this.eventsDe = eventsDe;
+    this.eventsLang = eventsLang;
     this.urlRoot = urlRoot;
     this.themeId = themeId;
     this.year = year;
@@ -152,7 +149,7 @@ public class NewsletterExport {
   
   /** Event list, one row for each event. */
   private void renderEvents() {
-    Map<String, Phrase> phrases = Phrases.getMergedPhrases(lang);
+    Map<String, Phrase> phrases = Phrases.getMergedPhrases(language.getCode());
     Phrase wasLauft = phrases.get("headNL");
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
@@ -169,7 +166,7 @@ public class NewsletterExport {
       }
       out.append("</div>");
       
-      for (Event event : events) {
+      for (Event event : eventsDe.getSortedEvents()) {
         renderEvent(event);
       }
       out.append("</td>");
@@ -181,48 +178,48 @@ public class NewsletterExport {
   }
   
   /** Renders a single event, in one or two languages. */
-  private void renderEvent(Event event) {
-    if (lang == null || "de".equals(lang)) {
-      renderEventSingleLanguage(event);
+  private void renderEvent(Event eventDe) {
+    if (eventsLang == null) {
+      renderEventSingleLanguage(eventDe);
+      return;
+    }
+    Event eventLang = eventsLang.getEvent(eventDe.getKey());
+    if (eventLang == null || eventLang.getDescription() == null) {
+      renderEventSingleLanguage(eventDe);
     } else {
       try {
-        renderEventDoubleLanguage(event);
+        renderEventDoubleLanguage(eventDe, eventLang);
       } catch (IllegalStateException e) {
         // Fall-back to just german when no translation is found.
-        renderEventSingleLanguage(event);
+        renderEventSingleLanguage(eventDe);
       }
     }
   }
   
   /** Renders an event row just in German. */
-  private void renderEventSingleLanguage(Event event) {
-    Translation german = event.getGermanTranslation();
+  private void renderEventSingleLanguage(Event eventDe) {
+    EventDescription desc = eventDe.getDescription();
     
     out.append("<div style='" + EVENT_CSS + "'>");
     
     out.append("<div style='" + EVENT_SINGLE_CSS + "'>");
     renderEventDetails(
-        DATE_FORMATTER.format(event.getDate()),
-        german.getTitle(), false, // All false, german isn't RTL.
-        german.getDesc(), false,
-        german.getLocation(), false,
-        german.getTransit(), false,
-        german.getUrl(), false);
+        DATE_FORMATTER.format(eventDe.getDate()),
+        desc.getTitle(), false, // All false, german isn't RTL.
+        desc.getDesc(), false,
+        eventDe.getLocation(),
+        eventDe.getTransit(),
+        eventDe.getUrl());
     out.append("</div>");
     
     out.append("</div>");
   }
   
   /** Renders an event row, in German plus the desired language. */ 
-  private void renderEventDoubleLanguage(Event event) {
-    Translation german = event.getGermanTranslation();
-    Translation nonGerman = null;
-    try {
-      nonGerman = Translation.getTranslationForEvent(event, lang);
-    } catch (EntityNotFoundException e) {
-      throw new IllegalStateException(e);
-    }
-    String date = DATE_FORMATTER.format(event.getDate());
+  private void renderEventDoubleLanguage(Event eventDe, Event eventLang) {
+    EventDescription descDe = eventDe.getDescription();
+    EventDescription descLang = eventLang.getDescription();
+    String date = DATE_FORMATTER.format(eventDe.getDate());
 
     out.append("<div style='" + EVENT_CSS + "'>");
     
@@ -230,25 +227,20 @@ public class NewsletterExport {
     out.append("<div style='" + EVENT_LEFT_CSS + "'>");
     renderEventDetails(
         date,
-        german.getTitle(), false, // All false, german isn't RTL.
-        german.getDesc(), false,
-        german.getLocation(), false,
-        german.getTransit(), false,
-        german.getUrl(), false);
+        descDe.getTitle(), false, // All false, german isn't RTL.
+        descDe.getDesc(), false,
+        eventDe.getLocation(),
+        eventDe.getTransit(),
+        eventDe.getUrl());
     out.append("</div>");
-
-    // Right column is whatever language is desired, falling back to German
-    // for whichever fields aren't translated (e.g. location, url).
-    TranslationWithFallback translated = new TranslationWithFallback(
-        nonGerman, german, language.isRightToLeft()); 
     out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,
-        translated.getTitle(), translated.isTitleRtl(),
-        translated.getDesc(), translated.isDescRtl(),
-        translated.getLocation(), translated.isLocationRtl(),
-        translated.getTransit(), translated.isTransitRtl(),
-        translated.getUrl(), translated.isUrlRtl());
+        descLang.getTitle(), language.isRightToLeft(),
+        descLang.getDesc(), language.isRightToLeft(),
+        eventDe.getLocation(),
+        eventDe.getTransit(),
+        eventDe.getUrl());
     out.append("</div>");
     
     out.append("<div style='clear: both;'></div>");
@@ -259,9 +251,7 @@ public class NewsletterExport {
   private void renderEventDetails(String date,
       String title, boolean isTitleRtl, 
       String desc, boolean isDescRtl, 
-      String location, boolean isLocationRtl,
-      String transit, boolean isTransitRtl,
-      String url, boolean isUrlRtl) {
+      String location, String transit, String url) {
     out.append(String.format("<h1 style='%s'>%s</h1>",
         DATE_CSS, ESCAPE_TEXT(date)));
     out.append(String.format("<h2 style='%s'>%s</h2>",
@@ -269,11 +259,11 @@ public class NewsletterExport {
     out.append(String.format("<div style='%s'>%s</div>",
         rtlCss(DESC_CSS, isDescRtl), ESCAPE_TEXT(desc)));
     out.append(String.format("<p style='%s'>%s</p>",
-        rtlCss(LOCATION_CSS, isLocationRtl), ESCAPE_TEXT(location)));
+        rtlCss(LOCATION_CSS, false), ESCAPE_TEXT(location)));
     out.append(String.format("<p style='%s'>%s</p>",
-	rtlCss(TRANSIT_CSS, isTransitRtl), ESCAPE_TEXT(transit)));
+	rtlCss(TRANSIT_CSS, false), ESCAPE_TEXT(transit)));
     out.append(String.format("<p style='%s'>", 
-        rtlCss(URL_CSS, isUrlRtl)));
+        rtlCss(URL_CSS, false)));
     addLink(url, url);
     out.append("</p>");
   }
@@ -335,7 +325,7 @@ public class NewsletterExport {
   /** @return URL to visit the web version of this rendering. */
   private String monthPermalink() {
     return String.format("%s/newsletter.jsp?lang=%s&year=%s&month=%s",
-        urlRoot, lang, year, month);
+        urlRoot, language.getCode(), year, month);
   }
   
   // HTML writing utilities

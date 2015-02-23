@@ -1,9 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
-%><%@ page import="ch.aoz.maps.Event"
+%><%@ page import="ch.aoz.maps.Events"
 %><%@ page import="ch.aoz.maps.Language"
 %><%@ page import="ch.aoz.maps.NewsletterExport"
 %><%@ page import="ch.aoz.maps.Subscriber"
-%><%@ page import="ch.aoz.maps.Translation"
 %><%@ page import="java.io.UnsupportedEncodingException"
 %><%@ page import="java.util.ArrayList"
 %><%@ page import="java.util.Calendar"
@@ -142,6 +141,7 @@ Calendar selected_month = Calendar.getInstance();
 if (request.getParameter("eyear") != null) {
   int year = Integer.parseInt(request.getParameter("eyear")); 
   int month = Integer.parseInt(request.getParameter("emonth"));
+  selected_month.clear();
   selected_month.set(year, month, 1);
 } else {
   selected_month.set(Calendar.DAY_OF_MONTH, 1);
@@ -151,8 +151,13 @@ if (lang == null) {
   lang = "de";
 }
 
-List<Event> events = Event.GetEventListForMonth(selected_month.get(Calendar.YEAR), 
-                                                selected_month.get(Calendar.MONTH));
+Events eventsDe = Events.getEvents(selected_month, "de");
+Events eventsLang = null;
+if (!lang.equals("de")) {
+  eventsLang = (Events)eventsDe.clone();
+  eventsLang.loadDescriptions(lang);
+}
+int numEvents = eventsDe.getSortedEvents().size();
 
 int year = selected_month.get(Calendar.YEAR);
 int month = selected_month.get(Calendar.MONTH);
@@ -163,14 +168,14 @@ String baseUrl = "localhost".equals(request.getServerName()) ?
 String themeId = "1";
 
 NewsletterExport exporter = null;
-if (request.getParameter("send") != null && events.size() > 0) {
+if (request.getParameter("send") != null && numEvents > 0) {
   int num_emails_sent = 0;
   for (Subscriber subscriber : Subscriber.getAllSubscribers().values()) {
     String language = subscriber.getLanguage();
 
     // One created for each subscriber.
     exporter = new NewsletterExport(
-        events, language,
+        eventsDe, eventsLang, language,
         baseUrl, themeId,
         year, month,
         subscriber);
@@ -188,13 +193,13 @@ if (request.getParameter("send") != null && events.size() > 0) {
 
 out.println(createForms(selected_month, languages, lang));
 
-if (events.size() == 0) {
+if (numEvents == 0) {
   out.println("No event is selected.");
   return;
 }
 
 exporter = new NewsletterExport(
-      events, lang,
+      eventsDe, eventsLang, lang,
       baseUrl, themeId,
       year, month,
       null);

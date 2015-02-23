@@ -66,6 +66,18 @@ public class Events implements java.io.Serializable {
     isOk = true;
     addToCache();
   }
+
+  @Override
+  public Events clone() {
+    Events events = new Events(calendar);
+    events.nextEventKey = this.nextEventKey;
+    events.isOk = this.isOk;
+    events.debug = this.debug;
+    for (Event e : this.events) {
+      events.events.add(e.clone());
+    }
+    return events;
+  }
   
   private static String getKey(Calendar c) {
     return String.format("%04d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH));
@@ -96,19 +108,28 @@ public class Events implements java.io.Serializable {
    * Returns the Events object. It contains all the events for the month 
    * specified in the calendar, and populates the EventDescription field
    * of those events that have a description in the requested language.
+   * If an event does not have a corresponding event description, then
+   * its description is set to null.
    */
   public static Events getEvents(Calendar c, String lang) {
     Events events = getEvents(c);
-    if (events.events.isEmpty())
-      return events;
-    
-    EventDescriptions descriptions = EventDescriptions.getDescriptions(lang, c);
-    for (Event e : events.events) {
+    events.loadDescriptions(lang);
+    return events;
+  }
+
+  /** 
+   * Loads the EventDescriptions for all the events in this Events object
+   * with descriptions in the requested language. If an event does not have
+   * a corresponding event, it sets the description to null. 
+   */
+  public void loadDescriptions(String lang) {
+    if (events.isEmpty()) return;
+    EventDescriptions descriptions = EventDescriptions.getDescriptions(lang, this.calendar);
+    for (Event e : events) {
       // getDescription returns null if no description is there, keeping the
       // assumption that an event has a null description in such a case.
       e.setDescription(descriptions.getDescription(e.getKey()));
     }
-    return events;
   }
 
   public static boolean addEvent(Event e) {
@@ -130,7 +151,6 @@ public class Events implements java.io.Serializable {
       }
     }
     events.events.add(e);
-    // First add the event to the store so that a key is chosen for the event.
     if (!events.addToStore())
       return false;
     if (e.getDescription() != null) {
