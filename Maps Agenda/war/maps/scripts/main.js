@@ -1,224 +1,289 @@
-common = {};
+var MONTHS = [
+  'mojanuar', 'mofebruar', 'momaerz', 'moapril',
+  'momai', 'mojuni', 'mojuli', 'moaugust',
+  'moseptember', 'mooktober', 'monovember', 'modezember'
+];
 
-common.languageDict_ = {
-  "woabdienstag":"Di",
-  "moapril":"April",
-  "wtabsonntag":"So",
-  "moabseptember":"Sept.",
-  "wtdienstag":"Dienstag",
-  "UeberMAPS":"\u00dcber MAPS",
-  "wtmittwoch":"Mittwoch",
-  "impprojektleitung":"Projektleitung",
-  "nlabbestellen":"Newsletter abbestellen",
-  "modezember":"Dezember",
-  "senden":"Senden",
-  "moabjuni":"Juni",
-  "headNL":"Was l\u00e4uft in Z\u00fcrich?",
-  "Impressum":"Impressum",
-  "Frueher":"Fr\u00fcher",
-  "keinepassVeranst":"Es konnten leider keine passenden Veranstaltungen gefunden werden.",
-  "nlstadtverwaltung":"Ihre Mitteilung wird mit diesem Formular verschl\u00fcsselt an die Stadtverwaltung Z\u00fcrich \u00fcbertragen.",
-  "ktstrasse":"Strasse / Hausnummer",
-  "mojuli":"Juli",
-  "moabnovember":"Nov.",
-  "kttelefon":"Telefon",
-  "nlkorrekt":"Wurde diese E-Mail korrekt angezeigt?",
-  "Spaeter":"Sp\u00e4ter",
-  "ktanhang":"Die maximale Gr\u00f6sse f\u00fcr Anh\u00e4nge betr\u00e4gt 5 MB (5120 KB).",
-  "moabjuli":"Juli",
-  "ktemail":"E-Mail",
-  "ktbetreff":"Betreff",
-  "mooktober":"Oktober",
-  "monovember":"November",
-  "ktanrede":"Anrede",
-  "tagsport":"Sport",
-  "moabaugust":"Aug.",
-  "wtabmontag":"Mo",
-  "wtabsamstag":"Sa",
-  "wtsonntag":"Sonntag",
-  "moabapril":"Apr.",
-  "nlkopie":"Ich m\u00f6chte eine unverschl\u00fcsselte Kopie dieser Nachricht an meine E-Mail-Adresse erhalten.",
-  "imherausgeberin":"Herausgeberin",
-  "Newsletter":"Newsletter",
-  "moaugust":"August",
-  "ktfirma":"Firma / Organisation",
-  "ktherr":"Herr",
-  "wtfreitag":"Freitag",
-  "imponline":"Online",
-  "Wochentage":"Montag",
-  "ktnachname":"Nachname",
-  "ktFeld":"Dieses Feld muss ausgef\u00fcllt werden.",
-  "kzadresse":"Adresse",
-  "impfotos":"Fotos",
-  "tagnatur":"Natur",
-  "GKFZA":"G\u00fcnstige Kultur- und Freizeitangebote",
-  "ktdurchsuchen":"Durchsuchen",
-  "mojanuar":"Januar",
-  "moabjanuar":"Jan.",
-  "impprojektleitungsassistenz":"Projektleitungsassistenz",
-  "moabmaerz":"M\u00e4rz",
-  "moaboktober":"Okt.",
-  "moseptember":"September",
-  "ktvorname":"Vorname",
-  "taggratis":"Gratis",
-  "wtabfreitag":"Fr",
-  "impuebersetzer":"\u00dcbersetzer/innen",
-  "momaerz":"M\u00e4rz",
-  "tagaktiv":"Aktiv",
-  "moabdezember":"Dez.",
-  "momai":"Mai",
-  "mojuni":"Juni",
-  "ktmitteilung":"Mitteilung",
-  "tagfamilie":"Familie",
-  "wtdonnerstag":"Donnerstag",
-  "Anmelden":"Anmelden",
-  "moabmai":"Mai",
-  "mofebruar":"Februar",
-  "taglernen":"Lernen",
-  "ktdatei":"Datei",
-  "ktplz":"PLZ / Ort",
-  "wtabmittwoch":"Mi",
-  "ktfrau":"Frau",
-  "tagdeutsch":"Deutsch",
-  "impversand":"Versand- und Kurierdienst",
-  "wtabdonnerstag":"Do",
-  "nlweiterleiten":"Newsletter weiterleiten",
-  "wtsamstag":"Samstag",
-  "AnmeldungNewsletter":"Erhalten Sie die MAPS Z\u00fcri Agenda einmal pro Monat in Ihrer Sprache per E-Mail.",
-  "Kontakt":"Kontakt",
-  "impdruck":"Druck",
-  "moabfebruar":"Feb.",
-  "impkonzept":"Konzept"
-};
+var MONTHS_SHORT = [
+  'moabjanuar', 'moabfebruar', 'moabmaerz', 'moabapril',
+  'moabmai', 'moabjuni', 'moabjuli', 'moabaugust',
+  'moabseptember', 'moaboktober', 'moabnovember', 'moabdezember'
+];
 
-common.getLanguageString = function(key) {
-  return common.languageDict_[key] || '(empty)';
-};
+var DAYS_OF_WEEK_SHORT = [
+  'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
+  'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
+];
 
-common.updateLanguage = function(newLang) {
-  for (var key in newLang) {
-    common.languageDict_[key] = newLang[key];
-  }
-};
+var DAYS_OF_WEEK_LONG = [
+  'wtsonntag', 'Wochentage', 'wtdienstag', 'wtmittwoch',
+  'wtdonnerstag', 'wtfreitag', 'wtsamstag' 
+];
 
-common.applyLanguage = function() {
-  Sizzle('[i18n]').forEach(function(elem) {
-    var key = elem.getAttribute('i18n');
-    while (elem.firstChild !== null)
-      elem.removeChild(elem.firstChild);
-    elem.appendChild(document.createTextNode(common.getLanguageString(key)));
-  });
-};
-
-common.getSearchParams = function() {
-  var hash = window.location.search.substring(1);
-  var params = {};
-  hash.split('&').forEach(function(pair) {
-    var tokens = pair.split('=');
-    var key = tokens.splice(0, 1)[0];
-    var value = tokens.join('=');
-    if (key) {
-      params[key] = value;
-    }
-  });
-
-  return params;
-};
-
-common.setSearchParams = function(params) {
-  var pairs = [];
-  for(var key in params) {
-    pairs.push(key + '=' + params[key]);
-  }
-
-  window.location.search = '?' + pairs.join('&');
-};
-
-common.getSelectedLanguage = function() {
-  return common.getSearchParams()['lang'] || 'de';
-};
-
-common.setSelectedLanguage = function(language) {
-  var params = common.getSearchParams();
-  params['lang'] = language;
-  common.setSearchParams(params);
-};
-
-common.setLanguages = function(languages) {
-  common.languages = languages;
-};
-
-common.getStartDate = function() {
-  var pivot = window.calPivot || new Date();
-
-  function pad(number, spaces) {
-    var output = '';
-    for (var i = 0; i < spaces; i++) {
-      output += '0';
-    }
-    output += number;
-
-    return ([].splice.call(
-        output.split(''),
-        output.length - spaces,
-        spaces)).join('');
-  }
-
-  return [
-    pivot.getFullYear(),
-    pad(pivot.getMonth() + 1, 2),
-    pad(pivot.getDate(), 2)
-  ].join('-');
-};
-
-function RightColumnCtrl($scope, $http) {
-  $scope.tags = [];
-  $http.get('/maps/data?type=tags').success(function(data) {
-	  $scope.tags = data.tags;
-  });
-  
-  $scope.showPopup = function(elemId) {
-    var elem = document.getElementById(elemId);
-    if (elem != null) {
-      elem.style.display = "block";
-    } else {
-      console.log("Cannot show popup: " + elemId);
-    }
-  }
-
-  $scope.hidePopup = function(elemId) {
-    var elem = document.getElementById(elemId);
-    if (elem != null) {
-      elem.style.display = "none";
-    } else {
-      console.log("Cannot hide popup: " + elemId);
-    }
-  }
-
-  $scope.getLanguages = function() {
-    return common.languages;
-  }
-  common.languages.forEach(function(language) {
-	  if (language.code == common.getSelectedLanguage()) {
-		  $scope.selectedLang = language;
-	  }
-  })
-  $scope.register = function() {
-      var params = [
-        'lang=' + $scope.selectedLang.code,
-        'name=' + $scope.name,
-        'email=' + $scope.email
-      ];
-	  
-	  var url = '/maps/subscribe?' + params.join('&');
-		$http.get(url).success(function(data) {
-		    if (data.status == "ok") {
-		      $scope.name = "";
-		      $scope.email = "";
-		      alert(data.message);
-		    } else {
-		      alert("Error: " + data.message);
-		    }
-		});	  
-  }
+var dateToString = function(date) {
+  var dd = date.getDate();
+  var mm = date.getMonth() + 1;  // January is 0.
+  var yyyy = date.getFullYear();
+  if(dd < 10) { dd = '0' + dd; }
+  if(mm < 10) { mm = '0' + mm; } 
+  return yyyy + '-' + mm + '-' + dd;    
 }
+
+
+var mapsApp = angular.module('mapsApp', ['ui.router', 'ngSanitize']);
+
+// Small service to keep the date between state transitions. For example,
+// when coming back to the events after looking at the contacts, the selected
+// date remains the same and does not jump back to the current day.
+mapsApp.service('dateKeeper', function() {
+  this.date = new Date();
+  this.getDate = function() { return this.date; }
+  this.setDate = function(new_date) { this.date = new Date(new_date); }
+});
+
+mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang, 
+                                         languages, phrases, tags) {
+  $scope.lang = lang;
+  $scope.newsletter_lang = lang;
+	$scope.languages = languages;	
+	$scope.phrases = phrases;
+  $scope.tags = tags;
+
+  var html = document.body.parentNode;
+  html.setAttribute('lang', lang);
+  
+  $scope.updateLang = function(new_lang) {
+    var path = $location.path();
+    if (new_lang == null)
+      $location.path(path.replace(/^.../, '/' + $scope.lang));
+    else
+      $location.path(path.replace(/^.../, '/' + new_lang));
+  }
+  $scope.register = function() {
+    var params = [
+      'lang=' + $scope.newsletter_lang,
+      'name=' + $scope.name,
+      'email=' + $scope.email
+    ];
+    var url = '/maps/subscribe?' + params.join('&');
+    $http.get(url).success(function(data) {
+      if (data.status == "ok") {
+        $scope.name = "";
+        $scope.email = "";
+        alert(data.message);
+      } else {
+        alert("Error: " + data.message);
+      }
+    });   
+  }
+
+  // Hack for long names. Tell the renderer that it can break after a '/'.
+  // Also check that the language is supported. If not, redirect to 'de'.
+  var found = false;
+  for (var i = 0; i < $scope.languages.length; ++i) {
+    var l = $scope.languages[i];
+    l.name_br = l.name.replace(/\//g, '/&#x200b;');
+    if (l.code == lang) {
+      found = true;
+      html.setAttribute('dir', l.isRtl? 'rtl' : 'ltr');
+    }
+  }
+  if (!found) $scope.updateLang('de');
+});
+
+mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events, dateKeeper) {
+  if (!date) {
+    $location.search('date', dateToString(dateKeeper.getDate()));
+    return;
+  }
+  $scope.lang = lang;
+  $scope.events = events;
+  $scope.date_str = date;
+  $scope.date = new Date($scope.date_str.replace(/[-]/g, '/'));
+  $scope.pivot = new Date($scope.date);
+  $scope.pivot.setDate(1);
+  dateKeeper.setDate($scope.date);
+  
+  $scope.printDate = function(dateStr) {
+    var date = new Date(dateStr);
+    if (lang == "ma")
+      return (date.getMonth() + 1) + '.' + date.getDate() + '.';
+    else
+      return date.getDate() + '.' + (date.getMonth() + 1) + '.';
+  };
+
+  $scope.printDate2 = function(dateStr) {
+    if (!dateStr) return '';
+    var date = new Date(dateStr);
+    var month = $scope.phrases[MONTHS_SHORT[date.getMonth()]];
+    if (!month) 
+      return $scope.printDate(dateStr);
+    else if (lang == "ma") 
+      return month + ' ' + date.getDate();
+    else 
+      return date.getDate() + ' ' + month;
+  };
+
+  $scope.printDay = function(dateStr) {
+    var date = new Date(dateStr);
+    return DAYS_OF_WEEK_LONG[date.getDay()];
+  };
+
+  $scope.showPreviousEvents = function() {
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() - 1);
+    $location.search('date', dateToString(new_date));
+  }
+  $scope.showNextEvents = function() {
+    var new_date = new Date($scope.date);
+    new_date.setMonth($scope.date.getMonth() + 1);
+    $location.search('date', dateToString(new_date));
+  }
+  
+  $scope.getDaysInMonth = function() {
+    return new Date($scope.pivot.getYear(), $scope.pivot.getMonth() + 1, 0).getDate();
+  };
+
+  $scope.movePivotForward = function() {
+    $scope.pivot.setMonth($scope.pivot.getMonth() + 1);
+    $scope.renderCalendar();
+  };
+
+  $scope.movePivotBack = function() {
+    $scope.pivot.setMonth($scope.pivot.getMonth() - 1);
+    $scope.renderCalendar();
+  };
+
+  $scope.renderCalendar = function() {
+    $scope.strings = DAYS_OF_WEEK_SHORT;
+    var currentWeek = [];
+    var new_weeks = [currentWeek];
+    for (var i = 0; i < $scope.getDaysInMonth(); i++) {
+      var date = new Date($scope.pivot);
+      date.setDate(i + 1);
+
+      var day = date.getDay();
+
+      // Add padding if the month doesn't begin on a Monday.
+      for (var k = 1; i == 0 && k < (day > 0 ? day : 7); k++) {
+        currentWeek.push('');
+      }
+
+      // Wrap to the next week.
+      if ((day - 1) % 7 == 0) {
+        currentWeek = [];
+        new_weeks.push(currentWeek);
+      }
+
+      currentWeek.push(i + 1);
+    }
+    $scope.weeks = new_weeks;
+  };
+
+  $scope.getMonth = function() {
+    return MONTHS[$scope.pivot.getMonth()];
+  }
+
+  $scope.isSelected = function(day) {
+    var d = new Date($scope.pivot);
+    d.setDate(day);
+    if ($scope.date.toDateString() == d.toDateString()) {
+      return 'selected';
+    } else {
+      return 'background-color';
+    }
+  }
+
+  $scope.selectDate = function(day) {
+    var date = new Date($scope.pivot);
+    date.setDate(day);
+    $location.search('date', dateToString(date));
+  }
+});
+
+mapsApp.config(['$stateProvider', '$urlRouterProvider',
+  function ($stateProvider, $urlRouterProvider) {
+  	$stateProvider
+  	  // Parent state that loads the languages and phrases for the entire site. 
+  	  .state('main', {
+        'abstract': true,
+        'url': '/{lang:[a-z][a-z]}',
+        'templateUrl': 'main.html',
+        'resolve': {
+          'lang': ['$stateParams', function($stateParams) {
+            return $stateParams.lang;
+          }],
+          'languages': function($http) {
+            return $http({'method': 'GET', 'url': '/maps/data?type=languages'})
+              .then (function (data) {
+                return data.data.languages;
+              }
+            );
+          },
+          'phrases': function($http, lang) {
+            return $http({'method': 'GET', 
+                          'url': '/maps/data?type=phrases&lang=' + lang})
+              .then (function (data) {
+                return data.data.phrases;
+              }
+            );         
+          },
+          'tags': function($http) {
+            return $http({'method': 'GET', 'url': '/maps/data?type=tags'})
+              .then (function (data) {
+                return data.data.tags;
+              }
+            );          
+          }
+        },
+  		  'controller': "MainCtrl"
+      })
+      .state('main.events', {
+        'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
+        'templateUrl': 'events.html',
+        'resolve': {
+          'date': ['$stateParams', function($stateParams) {
+            return $stateParams.date;
+          }],
+          'events': function($http, lang, date) {
+            var params = [
+              'type=events',
+              'lang=' + lang,
+              'month=' + date
+            ];
+            return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
+              .then (function (data) {
+                return data.data.events;
+              }
+            );          
+          }
+        },
+        controller: 'EventsCtrl'
+      })
+      .state('main.about', {
+        url: '/about',
+        templateProvider: function($templateFactory, $stateParams) {
+          // First try to load the about page for the requested language.
+          var templateUrl = 'about/' + $stateParams.lang + '.html';
+          return $templateFactory.fromUrl(templateUrl).then(
+            function (data) { return data; },
+            function (reason) { 
+              // If not available, return the German about page. 
+              return $templateFactory.fromUrl('about/de.html'); 
+          });
+        }
+      })
+      .state('main.contact', {
+        url: '/contact',
+        templateUrl: 'contact.html'        
+      })
+      .state('main.impressum', {
+        url: '/impressum',
+        templateUrl: 'impressum.html'        
+      });
+    $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
+      return $match + '/events';
+    }])
+    $urlRouterProvider.otherwise('/de/events');
+  }]
+);

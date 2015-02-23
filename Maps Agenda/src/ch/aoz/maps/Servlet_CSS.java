@@ -11,7 +11,7 @@ public class Servlet_CSS extends HttpServlet {
       String color = BackgroundColor.fetchFromStore().getColor();
       String image = BackgroundImage.fetchFromStore().getUrl();
       if (image == null || image.equals("")) {
-        image = "/maps2/images/temp-bg.png";
+        image = "/maps/images/temp-bg.png";
       } else {
         image += "=s1280";
       }

@@ -34,7 +34,7 @@ body {
 
 .section-div {
   background-color: rgba(0, 0, 0, .2);
-  background-image: url('/maps2/images/perforated_band_1.png');
+  background-image: url('/maps/images/perforated_band_1.png');
   background-position: center;
   background-repeat: repeat-x;
   background-size: 12px;
@@ -232,7 +232,7 @@ url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCS
 }
 
 .newsletter .section-div {
-  background: url('/maps2/images/perforated_band_2.png');
+  background: url('/maps/images/perforated_band_2.png');
   padding: 0;
   repeat-x scroll;
 }

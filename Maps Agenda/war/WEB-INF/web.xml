@@ -7,15 +7,15 @@
   </servlet>
   <servlet-mapping>
      <servlet-name>Servlet_CSS</servlet-name>
-     <url-pattern>/maps2/css/look_and_feel.css</url-pattern>
+     <url-pattern>/maps/css/look_and_feel.css</url-pattern>
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>Maps_Events</servlet-name>
+    <servlet-name>Servlet_Data</servlet-name>
     <servlet-class>ch.aoz.maps.Maps_DataServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Maps_Events</servlet-name>
+    <servlet-name>Servlet_Data</servlet-name>
     <url-pattern>/maps/data</url-pattern>
   </servlet-mapping>
 
