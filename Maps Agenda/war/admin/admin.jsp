@@ -34,7 +34,6 @@
         <div class="menu_item" id="languages">Supported languages</div>
         <div class="menu_item" id="phrases">Translations</div>
         <div class="menu_item" id="events">Events</div>
-        <div class="menu_item" id="generate">Generate XML</div>
         <div class="menu_item" id="send_newsletter">Send newsletter</div>
       </div>
       <div id="content">

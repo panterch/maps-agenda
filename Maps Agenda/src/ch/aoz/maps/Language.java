@@ -16,39 +16,39 @@ public class Language implements Comparable<Language>, java.io.Serializable {
    * Two-letter code for the language, such as en, de, or fr.
    */
   private final String code;
-  public static final String codeProperty = "code";
+
   /**
    * Name as written in the language.
    */
   private final String name;
-  public static final String nameProperty = "name";
+
   /**
    * Name as written in German.
    */
   private final String germanName;
-  public static final String germanNameProperty = "germanName";
+
   /**
    * List of the abbreviations of the 7 days of the week, starting with Sunday.
    */
   private final List<String> abbreviatedDays;
-  public static final String abbreviatedDaysProperty = "abbreviatedDays";
+
   /**
    * True if the language is written from right to left, false otherwise.
    */
   private final boolean rightToLeft;
-  public static final String rightToLeftProperty = "rightToLeft";
+
   /**
    * True if the language appears in the Maps Agenda. This can be used to test
    * new languages and is used in the UI to pre-populate which languages are
    * selected by default.
    */
   private final boolean inAgenda;
-  public static final String inAgendaProperty = "inAgenda";
+
   /**
    * True if this language requires specific formatting in the Maps Agenda.
    */
   private final boolean hasSpecificFormat;
-  public static final String hasSpecificFormatProperty = "hasSpecificFormat";
+
   /**
    * True if this language is well defined, i.e. has all its fields properly
    * filled.
