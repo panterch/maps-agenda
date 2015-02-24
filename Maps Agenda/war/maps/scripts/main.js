@@ -59,23 +59,6 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
     else
       $location.path(path.replace(/^.../, '/' + new_lang));
   }
-  $scope.register = function() {
-    var params = [
-      'lang=' + $scope.newsletter_lang,
-      'name=' + $scope.name,
-      'email=' + $scope.email
-    ];
-    var url = '/maps/subscribe?' + params.join('&');
-    $http.get(url).success(function(data) {
-      if (data.status == "ok") {
-        $scope.name = "";
-        $scope.email = "";
-        alert(data.message);
-      } else {
-        alert("Error: " + data.message);
-      }
-    });   
-  }
 
   // Hack for long names. Tell the renderer that it can break after a '/'.
   // Also check that the language is supported. If not, redirect to 'de'.

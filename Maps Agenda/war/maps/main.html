@@ -38,15 +38,18 @@
     <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
   </ul>
   
-  <form name="newsletter-form" ng-submit="register()" class="newsletter">
+  <form name="newsletter-form" action="http://maps-agenda.us10.list-manage.com/subscribe/post" class="newsletter">
 	  <h3>{{phrases.Newsletter}}</h3>
 	  <div class="section-div"></div>
 	  <div class="newsletter-text">
 	    <span>{{phrases.AnmeldungNewsletter}}</span>
       <select ng-model="newsletter_lang" 
-              ng-options="l.code as l.name for l in languages"></select>
-      <input ng-model="name" type="text" placeholder="Name" required>
-      <input ng-model="email" type="email" placeholder="Email address" required>
+              ng-options="l.code as l.name for l in languages" name="LANGUAGE_TEMP"></select>
+      <input type="hidden" name="LANGUAGE" value="{{newsletter_lang}}">
+      <input type="hidden" name="u" value="ac690be4e63cb29f638cb9529">
+      <input type="hidden" name="id" value="2da59c6f92">
+      <input ng-model="name" type="text" name="NAME" placeholder="Name" required>
+      <input ng-model="email" type="email" name="EMAIL" placeholder="Email address" required>
 	  </div>
 	  <div class="section-div"></div>
 	  <div>
