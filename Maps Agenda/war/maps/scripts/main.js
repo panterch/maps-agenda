@@ -62,6 +62,7 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
 
   // Hack for long names. Tell the renderer that it can break after a '/'.
   // Also check that the language is supported. If not, redirect to 'de'.
+  // Finally, set the rtl or ltr rendering.
   var found = false;
   for (var i = 0; i < $scope.languages.length; ++i) {
     var l = $scope.languages[i];
@@ -74,12 +75,11 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
   if (!found) $scope.updateLang('de');
 });
 
-mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events, dateKeeper) {
+mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, dateKeeper) {
   if (!date) {
     $location.search('date', dateToString(dateKeeper.getDate()));
     return;
   }
-  $scope.lang = lang;
   $scope.events = events;
   $scope.date_str = date;
   $scope.date = new Date($scope.date_str.replace(/[-]/g, '/'));
@@ -88,8 +88,8 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events
   dateKeeper.setDate($scope.date);
   
   $scope.printDate = function(dateStr) {
-    var date = new Date(dateStr);
-    if (lang == "ma")
+    var date = new Date(dateStr.replace(/[-]/g, '/'));
+    if ($scope.lang == "ma")
       return (date.getMonth() + 1) + '.' + date.getDate() + '.';
     else
       return date.getDate() + '.' + (date.getMonth() + 1) + '.';
@@ -97,11 +97,11 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events
 
   $scope.printDate2 = function(dateStr) {
     if (!dateStr) return '';
-    var date = new Date(dateStr);
+    var date = new Date(dateStr.replace(/[-]/g, '/'));
     var month = $scope.phrases[MONTHS_SHORT[date.getMonth()]];
     if (!month) 
       return $scope.printDate(dateStr);
-    else if (lang == "ma") 
+    else if ($scope.lang == "ma") 
       return month + ' ' + date.getDate();
     else 
       return date.getDate() + ' ' + month;
@@ -111,7 +111,20 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, lang, date, events
     var date = new Date(dateStr);
     return DAYS_OF_WEEK_LONG[date.getDay()];
   };
-
+  $scope.printFirstDate = function() {
+    if ($scope.events.length == 0) {
+      return $scope.printDate2($scope.date_str);
+    } else {
+      return $scope.printDate2($scope.events[0].date);
+    }
+  }
+  $scope.printLastDate = function() {
+    if ($scope.events.length == 0) {
+      return $scope.printDate2($scope.date_str);
+    } else {
+      return $scope.printDate2($scope.events[$scope.events.length - 1].date);
+    }
+  }
   $scope.showPreviousEvents = function() {
     var new_date = new Date($scope.date);
     new_date.setMonth($scope.date.getMonth() - 1);
