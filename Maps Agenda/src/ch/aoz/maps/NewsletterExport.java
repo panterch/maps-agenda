@@ -48,7 +48,8 @@ public class NewsletterExport {
   private StringBuilder out;
   
   /**
-   * @param events Displayed events, should be translated in the given language.
+   * @param eventsDe Events object containing the events with German descriptions to display. 
+   * @param eventsLang Events object containing the same events as eventDe, but in a different language.
    * @param lang Second (non-german) language for events, null for german.
    * @param urlRoot Root page that all served pages are relative to.
    * @param themeId ID of the theme, used for locating resources in static/themes.
