@@ -270,6 +270,12 @@ url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCS
   position: absolute;
   text-transform: uppercase;
   width: 120px;
+  height: 15px;
+}
+
+.no-bg-image {
+  background-image: none !important;  
+  cursor: default !important;
 }
 
 .event-nav > .prev {
@@ -291,11 +297,6 @@ url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAA3NCSV
   right: 0;
   text-align: left;
   top: 0;
-}
-
-.event-nav > .prev > div,
-.event-nav > .next > div {
-  font-size: .4em !important;
 }
 
 .event-nav .date {
