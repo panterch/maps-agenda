@@ -88,11 +88,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     $scope.events[i].date = $scope.events[i].date.replace(/[-]/g, '/');
   }
   
-  if ($scope.events.length > 0) {
-    $scope.date_str = $scope.events[0].date;
-  } else {
-    $scope.date_str = date.replace(/[-]/g, '/');
-  }  
+  $scope.date_str = date.replace(/[-]/g, '/');
   $scope.date = new Date($scope.date_str);
   $scope.pivot = new Date($scope.date);
   // $scope.pivot.setDate(1);
@@ -127,6 +123,12 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
       return $scope.printDate2($scope.date_str);
     return $scope.printDate2($scope.events[0].date);
   }
+  $scope.canGoBack = function() {
+    return true;
+  }
+  $scope.canGoForward = function() {
+    return true;    
+  }
   $scope.printLastDate = function() {
     if ($scope.events.length == 0)
       return $scope.printDate2($scope.date_str);
@@ -139,10 +141,10 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
       new_date.setDate(new_date.getDate() - 1);
     } else if ($location.search().back == null) {
       new_date = new Date($scope.date);
-      new_date.setMonth($scope.date.getMonth() - 1);      
+      new_date.setDate($scope.date.getDate() - 1);      
     } else {
       new_date = new Date($scope.date);
-      new_date.setMonth($scope.date.getMonth() - 15);      
+      new_date.setDate($scope.date.getDate() - 15);      
     }
     $location.search('date', dateToString(new_date));
     $location.search('back', true);
@@ -221,6 +223,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     var date = new Date($scope.pivot);
     date.setDate(day);
     $location.search('date', dateToString(date));
+    $location.search('back', null);
   }
 });
 
@@ -262,17 +265,21 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   		  'controller': "MainCtrl"
       })
       .state('main.events', {
-        'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}',
+        'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}&back',
         'templateUrl': 'events.html',
         'resolve': {
           'date': ['$stateParams', function($stateParams) {
             return $stateParams.date;
           }],
-          'events': function($http, lang, date) {
+          'back': ['$stateParams', function($stateParams) {
+            return $stateParams.back != null;
+          }],
+          'events': function($http, lang, date, back) {
             var params = [
               'type=events',
               'lang=' + lang,
-              'date=' + date
+              'date=' + date,
+              back? "back" : ""
             ];
             return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
               .then (function (data) {

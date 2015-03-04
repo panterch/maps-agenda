@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,9 +86,8 @@ public class Maps_DataServlet extends HttpServlet {
     if (lang == null) {
       lang = Language.GetByCode(req.getParameter("de"));
     }
-
+    
     boolean forward = (req.getParameter("back") == null);
-
     Calendar start_date = Calendar.getInstance();
     String requested_date = req.getParameter("date");
     if (requested_date != null) {
