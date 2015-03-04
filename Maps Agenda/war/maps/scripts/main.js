@@ -76,16 +76,23 @@ mapsApp.controller('MainCtrl', function ($scope, $location, $http, lang,
 });
 
 mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, dateKeeper) {
+  // If there is no date in the URL, set the date from the keeper.
   if (!date) {
     $location.search('date', dateToString(dateKeeper.getDate()));
     return;
   }
+
   $scope.events = events;
   // Fix the date format for IE 8.
   for (var i = 0; i < $scope.events.length; i++) {
     $scope.events[i].date = $scope.events[i].date.replace(/[-]/g, '/');
   }
-  $scope.date_str = date.replace(/[-]/g, '/');
+  
+  if ($scope.events.length > 0) {
+    $scope.date_str = $scope.events[0].date;
+  } else {
+    $scope.date_str = date.replace(/[-]/g, '/');
+  }  
   $scope.date = new Date($scope.date_str);
   $scope.pivot = new Date($scope.date);
   // $scope.pivot.setDate(1);
@@ -125,21 +132,35 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
       return $scope.printDate2($scope.date_str);
     return $scope.printDate2($scope.events[$scope.events.length - 1].date);
   }
-  $scope.canGoBack = function() {
-    return !($scope.events.length == 0 && $scope.date < new Date());
-  }
-  $scope.canGoForward = function() {
-    return !($scope.events.length == 0 && $scope.date > new Date());
-  }
   $scope.showPreviousEvents = function() {
-    var new_date = new Date($scope.date);
-    new_date.setMonth($scope.date.getMonth() - 1);
+    var new_date;
+    if ($scope.events.length > 0) {
+      new_date = new Date($scope.events[0].date);
+      new_date.setDate(new_date.getDate() - 1);
+    } else if ($location.search().back == null) {
+      new_date = new Date($scope.date);
+      new_date.setMonth($scope.date.getMonth() - 1);      
+    } else {
+      new_date = new Date($scope.date);
+      new_date.setMonth($scope.date.getMonth() - 15);      
+    }
     $location.search('date', dateToString(new_date));
+    $location.search('back', true);
   }
   $scope.showNextEvents = function() {
-    var new_date = new Date($scope.date);
-    new_date.setMonth($scope.date.getMonth() + 1);
+    var new_date;
+    if ($scope.events.length > 0) {
+      new_date = new Date($scope.events[$scope.events.length - 1].date);
+      new_date.setDate(new_date.getDate() + 1);
+    } else if ($location.search().back == null) {
+      new_date = new Date($scope.date);
+      new_date.setDate(new_date.getDate() + 15);
+    } else {
+      new_date = new Date($scope.date);
+      new_date.setDate(new_date.getDate() + 1);
+    }
     $location.search('date', dateToString(new_date));
+    $location.search('back', null);
   }
   
   $scope.getDaysInMonth = function() {
