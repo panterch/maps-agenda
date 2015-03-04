@@ -1,7 +1,9 @@
- <div class="event-nav">
-  <div ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
+<div class="event-nav">
+  <div ng-if="!canGoBack()" class="prev no-bg-image"></div>
+  <div ng-if="canGoBack()" ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
   <span class="date"><bdi>{{printFirstDate()}}</bdi> - <bdi>{{printLastDate()}}</bdi></span>
-  <div ng-click="showNextEvents()" class="next">{{phrases.Spaeter}}</div>
+  <div ng-if="!canGoForward()" class="next no-bg-image"></div>
+  <div ng-if="canGoForward()" ng-click="showNextEvents()" class="next">{{phrases.Spaeter}}</div>
 </div>
 
 <div class="section-div"></div>

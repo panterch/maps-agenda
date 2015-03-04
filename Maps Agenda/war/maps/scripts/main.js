@@ -125,6 +125,12 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
       return $scope.printDate2($scope.events[$scope.events.length - 1].date);
     }
   }
+  $scope.canGoBack = function() {
+    return !($scope.events.length == 0 && $scope.date < new Date());
+  }
+  $scope.canGoForward = function() {
+    return !($scope.events.length == 0 && $scope.date > new Date());
+  }
   $scope.showPreviousEvents = function() {
     var new_date = new Date($scope.date);
     new_date.setMonth($scope.date.getMonth() - 1);
