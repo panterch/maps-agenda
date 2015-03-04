@@ -2,6 +2,7 @@ package ch.aoz.maps;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -84,12 +85,11 @@ public class Maps_DataServlet extends HttpServlet {
       }
       
       Calendar date = Calendar.getInstance();
-      String requested_date = req.getParameter("month");
+      String requested_date = req.getParameter("date");
       if (requested_date != null) {
         try {
           date.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
       }
       // Set the time at midnight, so that the below query stays the same.
       date.set(Calendar.MILLISECOND, 0);
@@ -97,11 +97,28 @@ public class Maps_DataServlet extends HttpServlet {
       date.set(Calendar.MINUTE, 0);
       date.set(Calendar.HOUR_OF_DAY, 0);
 
+      int numEvents = 15;
+      if (req.getParameter("num_events") != null) {
+        try {
+          numEvents = Integer.parseInt(req.getParameter("num_events"));
+        }
+        catch (Exception e) {}
+      }
+      
       Events events = Events.getEvents(date, lang.getCode());
+      ArrayList<Event> eventList = new ArrayList<>();
+      Calendar lastDate = date;
+      for (Event e : events.getSortedEvents()) {
+        if ((e.getCalendar().after(date) && eventList.size() < numEvents) ||
+            (e.getCalendar().equals(lastDate))) {
+          eventList.add(e);
+          lastDate = e.getCalendar();
+        }
+      }
       
       StringBuilder response = new StringBuilder();
       response.append("{ \"events\": [");
-      for (Event e : events.getSortedEvents()) {
+      for (Event e : eventList) {
         EventDescription d = e.getDescription();
         if (d != null) {
           response.append("{");

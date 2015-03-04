@@ -81,14 +81,18 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     return;
   }
   $scope.events = events;
-  $scope.date_str = date;
-  $scope.date = new Date($scope.date_str.replace(/[-]/g, '/'));
+  // Fix the date format for IE 8.
+  for (var i = 0; i < $scope.events.length; i++) {
+    $scope.events[i].date = $scope.events[i].date.replace(/[-]/g, '/');
+  }
+  $scope.date_str = date.replace(/[-]/g, '/');
+  $scope.date = new Date($scope.date_str);
   $scope.pivot = new Date($scope.date);
-  $scope.pivot.setDate(1);
+  // $scope.pivot.setDate(1);
   dateKeeper.setDate($scope.date);
-  
+      
   $scope.printDate = function(dateStr) {
-    var date = new Date(dateStr.replace(/[-]/g, '/'));
+    var date = new Date(dateStr);
     if ($scope.lang == "ma")
       return (date.getMonth() + 1) + '.' + date.getDate() + '.';
     else
@@ -97,7 +101,7 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
 
   $scope.printDate2 = function(dateStr) {
     if (!dateStr) return '';
-    var date = new Date(dateStr.replace(/[-]/g, '/'));
+    var date = new Date(dateStr);
     var month = $scope.phrases[MONTHS_SHORT[date.getMonth()]];
     if (!month) 
       return $scope.printDate(dateStr);
@@ -112,18 +116,14 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     return DAYS_OF_WEEK_LONG[date.getDay()];
   };
   $scope.printFirstDate = function() {
-    if ($scope.events.length == 0) {
+    if ($scope.events.length == 0) 
       return $scope.printDate2($scope.date_str);
-    } else {
-      return $scope.printDate2($scope.events[0].date);
-    }
+    return $scope.printDate2($scope.events[0].date);
   }
   $scope.printLastDate = function() {
-    if ($scope.events.length == 0) {
+    if ($scope.events.length == 0)
       return $scope.printDate2($scope.date_str);
-    } else {
-      return $scope.printDate2($scope.events[$scope.events.length - 1].date);
-    }
+    return $scope.printDate2($scope.events[$scope.events.length - 1].date);
   }
   $scope.showPreviousEvents = function() {
     var new_date = new Date($scope.date);
@@ -245,7 +245,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
             var params = [
               'type=events',
               'lang=' + lang,
-              'month=' + date
+              'date=' + date
             ];
             return $http({method: 'GET', url: '/maps/data?' + params.join('&')})
               .then (function (data) {
