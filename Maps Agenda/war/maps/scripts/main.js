@@ -124,10 +124,14 @@ mapsApp.controller('EventsCtrl', function ($scope, $location, date, events, date
     return $scope.printDate2($scope.events[0].date);
   }
   $scope.canGoBack = function() {
-    return true;
+    if ($scope.events.length > 0)
+      return true;
+    return new Date($scope.date_str) > new Date();
   }
   $scope.canGoForward = function() {
-    return true;    
+    if ($scope.events.length > 0)
+      return true;
+    return new Date($scope.date_str) < new Date();
   }
   $scope.printLastDate = function() {
     if ($scope.events.length == 0)
