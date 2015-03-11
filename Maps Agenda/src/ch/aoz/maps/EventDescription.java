@@ -17,12 +17,18 @@ public class EventDescription implements java.io.Serializable {
   private boolean isOk;
   
   public EventDescription(String lang, String title, String desc) {
-    this.lang = lang;    
-    this.title = title;
-    this.desc = desc;
+    this.lang = lang;
     
-    if (title == null || title.isEmpty()) this.title = "";
-    if (desc == null || desc.isEmpty()) this.desc = "";
+    if (title == null || title.isEmpty()) {
+	this.title = "";
+    } else {
+	this.title = title.trim();
+    }
+    if (desc == null || desc.isEmpty()) {
+	this.desc = "";
+    } else {
+	this.desc = desc.trim();
+    }
     
     isOk = (lang != null && !lang.isEmpty());
   }
