@@ -168,30 +168,6 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   }
 });
 
-// Controller for the subscribers page.
-adminApp.controller('SubscriberCtrl', function ($scope, subscribers) {
-  $scope.subscribers = subscribers;
-  $scope.getLangName = function(lang) {
-    if (languages[lang] == null) {
-      return lang + " (unknown)";
-    } else {
-      return languages[lang].germanName;
-    }
-  }
-  $scope.remove = function(email) {
-    alert("Deletion capabilities coming soon.");
-    console.log("Delete email: " + email);
-  }
-  $scope.subs_filter = function(expr) {
-    return function(s) {
-      return !expr
-          || s.email.indexOf(expr) != -1 
-          || s.name.indexOf(expr) != -1
-          || $scope.getLangName(s.lang).indexOf(expr) != -1;
-    }
-  }
-});
-
 // Controller for the languages page.
 adminApp.controller('LanguageCtrl', function ($scope, languages) {
 	$scope.languages = languages;
@@ -246,7 +222,26 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
 });
 
 // Controller for the events page.
-adminApp.controller('EventCtrl', function ($scope) {});
+adminApp.controller('EventCtrl', function ($scope, month_str, events) {
+  $scope.monthToString = function(month) {
+    var mm = month.getMonth() + 1;  // January is 0.
+    var yyyy = month.getFullYear();
+    if(mm < 10) { mm = '0' + mm; } 
+    return yyyy + '-' + mm;    
+  }
+
+  if (month_str == null) {
+    $scope.month_str = $scope.monthToString(new Date())
+    $scope.date = $scope.month_str + "-01";
+    $scope.month = new Date($scope.date);
+  } else {
+    $scope.date = month_str + "-01";
+    $scope.month = new Date($scope.date);
+    $scope.month_str = $scope.monthToString($scope.month)
+  }
+  $scope.events = events;
+  
+});
 
 //Controller for the xml generation page.
 adminApp.controller('GenerateCtrl', function ($scope) {});
@@ -379,9 +374,24 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       controller: 'PhraseCtrl'
     })
 	  .state('events', {
-		  url: '/events',
+		  url: '/events/{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
       onEnter: function() { itemClick("events") },
 		  templateUrl: 'events.html',
+      resolve: {
+        month_str: ['$stateParams', function($stateParams) {
+          return $stateParams.month;
+        }],
+        events: function(month_str, $http) {
+          month = "";
+          if (month_str) {
+            month = "&month=" + month_str;
+          }
+          return $http({method: 'GET', url: '/admin/data?type=events' + month})
+            .then (function (data) {
+              return data.data.events;
+            });         
+        }
+      },
       controller: 'EventCtrl'
     })
 	  .state('generate', {
@@ -425,7 +435,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       controller: 'NewsletterCtrl'
     })
     $urlRouterProvider.when(/\/translations\/?/, '/translations/de');
-    $urlRouterProvider.otherwise('/');
+    // $urlRouterProvider.otherwise('/');
   }]
 );
 

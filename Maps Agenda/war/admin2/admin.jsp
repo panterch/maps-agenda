@@ -33,7 +33,6 @@
       <div id="menu">
         <div id="menu_selector"></div>
         <div class="menu_item" id="translators" ui-sref="translators">Translators</div>
-        <div class="menu_item" id="subscribers" ui-sref="subscribers">Newsletter subscribers</div>
         <div class="menu_item" id="languages" ui-sref="languages">Supported languages</div>
         <div class="menu_item" id="phrases" ui-sref="phrases({lang: 'de'})">Translations</div>
         <div class="menu_item" id="events" ui-sref="events">Events</div>

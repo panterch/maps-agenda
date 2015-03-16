@@ -66,14 +66,14 @@ public class Maps_AdminDataServlet extends HttpServlet {
     private String getEvents(HttpServletRequest req) {
       Language lang = Language.GetByCode(req.getParameter("lang"));
       if (lang == null) {
-        lang = Language.GetByCode(req.getParameter("de"));
+        lang = Language.GetByCode("de");
       }
       
       Calendar date = Calendar.getInstance();
       String requested_date = req.getParameter("month");
       if (requested_date != null) {
         try {
-          date.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(requested_date));
+          date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
         } catch (Exception e) {
         }
       }
@@ -82,6 +82,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
       date.set(Calendar.SECOND, 0);
       date.set(Calendar.MINUTE, 0);
       date.set(Calendar.HOUR_OF_DAY, 0);
+      date.set(Calendar.DATE, 1);
 
       Events events = Events.getEvents(date, lang.getCode());
       
@@ -96,8 +97,15 @@ public class Maps_AdminDataServlet extends HttpServlet {
           response.append("\"description\":\"").append(Utils.toUnicode(d.getDesc())).append("\",");
           response.append("\"location\":\"").append(Utils.toUnicode(e.getLocation())).append("\",");
           response.append("\"transit\":\"").append(Utils.toUnicode(e.getTransit())).append("\",");
-          response.append("\"url\":\"").append(Utils.toUnicode(e.getUrl())).append("\"");
-          response.append("},");
+          response.append("\"url\":\"").append(Utils.toUnicode(e.getUrl())).append("\",");
+          response.append("\"tags\": [");
+          for (String tag : e.getTags()) {
+            response.append("\"").append(Utils.toUnicode(tag)).append("\",");
+          }
+          if (response.charAt(response.length() - 1) == ',') {
+            response.deleteCharAt(response.length() - 1);  // remove the last ,
+          }
+          response.append("]},");
         }
       }
       if (response.charAt(response.length() - 1) == ',') {
