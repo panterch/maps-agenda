@@ -4,36 +4,24 @@
     <div class="left"><button ng-click="edit('')">Add a new event</button></div>
     <div class="left">
       <button ng-click="previousMonth()">&lt;&lt;</button>
-      <input type="text" ng-model="month_str" ng-change="updateMonth()" />
+      <input type="text" ng-model="month_str" ng-change="updateMonth()" ng-pattern="month_regex" />
       <button ng-click="nextMonth()">&gt;&gt;</button>
     </div>
     <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
                                                   placeholder="Filter" /></div>
   </div>
-  <!-- 
-  <table id="table">
-    <tr>
-      <th>Key</th>
-      <th>Group</th>
-      <th>{{languages['de'].germanName}}</th>
-      <th ng-if="lang != 'de'">{{languages[lang].germanName}}</th>
-      <th>is tag?</th>
-      <th><img src="icons/trash.svg" width=16 height=16 title='Delete'"></th>
-    </tr>
-    <tr class="hover" ng-repeat="p in de_phrases | filter: p_filter(search) | orderBy: 'group'" 
-                      ng-click="edit(p.key)">
-      <td>{{p.key}}</td>
-      <td>{{p.group}}</td>
-      <td>{{p.phrase}}</td>
-      <td ng-if="lang != 'de'">{{getPhraseForKey(p.key)}}</td>
-      <td ng-switch="p.isTag">
-        <span ng-switch-when=true>&#10003;</span>
-        <span ng-switch-when=false>&#10007;</span>
-      </td>
-      <td class="red-hover" ng-click="remove(t.email); $event.stopPropagation()">
-        <img src="icons/trash.svg" width=16 height=16 title='Delete'>
-      </td>
-    </tr>
-  </table>
-   -->
+  <div class='event' ng-repeat="e in events | filter: search" ng-click="edit($index)">
+    <div ng-click="remove($index); $event.stopPropagation()">
+      <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+    </div>
+    <h2>{{e.title}}</h2>
+    <hr>
+    <p>{{e.description}}</p>
+    <hr>
+    <p><b>date: </b>{{e.date}}</p>
+    <p><b>@ </b>{{e.location}}</p>
+    <p><b>&#x21F9; </b>{{e.transit}}</p>
+    <p><b>&#x21D2; </b>{{e.utl}}</p>
+    <p><b>tags: </b>{{e.tags.join(", ")}}</p>
+  </div>
 </div>

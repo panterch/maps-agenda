@@ -26,6 +26,10 @@ button, input, select {
   vertical-align:middle;
 }
 
+input.ng-invalid {
+	border-color: red;
+}
+
 th {
   background-color: #ba7;
 }
@@ -228,4 +232,24 @@ th, td {
   background: #FF0000;
 }
 
+.event {
+  background-color: #ba7;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
 
+.event div {
+	float: right;
+}
+.event h2 {
+	margin: 0px;
+}
+
+.event p {
+  margin: 0px;
+}
+
+.event hr {
+  border: 1px solid #653;
+}

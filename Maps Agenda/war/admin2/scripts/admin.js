@@ -1,3 +1,10 @@
+monthToString = function(month) {
+  var mm = month.getMonth() + 1;  // January is 0.
+  var yyyy = month.getFullYear();
+  if(mm < 10) { mm = '0' + mm; } 
+  return yyyy + '-' + mm;    
+}
+
 // An item of the menu has been clicked.
 function itemClick(item_id) {
   // Move the selector.
@@ -222,25 +229,44 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
 });
 
 // Controller for the events page.
-adminApp.controller('EventCtrl', function ($scope, month_str, events) {
-  $scope.monthToString = function(month) {
-    var mm = month.getMonth() + 1;  // January is 0.
-    var yyyy = month.getFullYear();
-    if(mm < 10) { mm = '0' + mm; } 
-    return yyyy + '-' + mm;    
-  }
-
-  if (month_str == null) {
-    $scope.month_str = $scope.monthToString(new Date())
+adminApp.controller('EventCtrl', function ($scope, $location, month_str, events) {
+  if (month_str == null || month_str == '') {
+    $scope.month_str = monthToString(new Date())
     $scope.date = $scope.month_str + "-01";
     $scope.month = new Date($scope.date);
   } else {
     $scope.date = month_str + "-01";
     $scope.month = new Date($scope.date);
-    $scope.month_str = $scope.monthToString($scope.month)
+    $scope.month_str = monthToString($scope.month)
   }
   $scope.events = events;
-  
+  $scope.month_regex = /^[0-9]{4}-(0[0-9]|1[012])$/;
+  $scope.previousMonth = function() {
+    $scope.month.setMonth($scope.month.getMonth() - 1);
+    $scope.month_str = monthToString($scope.month)
+    $scope.date = $scope.month_str + "-01";
+    $location.search('month', $scope.month_str);    
+  }
+  $scope.nextMonth = function() {
+    $scope.month.setMonth($scope.month.getMonth() + 1);
+    $scope.month_str = monthToString($scope.month)
+    $scope.date = $scope.month_str + "-01";
+    $location.search('month', $scope.month_str);    
+  }
+  $scope.updateMonth = function() {
+    if ($scope.month_regex.test($scope.month_str) &&
+        $scope.month_str != monthToString($scope.month)) {
+      $scope.date = $scope.month_str + "-01";
+      $scope.month = new Date($scope.date);
+      $location.search('month', $scope.month_str);    
+    }
+  }
+  $scope.edit = function(index) {
+    console.log("Editing " + index)
+  }
+  $scope.remove = function(index) {
+    console.log("Removing " + index)
+  }
 });
 
 //Controller for the xml generation page.
@@ -374,7 +400,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       controller: 'PhraseCtrl'
     })
 	  .state('events', {
-		  url: '/events/{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
+		  url: '/events?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
       onEnter: function() { itemClick("events") },
 		  templateUrl: 'events.html',
       resolve: {

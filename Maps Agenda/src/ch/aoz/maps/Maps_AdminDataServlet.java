@@ -120,11 +120,11 @@ public class Maps_AdminDataServlet extends HttpServlet {
       Calendar c = Calendar.getInstance();
       c.setTime(d);
       return new StringBuilder()
-          .append(c.get(Calendar.MONTH) + 1)
-          .append('/')
-          .append(c.get(Calendar.DAY_OF_MONTH))
-          .append('/')
           .append(c.get(Calendar.YEAR))
+          .append('-')
+          .append(c.get(Calendar.MONTH) + 1)
+          .append('-')
+          .append(c.get(Calendar.DAY_OF_MONTH))
           .toString();
     }
     
