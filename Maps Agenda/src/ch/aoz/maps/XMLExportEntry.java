@@ -164,13 +164,13 @@ public class XMLExportEntry {
 			// TODO remove special hack for _ru.
 			xml += (language.getXMLFormatSupplement() == "_ru" ? language
 					.getXMLFormatSupplement() : "") + "\">";
-			xml += escapeXML(event.getLocation()) + " ";
+			xml += escapeXML(event.getLocation().trim()) + " ";
 			if (event.getTransit() != null && event.getTransit() != "") {
-			    xml += escapeXML(event.getTransit()) + " ";
+			    xml += escapeXML(event.getTransit().trim()) + " ";
 			}
 
 			if (event.getUrl() != null && event.getUrl() != "") {
-				xml += event.getUrl().replace("http://www", "www");
+				xml += event.getUrl().replace("http://www", "www").trim();
 			}
 			xml += "</Orttag>";
 		}
