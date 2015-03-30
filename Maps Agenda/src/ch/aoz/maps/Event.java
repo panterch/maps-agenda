@@ -67,9 +67,9 @@ public class Event implements Comparable<Event>, java.io.Serializable {
                String url, Set<String> tags) {
     this.key = key;
     this.hasKey = true;
-    this.location = (location != null ? location : "");
-    this.transit = (transit != null ? transit : "");
-    this.url = (url != null ? url : "");
+    this.location = (location != null ? location.trim() : "");
+    this.transit = (transit != null ? transit.trim() : "");
+    this.url = (url != null ? url.trim() : "");
     this.tags = new HashSet<String>();
     if (tags != null)
       this.tags.addAll(tags);
@@ -90,9 +90,9 @@ public class Event implements Comparable<Event>, java.io.Serializable {
                String url, Set<String> tags, EventDescription d) {
     this.key = 0;
     this.hasKey = false;
-    this.location = (location != null ? location : "");
-    this.transit = (transit != null ? transit : "");
-    this.url = (url != null ? url : "");
+    this.location = (location != null ? location.trim() : "");
+    this.transit = (transit != null ? transit.trim() : "");
+    this.url = (url != null ? url.trim() : "");
     this.tags = new HashSet<String>();
     if (tags != null)
       this.tags.addAll(tags);
