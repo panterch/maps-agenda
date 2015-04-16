@@ -1,1 +1,19 @@
-<h1>The newsletter page is under construction</h1>
+<div class='left top'>
+  <div class="title">Newsletters</div>
+  <div class="mb">
+    <div class="left">
+      <select ng-model="text" ng-change="updateLang(code)"
+              ng-options="code for (code, newsletter) in newsletters">
+      </select>
+    </div>
+    <div class="left">
+      <button ng-click="previousMonth()">&lt;&lt;</button>
+      <input type="text" ng-model="month_str" ng-change="updateMonth()" ng-pattern="month_regex" />
+      <button ng-click="nextMonth()">&gt;&gt;</button>
+    </div>
+  </div>
+  <div class='top'>
+    <p>Newsletter HTML:</p>
+    <textarea id="ta" name="ta_name" cols="80"></textarea>
+  </div>
+</div>

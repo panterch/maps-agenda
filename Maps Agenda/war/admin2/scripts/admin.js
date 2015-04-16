@@ -321,7 +321,52 @@ adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbna
 });
 
 //Controller for the send newsletter page.
-adminApp.controller('NewsletterCtrl', function ($scope) {});
+adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, newsletters) {
+  if (month_str == null || month_str == '') {
+    $scope.month_str = monthToString(new Date())
+    $scope.date = $scope.month_str + "-01";
+    $scope.month = new Date($scope.date);
+  } else {
+    $scope.date = month_str + "-01";
+    $scope.month = new Date($scope.date);
+    $scope.month_str = monthToString($scope.month)
+  }
+  
+  $scope.month_regex = /^[0-9]{4}-(0[0-9]|1[012])$/;
+  $scope.previousMonth = function() {
+    $scope.month.setMonth($scope.month.getMonth() - 1);
+    $scope.month_str = monthToString($scope.month)
+    $scope.date = $scope.month_str + "-01";
+    $location.search('month', $scope.month_str);    
+  }
+  $scope.nextMonth = function() {
+    $scope.month.setMonth($scope.month.getMonth() + 1);
+    $scope.month_str = monthToString($scope.month)
+    $scope.date = $scope.month_str + "-01";
+    $location.search('month', $scope.month_str);    
+  }
+  $scope.updateMonth = function() {
+    if ($scope.month_regex.test($scope.month_str) &&
+        $scope.month_str != monthToString($scope.month)) {
+      $scope.date = $scope.month_str + "-01";
+      $scope.month = new Date($scope.date);
+      $location.search('month', $scope.month_str);    
+    }
+  }
+  $scope.updateLang = function() {
+    document.getElementById('ta').value = $scope.text;
+  }
+  $scope.newsletters = newsletters;
+  $scope.all_text = '';
+  for (var lang in newsletters) {
+    $scope.all_text += '*|SPRACHE:' + lang + '|*';
+    $scope.all_text += newsletters[lang];
+    $scope.all_text += '*|END:SPRACHE|*';
+  }
+  $scope.newsletters['All languages'] = $scope.all_text;
+  $scope.text = $scope.newsletters['All languages'];
+  $scope.updateLang();  
+});
 
 adminApp.config(['$stateProvider', '$urlRouterProvider',
   function ($stateProvider,   $urlRouterProvider) {
@@ -455,9 +500,24 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       controller: 'LookNFeelCtrl'
     })
 	  .state('newsletter', {
-		  url: '/send_newsletter',
-      onEnter: function() { itemClick("send_newsletter") },
-		  templateUrl: 'newsletter.html',
+      url: '/newsletter_hack?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
+      onEnter: function() { itemClick("newsletter_hack") },
+      templateUrl: 'newsletter.html',
+      resolve: {
+        month_str: ['$stateParams', function($stateParams) {
+          return $stateParams.month;
+        }],
+        newsletters: function(month_str, $http) {
+          month = "";
+          if (month_str) {
+            month = "&month=" + month_str;
+          }
+          return $http({method: 'GET', url: '/admin/data?type=newsletter' + month})
+            .then (function (data) {
+              return data.data.newsletters;
+            });         
+        }
+      },
       controller: 'NewsletterCtrl'
     })
     $urlRouterProvider.when(/\/translations\/?/, '/translations/de');

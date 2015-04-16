@@ -12,6 +12,11 @@ html, body, #main { height: 96%; }
 .left {
   float: left;
   margin-right: 10px;
+  height: 100%;
+}
+
+.top {
+  height: 100%;
 }
 
 .right {
@@ -252,4 +257,11 @@ th, td {
 
 .event hr {
   border: 1px solid #653;
+}
+
+section {
+	height: 100%;
+}
+textarea {
+	height: 100%;
 }

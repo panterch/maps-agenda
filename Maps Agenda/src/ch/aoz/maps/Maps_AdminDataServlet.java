@@ -36,6 +36,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
         case "translators":
           response = getTranslators();
           break;
+        case "newsletter":
+          response = getNewsletters(req);
+          break;
       }
       if (response == null) {
         
@@ -200,6 +203,52 @@ public class Maps_AdminDataServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }      
       response.append("]}");
+      return response.toString();
+    }
+
+    public String getNewsletters(HttpServletRequest req) {
+      Calendar date = Calendar.getInstance();
+      String requested_date = req.getParameter("month");
+      if (requested_date != null) {
+        try {
+          date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
+        } catch (Exception e) {
+        }
+      }
+      // Set the time at midnight, so that the below query stays the same.
+      date.set(Calendar.MILLISECOND, 0);
+      date.set(Calendar.SECOND, 0);
+      date.set(Calendar.MINUTE, 0);
+      date.set(Calendar.HOUR_OF_DAY, 0);
+      date.set(Calendar.DATE, 1);
+
+      StringBuilder response = new StringBuilder();
+      response.append("{ \"newsletters\": {");
+
+      Set<Language> langs = Language.getAllLanguages();
+      Events eventsDe = Events.getEvents(date, "de");
+      String themeId = "1";
+      String baseUrl = "localhost".equals(req.getServerName()) ? 
+              "http://localhost:8888" : "http://www.maps-agenda.com";
+      
+      for (Language l : langs) {
+        Events eventsLang = null;
+        if (!l.getCode().equals("de")) {
+          eventsLang = (Events)eventsDe.clone();
+          eventsLang.loadDescriptions(l.getCode());
+        }
+        NewsletterExport exporter = new NewsletterExport(
+                eventsDe, eventsLang, l.getCode(),
+                baseUrl, themeId,
+                date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+                null /* subscriber, none for public render. */);
+        
+        response.append("\"" + l.getCode() + "\":\"" + Utils.toUnicode(exporter.render()) + "\",");
+      }
+      if (response.charAt(response.length() - 1) == ',') {
+        response.deleteCharAt(response.length() - 1);  // remove the last ,
+      }      
+      response.append("}}");
       return response.toString();
     }
 }
