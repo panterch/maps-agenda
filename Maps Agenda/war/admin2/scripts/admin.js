@@ -359,9 +359,9 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, ne
   $scope.newsletters = newsletters;
   $scope.all_text = '';
   for (var lang in newsletters) {
-    $scope.all_text += '*|SPRACHE:' + lang + '|*';
+    $scope.all_text += '*|IF:LANGUAGE=' + lang + '|*';
     $scope.all_text += newsletters[lang];
-    $scope.all_text += '*|END:SPRACHE|*';
+    $scope.all_text += '*|END:IF|*\n';
   }
   $scope.newsletters['All languages'] = $scope.all_text;
   $scope.text = $scope.newsletters['All languages'];
