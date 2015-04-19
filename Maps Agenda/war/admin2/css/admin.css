@@ -114,8 +114,14 @@ th {
 .modified {
   background-color: #ee4;
 }
+.deleted {
+  background-color: #f88;
+}
+.modified-hover:hover {
+  background-color: #bb0;
+}
 .red-hover:hover {
-  background-color: #c00;
+  background-color: #d33;
 }
 
 form p {
@@ -244,8 +250,8 @@ th, td {
   margin-bottom: 10px;
 }
 
-.event div {
-	float: right;
+.overflow {
+	overflow: auto;
 }
 .event h2 {
 	margin: 0px;
