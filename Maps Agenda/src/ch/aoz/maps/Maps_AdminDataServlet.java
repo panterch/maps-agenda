@@ -229,12 +229,12 @@ public class Maps_AdminDataServlet extends HttpServlet {
       Events eventsDe = Events.getEvents(date, "de");
       String themeId = "1";
       String baseUrl = "localhost".equals(req.getServerName()) ? 
-              "http://localhost:8888" : "http://www.maps-agenda.com";
+              "http://localhost:8888" : "http://www.maps-agenda.ch";
       
       for (Language l : langs) {
         Events eventsLang = null;
         if (!l.getCode().equals("de")) {
-          eventsLang = (Events)eventsDe.clone();
+          eventsLang = eventsDe.clone();
           eventsLang.loadDescriptions(l.getCode());
         }
         NewsletterExport exporter = new NewsletterExport(
