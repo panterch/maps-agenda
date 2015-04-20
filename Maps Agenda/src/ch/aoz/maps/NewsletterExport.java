@@ -201,9 +201,9 @@ public class NewsletterExport {
   private void renderEventSingleLanguage(Event eventDe) {
     EventDescription desc = eventDe.getDescription();
     
-    out.append("<div style='" + EVENT_CSS + "'>");
+    out.append("<table style='" + EVENT_CSS + "'>");
     
-    out.append("<div style='" + EVENT_SINGLE_CSS + "'>");
+    out.append("<tr><td style='" + EVENT_SINGLE_CSS + "'>");
     renderEventDetails(
         DATE_FORMATTER.format(eventDe.getDate()),
         desc.getTitle(), false, // All false, german isn't RTL.
@@ -211,9 +211,9 @@ public class NewsletterExport {
         eventDe.getLocation(),
         eventDe.getTransit(),
         eventDe.getUrl());
-    out.append("</div>");
+    out.append("</td></tr>");
     
-    out.append("</div>");
+    out.append("</table>");
   }
   
   /** Renders an event row, in German plus the desired language. */ 
@@ -222,10 +222,10 @@ public class NewsletterExport {
     EventDescription descLang = eventLang.getDescription();
     String date = DATE_FORMATTER.format(eventDe.getDate());
 
-    out.append("<div style='" + EVENT_CSS + "'>");
+    out.append("<tr style='" + EVENT_CSS + "'>");
     
     // Left column is always German translation.
-    out.append("<div style='" + EVENT_LEFT_CSS + "'>");
+    out.append("<td style='" + EVENT_LEFT_CSS + "'>");
     renderEventDetails(
         date,
         descDe.getTitle(), false, // All false, german isn't RTL.
@@ -233,8 +233,8 @@ public class NewsletterExport {
         eventDe.getLocation(),
         eventDe.getTransit(),
         eventDe.getUrl());
-    out.append("</div>");
-    out.append("<div style='" + EVENT_RIGHT_CSS + "'>");
+    out.append("</td>");
+    out.append("<td style='" + EVENT_RIGHT_CSS + "'>");
     renderEventDetails(
         date,
         descLang.getTitle(), language.isRightToLeft(),
@@ -242,10 +242,18 @@ public class NewsletterExport {
         eventDe.getLocation(),
         eventDe.getTransit(),
         eventDe.getUrl());
-    out.append("</div>");
+    out.append("</td>");
     
-    out.append("<div style='clear: both;'></div>");
-    out.append("</div>");
+    out.append("</tr>");
+  }
+  
+  /** Guesses a Google Maps link for the given location. 
+   *  Escapes all plain text portions that are returned. */
+  private String renderGoogleMapsLink(String location) {
+    return String.format(
+	"<a title='%s' href='https://www.google.ch/maps/search/%s,Zurich'>" +
+        "%s</a>",
+	ESCAPE_TEXT(location), ESCAPE_TEXT(location), ESCAPE_TEXT(location));
   }
 
   /** Renders just the details for one event in one language. */
@@ -260,7 +268,7 @@ public class NewsletterExport {
     out.append(String.format("<div style='%s'>%s</div>",
         rtlCss(DESC_CSS, isDescRtl), ESCAPE_TEXT(desc)));
     out.append(String.format("<p style='%s'>%s</p>",
-        rtlCss(LOCATION_CSS, false), ESCAPE_TEXT(location)));
+        rtlCss(LOCATION_CSS, false), renderGoogleMapsLink(location)));
     out.append(String.format("<p style='%s'>%s</p>",
 	rtlCss(TRANSIT_CSS, false), ESCAPE_TEXT(transit)));
     out.append(String.format("<p style='%s'>", 
