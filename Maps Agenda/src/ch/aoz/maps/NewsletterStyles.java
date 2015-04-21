@@ -86,6 +86,8 @@ public class NewsletterStyles {
   public static final String DISCLAIMER_CSS = join(
       "font-size:10px");
   
+  public static final String RIGHT_ALIGN_CSS = "text-align: right;";
+  
   public static final String RTL_CSS = "direction: rtl;";
 
   // Rules for styling the sections of each single event 

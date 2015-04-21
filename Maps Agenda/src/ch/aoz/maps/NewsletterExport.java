@@ -16,6 +16,7 @@ import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
 import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
 import static ch.aoz.maps.NewsletterStyles.MAKE_ABSOLUTE_LINK;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
+import static ch.aoz.maps.NewsletterStyles.RIGHT_ALIGN_CSS;
 import static ch.aoz.maps.NewsletterStyles.RTL_CSS;
 import static ch.aoz.maps.NewsletterStyles.TITLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.TRANSIT_CSS;
@@ -234,7 +235,8 @@ public class NewsletterExport {
         eventDe.getTransit(),
         eventDe.getUrl());
     out.append("</td>");
-    out.append("<td style='" + EVENT_RIGHT_CSS + "'>");
+    out.append("<td style='" +
+        rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + "'>");
     renderEventDetails(
         date,
         descLang.getTitle(), language.isRightToLeft(),
@@ -362,5 +364,9 @@ public class NewsletterExport {
   
   private static String rtlCss(String CSS, boolean isRtl) {
     return isRtl ? RTL_CSS + CSS : CSS;
+  }
+  
+  private static String rightAlignCss(String CSS, boolean isRightAlign) {
+      return isRightAlign ? RIGHT_ALIGN_CSS + CSS : CSS;
   }
 }
