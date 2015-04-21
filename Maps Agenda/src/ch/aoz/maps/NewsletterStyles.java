@@ -100,7 +100,7 @@ public class NewsletterStyles {
       "margin:15px 0 10px");
   public static final String TITLE_CSS = join(
       "color:#202020",
-      "display:inline",
+      "display:inline-block",
       "font-size:14px",
       "line-height:120%",
       "margin: 0",
