@@ -88,7 +88,9 @@ public class NewsletterStyles {
   
   public static final String RIGHT_ALIGN_CSS = "text-align: right;";
   
-  public static final String RTL_CSS = "direction: rtl;";
+  public static final String RTL_CSS = join(
+      "direction: rtl",
+      "text-align: right");
 
   // Rules for styling the sections of each single event 
   public static final String DATE_CSS = join(
@@ -100,7 +102,7 @@ public class NewsletterStyles {
       "margin:15px 0 10px");
   public static final String TITLE_CSS = join(
       "color:#202020",
-      "display:inline-block",
+      "display:block",
       "font-size:14px",
       "line-height:120%",
       "margin: 0",
@@ -130,8 +132,8 @@ public class NewsletterStyles {
   private static final String join(String... rules) {
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < rules.length; i++) {
-      if (i != 0) result.append(';');
       result.append(rules[i]);
+      result.append(";");
     }
     return result.toString();
   }
