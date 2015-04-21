@@ -59,7 +59,6 @@ public class NewsletterStyles {
       "padding: 5px 20px");
   
   public static final String EVENT_CSS = join(
-      "display:block",
       "margin:10px 0 15px 0");
   
   public static final String EVENT_LEFT_CSS = join(
