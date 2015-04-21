@@ -108,6 +108,7 @@ public class NewsletterStyles {
       "text-transform: uppercase");
   public static final String DESC_CSS = join(
       "color:#505050",
+      "display:block",
       "font-size:13px",
       "margin:5px 0 0 0");
   public static final String LOCATION_CSS = join(
