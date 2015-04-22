@@ -53,10 +53,16 @@ public class NewsletterStyles {
       "border:1px solid #DDDDDD",
       "font-family:Arial");
   
+  public static final String HEADER_IMG_CSS = join(
+      "width:600px",
+      "height:140px",
+      "text-color:#fff");
+  
   public static final String WHATS_UP_CSS = join(
       "margin-bottom:-15px",
       "font-style:italic",
-      "font-weight:bold");
+      "font-weight:bold",
+      "font-size:18px");
   
   public static final String EVENT_CSS = join(
       "margin:10px 0 15px 0");

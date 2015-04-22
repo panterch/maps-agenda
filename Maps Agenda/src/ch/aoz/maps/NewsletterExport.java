@@ -13,6 +13,7 @@ import static ch.aoz.maps.NewsletterStyles.EVENT_LEFT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_RIGHT_CSS;
 import static ch.aoz.maps.NewsletterStyles.EVENT_SINGLE_CSS;
 import static ch.aoz.maps.NewsletterStyles.FOOTER_CSS;
+import static ch.aoz.maps.NewsletterStyles.HEADER_IMG_CSS;
 import static ch.aoz.maps.NewsletterStyles.LOCATION_CSS;
 import static ch.aoz.maps.NewsletterStyles.MAKE_ABSOLUTE_LINK;
 import static ch.aoz.maps.NewsletterStyles.PREHEADER_CSS;
@@ -135,9 +136,10 @@ public class NewsletterExport {
       out.append("<td>");
       out.append("<img src='" + ESCAPE_ATTRIBUTE(aozHeaderUrl) +
           "' style='padding: 16px 16px 0' alt='AOZ'>");
-      out.append("<div style='background-color: #{{background_color}}'>" +
+      out.append("<div style='background-color: #{{background_color}};" +
+          HEADER_IMG_CSS + "'>" +
           "<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
-          "' style='width:100%' alt='MAPS Züri Agenda'></div>");
+          "' style='" + HEADER_IMG_CSS + "' alt='MAPS Züri Agenda'></div>");
       out.append("</td>");
       out.append("</tr>");
     endTable();

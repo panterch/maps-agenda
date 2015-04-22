@@ -181,12 +181,17 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, ne
         $scope.text.replace(/{{background_color}}/g, $scope.background_color);
   }
   $scope.newsletters = newsletters;
-  $scope.all_text = '';
+  $scope.all_text = '*|';
   for (var lang in newsletters) {
-    $scope.all_text += '*|IF:LANGUAGE=' + lang + '|*';
-    $scope.all_text += newsletters[lang];
-    $scope.all_text += '*|END:IF|*\n';
+    if (lang != 'en') {
+      $scope.all_text += 'IF:LANGUAGE=' + lang + '|*';
+      $scope.all_text += newsletters[lang];
+      $scope.all_text += '*|ELSE';
+    }
   }
+  $scope.all_text += ':|*';
+  $scope.all_text += newsletters['en'];
+  $scope.all_text += '*|END:IF|*';
   $scope.newsletters['All languages'] = $scope.all_text;
   $scope.text = $scope.newsletters['All languages'];
   $scope.background_color = background_color;
