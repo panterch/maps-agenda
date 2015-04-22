@@ -161,7 +161,7 @@ public class NewsletterExport {
 
       out.append("<div style='" + WHATS_UP_CSS + "'>");
       final String wasLauftGerman = "Was läuft in Zürich?";
-      if (wasLauft == null) {
+      if (wasLauft == null || language.getCode() == "de") {
         out.append(wasLauftGerman);
       } else {
         out.append("<table style='" + EVENT_CSS + "'><tr>" +

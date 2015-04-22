@@ -55,8 +55,9 @@ public class NewsletterStyles {
   
   public static final String HEADER_IMG_CSS = join(
       "width:600px",
-      "height:140px",
-      "text-color:#fff");
+      "max-height:140px",
+      "margin:0px",
+      "padding:0px");
   
   public static final String WHATS_UP_CSS = join(
       "margin-bottom:-15px",
