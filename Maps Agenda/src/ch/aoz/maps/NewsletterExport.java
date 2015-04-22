@@ -135,9 +135,9 @@ public class NewsletterExport {
       out.append("<td>");
       out.append("<img src='" + ESCAPE_ATTRIBUTE(aozHeaderUrl) +
           "' style='padding: 16px 16px 0' alt='AOZ'>");
-      out.append("<img style='background-color: #{{background_color}}' src='" +
-          ESCAPE_ATTRIBUTE(logoUrl) +
-          "' style='width:100%' alt='MAPS Züri Agenda'>");
+      out.append("<div style='background-color: #{{background_color}}'>" +
+          "<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
+          "' style='width:100%' alt='MAPS Züri Agenda'></div>");
       out.append("</td>");
       out.append("</tr>");
     endTable();
@@ -158,10 +158,15 @@ public class NewsletterExport {
       out.append("<td valign='top'>");
 
       out.append("<div style='" + WHATS_UP_CSS + "'>");
+      final String wasLauftGerman = "Was läuft in Zürich?";
       if (wasLauft == null) {
-        out.append("Was läuft in Zürich?");
+        out.append(wasLauftGerman);
       } else {
-        out.append(wasLauft.getPhrase());
+        out.append("<table style='" + EVENT_CSS + "'><tr>" +
+            "<td style='" + EVENT_LEFT_CSS + "'>" +
+            wasLauftGerman + "</td><td style='" +
+            rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + "'>" +
+            wasLauft.getPhrase() + "</td></tr></table>");
       }
       out.append("</div>");
       

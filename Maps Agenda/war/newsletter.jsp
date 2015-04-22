@@ -43,7 +43,6 @@ try {
 String baseUrl = "localhost".equals(request.getServerName()) ? 
     "http://localhost:8888" : "http://maps-agenda.appspot.com";
 
-String themeId = "1";
 Calendar c = Calendar.getInstance();
 c.clear();
 c.set(year, month - 1, 1);
@@ -56,8 +55,7 @@ if (!language.equals("de")) {
 
 NewsletterExport exporter = new NewsletterExport(
     eventsDe, eventsLang, language,
-    baseUrl, themeId,
-    year, month,
+    baseUrl, year, month,
     null /* subscriber, none for public render. */);
 out.println(exporter.render());
 %>

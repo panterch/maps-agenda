@@ -178,7 +178,7 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, ne
   }
   $scope.updateLang = function() {
     document.getElementById('ta').value =
-        $scope.text.replace("{{background_color}}", $scope.background_color);
+        $scope.text.replace(/{{background_color}}/g, $scope.background_color);
   }
   $scope.newsletters = newsletters;
   $scope.all_text = '';

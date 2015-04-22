@@ -165,7 +165,6 @@ String subject = months[month] + " Kultur- und Freizeitangebote";
 
 String baseUrl = "localhost".equals(request.getServerName()) ? 
     "http://localhost:8888" : "http://maps-agenda.appspot.com";
-String themeId = "1";
 
 NewsletterExport exporter = null;
 if (request.getParameter("send") != null && numEvents > 0) {
@@ -176,8 +175,7 @@ if (request.getParameter("send") != null && numEvents > 0) {
     // One created for each subscriber.
     exporter = new NewsletterExport(
         eventsDe, eventsLang, language,
-        baseUrl, themeId,
-        year, month,
+        baseUrl, year, month,
         subscriber);
     
     if (send(subscriber.getEmail(),
@@ -200,8 +198,7 @@ if (numEvents == 0) {
 
 exporter = new NewsletterExport(
       eventsDe, eventsLang, lang,
-      baseUrl, themeId,
-      year, month,
+      baseUrl, year, month,
       null);
 out.println(exporter.render());
 

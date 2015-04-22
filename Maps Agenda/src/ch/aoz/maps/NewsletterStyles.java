@@ -56,7 +56,7 @@ public class NewsletterStyles {
   public static final String WHATS_UP_CSS = join(
       "margin-bottom:-15px",
       "font-style:italic",
-      "padding: 5px 20px");
+      "font-weight:bold");
   
   public static final String EVENT_CSS = join(
       "margin:10px 0 15px 0");
