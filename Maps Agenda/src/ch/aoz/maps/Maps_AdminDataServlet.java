@@ -227,7 +227,6 @@ public class Maps_AdminDataServlet extends HttpServlet {
 
       Set<Language> langs = Language.getAllLanguages();
       Events eventsDe = Events.getEvents(date, "de");
-      String themeId = "1";
       String baseUrl = "localhost".equals(req.getServerName()) ? 
               "http://localhost:8888" : "http://www.maps-agenda.ch";
       
@@ -239,8 +238,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
         }
         NewsletterExport exporter = new NewsletterExport(
                 eventsDe, eventsLang, l.getCode(),
-                baseUrl, themeId,
-                date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+                baseUrl, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                 null /* subscriber, none for public render. */);
         
         response.append("\"" + l.getCode() + "\":\"" + Utils.toUnicode(exporter.render()) + "\",");

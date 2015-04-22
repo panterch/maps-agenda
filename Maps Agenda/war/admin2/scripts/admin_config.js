@@ -134,6 +134,18 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       onEnter: function() { itemClick("newsletter_hack") },
       templateUrl: 'newsletter.html',
       resolve: {
+        background_color : function($http) {
+          return $http({
+            method : 'GET',
+            url : '/admin/background_images?type=color'
+          }).then(function(data) {
+          if (data.data.color == null || data.data.color == '') {
+            return "000000";
+          } else {
+            return data.data.color; 
+          }
+            });
+        },
         month_str: ['$stateParams', function($stateParams) {
           return $stateParams.month;
         }],

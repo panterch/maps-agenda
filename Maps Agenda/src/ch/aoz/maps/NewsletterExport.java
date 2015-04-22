@@ -40,7 +40,6 @@ public class NewsletterExport {
   private final Events eventsLang;
   private final Language language;
   private final String urlRoot;
-  private final String themeId;
   private final int year;
   private final int month;
   private final Subscriber subscriber;
@@ -53,20 +52,17 @@ public class NewsletterExport {
    * @param eventsLang Events object containing the same events as eventDe, but in a different language.
    * @param lang Second (non-german) language for events, null for german.
    * @param urlRoot Root page that all served pages are relative to.
-   * @param themeId ID of the theme, used for locating resources in static/themes.
    * @param year Year the newsletter is for.
    * @param month (0-based) Month the newsletter is for.
    * @param subscriber The subscriber this newsletter is for -
    *     or null for when rendering the public website version.
    */
   public NewsletterExport(Events eventsDe, @Nullable Events eventsLang, String lang,
-      String urlRoot, String themeId,
-      int year, int month,
+      String urlRoot, int year, int month,
       @Nullable Subscriber subscriber) {
     this.eventsDe = eventsDe;
     this.eventsLang = eventsLang;
     this.urlRoot = urlRoot;
-    this.themeId = themeId;
     this.year = year;
     this.month = month;
     this.subscriber = subscriber;
@@ -128,7 +124,7 @@ public class NewsletterExport {
   
   /** Header HTML = Colored AOZ banner. */
   private void renderHeader() {
-    String logoUrl = urlRoot + "/static/themes/" + themeId + "_header.png";
+    String logoUrl = urlRoot + "/static/themes/transparent_header.png";
     String aozHeaderUrl = urlRoot + "/static/aoz-stadtzuerich.gif";
     
     out.append("<tr>");
@@ -139,7 +135,8 @@ public class NewsletterExport {
       out.append("<td>");
       out.append("<img src='" + ESCAPE_ATTRIBUTE(aozHeaderUrl) +
           "' style='padding: 16px 16px 0' alt='AOZ'>");
-      out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
+      out.append("<img style='background-color: #{{background_color}}' src='" +
+          ESCAPE_ATTRIBUTE(logoUrl) +
           "' style='width:100%' alt='MAPS Züri Agenda'>");
       out.append("</td>");
       out.append("</tr>");
