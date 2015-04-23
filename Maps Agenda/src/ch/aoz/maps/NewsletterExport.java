@@ -155,19 +155,18 @@ public class NewsletterExport {
       out.append("<tr>");
       out.append("<td valign='top'>");
 
-      out.append("<div style='" + WHATS_UP_CSS + "'>");
       final String wasLauftGerman = "Was läuft in Zürich?";
       if (wasLauft == null || language.getCode().equals("de")) {
-        out.append("<div style='margin-left: 25px'>" + wasLauftGerman +
-        	   "</div>");
+        out.append("<div style='margin-left: 25px;'" + WHATS_UP_CSS + ">" +
+                   wasLauftGerman + "</div>");
       } else {
-        out.append("<table style='" + EVENT_CSS + "'><tr>" +
+        out.append("<table style='" + EVENT_CSS + ";" + WHATS_UP_CSS +
+            "'><tr>" +
             "<td style='" + EVENT_LEFT_CSS + "'>" +
             wasLauftGerman + "</td><td style='" +
             rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + "'>" +
             wasLauft.getPhrase() + "</td></tr></table>");
       }
-      out.append("</div>");
       
       for (Event event : eventsDe.getSortedEvents()) {
         renderEvent(event);
