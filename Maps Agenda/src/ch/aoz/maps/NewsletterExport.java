@@ -74,9 +74,7 @@ public class NewsletterExport {
   public String render() {
     out = new StringBuilder();
     
-    if (isEmail()) {
-      renderPreheader();
-    }
+    renderPreheader();
     
     startTable(CONTAINER_CSS);
       out.append("<tr>");
@@ -107,12 +105,10 @@ public class NewsletterExport {
     out.append("</td>");
     
     out.append("<td valign='top'>");
-    if (this.isEmail()) {
-      out.append("<div>");
-      out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
-      addLink(monthPermalink(), "Öffnen Sie es im Browser.");
-      out.append("</div>");
-    }
+    out.append("<div>");
+    out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
+    addLink(monthPermalink(), "Öffnen Sie es im Browser.");
+    out.append("</div>");
     out.append("</td>");
     
     out.append("</tr>");
@@ -340,8 +336,8 @@ public class NewsletterExport {
 
   /** @return URL to visit the web version of this rendering. */
   private String monthPermalink() {
-    return String.format("%s/newsletter.jsp?lang=%s&year=%s&month=%s",
-        urlRoot, language.getCode(), year, month);
+    return String.format("%s/maps/#/%s/events?date=%04d-%02d-01",
+        urlRoot, language.getCode(), year, month+1);
   }
   
   // HTML writing utilities
