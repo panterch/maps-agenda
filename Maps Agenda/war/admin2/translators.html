@@ -11,7 +11,7 @@
       <th>Email address</th>
       <th>Name</th>
       <th>Languages</th>
-      <th>R</th>
+      <th><img src="icons/undo.svg" width=16 height=16 title='Undo changes'></th>
       <th><img src="icons/trash.svg" width=16 height=16 title='Delete'></th>
     </tr>
     <tr ng-repeat="t in translators | filter: t_filter(search)"
@@ -21,7 +21,9 @@
       <td>{{getLangStrings(t.langs)}}</td>
       <div ng-if="!canGoBack()" class="prev no-bg-image"></div>
      <div ng-if="canGoBack()" ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
-      <td ng-if="t.is_modified && !t.is_new" ng-click="unedit(t.email); $event.stopPropagation()">R</td>
+      <td ng-if="t.is_modified && !t.is_new" ng-click="unedit(t.email); $event.stopPropagation()">
+        <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
+      </td>
       <td ng-if="!t.is_modified || t.is_new"></td>
       <td class="red-hover" ng-click="remove(t.email); $event.stopPropagation()">
         <img src="icons/trash.svg" width=16 height=16 title='Delete'>
