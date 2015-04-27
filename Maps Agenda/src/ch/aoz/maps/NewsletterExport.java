@@ -152,27 +152,22 @@ public class NewsletterExport {
     out.append("<td align='center' valign='top'>");
     
     startTable(null);
-      out.append("<tr>");
-      out.append("<td valign='top'>");
-
       final String wasLauftGerman = "Was läuft in Zürich?";
       if (wasLauft == null || language.getCode().equals("de")) {
-        out.append("<div style='margin-left: 25px;" + WHATS_UP_CSS + "'>" +
-                   wasLauftGerman + "</div>");
+        out.append("<tr>" +
+                   "<td style='" + EVENT_SINGLE_CSS + ";" + WHATS_UP_CSS +
+                   "'>" + wasLauftGerman + "</td></tr>");
       } else {
-        out.append("<table style='" + EVENT_CSS + ";" + WHATS_UP_CSS +
-            "'><tr>" +
-            "<td style='" + EVENT_LEFT_CSS + "'>" +
+        out.append("<tr>" +
+            "<td style='" + EVENT_LEFT_CSS + ";" + WHATS_UP_CSS + "'>" +
             wasLauftGerman + "</td><td style='" +
-            rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + "'>" +
-            wasLauft.getPhrase() + "</td></tr></table>");
+            rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + ";" +
+            WHATS_UP_CSS + "'>" + wasLauft.getPhrase() + "</td></tr>");
       }
       
       for (Event event : eventsDe.getSortedEvents()) {
         renderEvent(event);
       }
-      out.append("</td>");
-      out.append("</tr>");
     endTable();
     
     out.append("</td>");
@@ -201,10 +196,7 @@ public class NewsletterExport {
   /** Renders an event row just in German. */
   private void renderEventSingleLanguage(Event eventDe) {
     EventDescription desc = eventDe.getDescription();
-    
-    out.append("<table style='" + EVENT_CSS + "'>");
-    
-    out.append("<tr><td style='" + EVENT_SINGLE_CSS + "'>");
+    out.append("<tr style='" + EVENT_CSS + "'><td style='" + EVENT_SINGLE_CSS + "'>");
     renderEventDetails(
         DATE_FORMATTER.format(eventDe.getDate()),
         desc.getTitle(), false, // All false, german isn't RTL.
@@ -213,8 +205,6 @@ public class NewsletterExport {
         eventDe.getTransit(),
         eventDe.getUrl());
     out.append("</td></tr>");
-    
-    out.append("</table>");
   }
   
   /** Renders an event row, in German plus the desired language. */ 
