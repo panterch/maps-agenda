@@ -132,9 +132,9 @@ public class NewsletterExport {
       out.append("<td>");
       out.append("<img src='" + ESCAPE_ATTRIBUTE(aozHeaderUrl) +
           "' style='padding: 16px 16px 0' alt='AOZ'>");
-      out.append("<div style='background-color: #{{background_color}};" +
-          HEADER_IMG_CSS + "'>" +
-          "<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
+      out.append("</td></tr>");
+      out.append("<tr><td style='background-color: #{{background_color}};'>");
+      out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
           "' style='" + HEADER_IMG_CSS + "' alt='MAPS Züri Agenda'></div>");
       out.append("</td>");
       out.append("</tr>");

@@ -54,13 +54,7 @@ public class NewsletterStyles {
       "font-family:Arial");
   
   public static final String HEADER_IMG_CSS = join(
-      "width:600px",
-      "max-height:140px",
-      "max-width:600px",
-      "min-height:140px",
-      "min-width:600px",
-      "margin:0px",
-      "padding:0px");
+      "margin-bottom: -5px");
   
   public static final String WHATS_UP_CSS = join(
       "margin-bottom:-15px",
