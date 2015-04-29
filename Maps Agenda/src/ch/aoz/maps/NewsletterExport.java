@@ -343,9 +343,9 @@ public class NewsletterExport {
   
   private void startTable(@Nullable String style) {
     // Each startTable should be paired with an endTable.
-    out.append("<table border='0' cellpadding='0' cellspacing='0' width='600'");
+    out.append("<table border='0' cellpadding='0' cellspacing='0'");
     if (style != null) {
-      out.append(" style='" + style + "'");
+      out.append(" style='" + style + ";width:600px;min-width:600px;'");
     }
     out.append(">");
   }
