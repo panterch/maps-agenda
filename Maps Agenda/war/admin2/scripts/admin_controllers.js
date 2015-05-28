@@ -144,7 +144,7 @@ adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbna
 });
 
 //Controller for the send newsletter page.
-adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, newsletters, background_color) {
+adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_str, newsletters, background_color) {
   if (month_str == null || month_str == '') {
     $scope.month_str = monthToString(new Date())
     $scope.date = $scope.month_str + "-01";
@@ -179,6 +179,14 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, month_str, ne
   $scope.updateLang = function() {
     document.getElementById('ta').value =
         $scope.text.replace(/{{background_color}}/g, $scope.background_color);
+  }
+  $scope.createCampaign = function() {
+    $http({
+      method : 'GET',
+          url : '/admin/data?type=campaign&month=' + $scope.month_str + '&bgcolor=' + $scope.background_color
+        }).success(function(data){
+          console.log(data)
+        });
   }
   $scope.newsletters = newsletters;
   $scope.all_text = '*|';

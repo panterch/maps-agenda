@@ -39,6 +39,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
         case "newsletter":
           response = getNewsletters(req);
           break;
+        case "campaign":
+          response = createCampaign(req);
+          break;
       }
       if (response == null) {
         
@@ -247,6 +250,32 @@ public class Maps_AdminDataServlet extends HttpServlet {
         response.deleteCharAt(response.length() - 1);  // remove the last ,
       }      
       response.append("}}");
+      return response.toString();
+    }
+
+    public String createCampaign(HttpServletRequest req) {
+      Calendar date = Calendar.getInstance();
+      String requested_date = req.getParameter("month");
+      if (requested_date != null) {
+        try {
+          date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
+        } catch (Exception e) {
+        }
+      }
+      // Set the time at midnight, so that the below query stays the same.
+      date.set(Calendar.MILLISECOND, 0);
+      date.set(Calendar.SECOND, 0);
+      date.set(Calendar.MINUTE, 0);
+      date.set(Calendar.HOUR_OF_DAY, 0);
+      date.set(Calendar.DATE, 1);
+
+      String background_color = req.getParameter("bgcolor");
+      if (background_color == null) {
+        background_color = BackgroundColor.fetchFromStore().getColor();
+      }
+      
+      StringBuilder response = new StringBuilder();      
+      response.append("\"" + new SimpleDateFormat().format(date.getTime()) + " -> " + background_color + "\"");
       return response.toString();
     }
 }
