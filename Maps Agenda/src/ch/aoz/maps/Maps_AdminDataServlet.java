@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.servlet.http.*;
 
+import org.json.*;
+
 import ch.aoz.maps.Event;
 import ch.aoz.maps.Language;
 import ch.aoz.maps.Phrase;
@@ -41,6 +43,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
           break;
         case "campaign":
           response = createCampaign(req);
+          break;
+        case "mtranslators":
+          response = modifyTranslators(req);
           break;
       }
       if (response == null) {
@@ -276,6 +281,22 @@ public class Maps_AdminDataServlet extends HttpServlet {
       
       StringBuilder response = new StringBuilder();      
       response.append("\"" + new SimpleDateFormat().format(date.getTime()) + " -> " + background_color + "\"");
+      return response.toString();
+    }
+    
+    public String modifyTranslators(HttpServletRequest req) {
+      StringBuilder response = new StringBuilder();      
+      if (req.getParameter("modifications") == null || req.getParameter("modifications").equals("")) {
+        response.append("Nothing.");
+        return response.toString();
+      } 
+      
+      try {
+        JSONObject json = new JSONObject(req.getParameter("modifications"));
+        response.append("Num keys: " + json.length());
+      } catch (JSONException e) {
+        response.append("Error: " + e.getMessage());
+      }
       return response.toString();
     }
 }
