@@ -1,9 +1,15 @@
 package ch.aoz.maps;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -279,8 +285,57 @@ public class Maps_AdminDataServlet extends HttpServlet {
         background_color = BackgroundColor.fetchFromStore().getColor();
       }
       
-      StringBuilder response = new StringBuilder();      
-      response.append("\"" + new SimpleDateFormat().format(date.getTime()) + " -> " + background_color + "\"");
+      JSONObject options = new JSONObject();
+      options.put("list_id", "9357c08f67");  // TEST ONLY. // TODO fix.
+      options.put("subject",
+	      "MAPS Agenda Newsletter "
+      + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
+      + " " + date.get(Calendar.YEAR));
+      options.put("from_name", "Pascal Gwosdek");  // TODO fix.
+      options.put("from_email", "pascalgwosdek@google.com");  // TODO fix.
+      options.put("to_name", "*|NAME|*");
+      options.put("generate_text", true);
+      
+      JSONObject content = new JSONObject();
+      content.put("html", "Please paste text here.");  // TODO fix.
+      
+      JSONObject json = new JSONObject();
+      json.put("apikey", "bd323b0babe5a6615a7c5b0a1adab0fa-us10");
+      json.put("type", "regular");
+      json.put("options", options);
+      json.put("content", content);
+      String mailchimpRequest = json.toString();
+      
+      StringBuilder response = new StringBuilder();
+      HttpURLConnection connection = null;
+      try {
+	  URL url = new URL("https://us10.api.mailchimp.com/2.0/campaigns/create");
+	  connection = (HttpURLConnection)url.openConnection();
+	  connection.setRequestMethod("POST");
+	  connection.setRequestProperty("Content-Type", "application/json");
+	  connection.setRequestProperty("Content-Length", Integer.toString(mailchimpRequest.length()));
+	  connection.setDoOutput(true);
+	  connection.setUseCaches(false);
+	  
+	  DataOutputStream outStream = new DataOutputStream(connection.getOutputStream());
+	  outStream.writeBytes(mailchimpRequest);
+	  outStream.close();
+	  
+	  InputStreamReader inStream = new InputStreamReader(connection.getInputStream());
+	  BufferedReader reader = new BufferedReader(inStream);
+	  String line;
+	  while((line = reader.readLine()) != null) {
+	      response.append(line);
+	      response.append('\r');
+	  }
+	  reader.close();  
+      } catch (Exception e) {
+	  return "Error while sending request to MailChimp: " + e.toString();
+      } finally {
+	  if (connection != null) {
+	      connection.disconnect();
+	  }
+      }
       return response.toString();
     }
     
