@@ -22,7 +22,7 @@ public class EventDescription implements java.io.Serializable {
     if (title == null || title.isEmpty()) {
 	this.title = "";
     } else {
-	this.title = title.trim();
+	this.title = Utils.replaceDoubleQuotes(title.trim());
     }
     if (desc == null || desc.isEmpty()) {
 	this.desc = "";

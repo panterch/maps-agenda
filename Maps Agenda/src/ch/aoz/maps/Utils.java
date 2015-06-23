@@ -29,5 +29,26 @@ public class Utils {
       }
     }
     return b.toString();      
-  }  
+  }
+  
+  /**
+   * Replaces all non-standard double quote characters by "programmer's
+   * double quotes". To be used in event titles.
+   * @param s text
+   * @return s with all alternative double quotes replaced with "
+   */
+  public static String replaceDoubleQuotes(String s) {
+    return s.replace('\u00ab', '"')   // <<
+	    .replace('\u00bb', '"')   // >>
+	    .replace('\u201c', '"')   // " left high
+	    .replace('\u201d', '"')   // " right high
+	    .replace('\u201e', '"')   // " left low
+	    .replace('\u2039', '"')   // <
+	    .replace('\u203A', '"')   // >
+	    .replace('\u201f', '"')   // " bold
+	    .replace('\u301e', '"')   // " high asian
+	    .replace('\u301f', '"')   // " low asian
+	    .replace('\u301d', '"')   // " bold asian
+	    .replace('\uff02', '"');  // " full width
+  }
 }
