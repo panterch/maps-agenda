@@ -22,7 +22,8 @@ public static String escapeHTML(String raw) {
   return raw.replaceAll("&",  "&amp;")
              .replaceAll("\"", "&quot;")
              .replaceAll("<",  "&lt;")
-             .replaceAll(">",  "&gt;");
+             .replaceAll(">",  "&gt;")
+             .replaceAll("'", "&#39;");
 }
 
 public static String formatTranslation(
