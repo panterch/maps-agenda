@@ -38,17 +38,22 @@ public class Utils {
    * @return s with all alternative double quotes replaced with "
    */
   public static String replaceDoubleQuotes(String s) {
-    return s.replace('\u00ab', '"')   // <<
-	    .replace('\u00bb', '"')   // >>
-	    .replace('\u201c', '"')   // " left high
-	    .replace('\u201d', '"')   // " right high
-	    .replace('\u201e', '"')   // " left low
-	    .replace('\u2039', '"')   // <
-	    .replace('\u203A', '"')   // >
-	    .replace('\u201f', '"')   // " bold
-	    .replace('\u301e', '"')   // " high asian
-	    .replace('\u301f', '"')   // " low asian
-	    .replace('\u301d', '"')   // " bold asian
-	    .replace('\uff02', '"');  // " full width
+    /* In order:
+     * U+00ab  <<
+     * U+00bb  >>
+     * U+201c  " left high
+     * U+201d  " right high
+     * U+201e  " left low
+     * U+2039  <
+     * U+203A  >
+     * U+201f  " bold
+     * U+301e  " high asian
+     * U+301f  " low asian
+     * U+301d  " bold asian
+     * U+ff02  " full width
+     */
+    return s.replaceAll("\u00ab|\u00bb|\u201c|\u201d|\u201e|\u2039|\u203a|" +
+                        "\u201f|\u301e|\u301f|\u301d|\uff02",
+                        "\"");
   }
 }
