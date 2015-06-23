@@ -9,9 +9,11 @@ import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.*;
 
@@ -220,6 +222,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
       return response.toString();
     }
 
+    // TODO (pascalgwosdek) remove this function and the whole getter hierarchy.
     public String getNewsletters(HttpServletRequest req) {
       Calendar date = Calendar.getInstance();
       String requested_date = req.getParameter("month");
@@ -264,6 +267,46 @@ public class Maps_AdminDataServlet extends HttpServlet {
       return response.toString();
     }
 
+    public Map<String, String> generateNewslettersList(Calendar date, String color, String serverName) {
+	Map<String, String> response = new HashMap<String, String>();
+      Set<Language> langs = Language.getAllLanguages();
+      
+      Events eventsDe = Events.getEvents(date, "de");
+      String baseUrl = "localhost".equals(serverName) ? 
+              "http://localhost:8888" : "http://www.maps-agenda.ch";
+
+      for (Language l : langs) {
+       Events eventsLang = null;
+        if (!l.getCode().equals("de")) {
+          eventsLang = eventsDe.clone();
+          eventsLang.loadDescriptions(l.getCode());
+        }
+        NewsletterExport exporter = new NewsletterExport(
+                eventsDe, eventsLang, l.getCode(),
+                baseUrl, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+                null /* subscriber, none for public render. */);
+	        
+        response.put(l.getCode(), exporter.render().replaceAll(
+        	Pattern.quote("{{background_color}}"), color));
+      }
+      return response;
+    }
+    
+    public String generateNewsletters(Calendar date, String color, String serverName) {
+	Map<String, String> newsletters =
+		generateNewslettersList(date, color, serverName);
+	StringBuilder builder = new StringBuilder();
+	builder.append("*|");
+	for (String code : newsletters.keySet()) {
+	    if (!code.equals("en")) {
+		builder.append("IF:LANGUAGE=" + code + "|*"
+	        + newsletters.get(code) + "*|ELSE");
+	    }
+	}
+	builder.append(":|*" + newsletters.get("en") + "*|END:IF|*");
+	return Utils.toUnicode(builder.toString());
+    }
+    
     public String createCampaign(HttpServletRequest req) {
       Calendar date = Calendar.getInstance();
       String requested_date = req.getParameter("month");
@@ -297,7 +340,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
       options.put("generate_text", true);
       
       JSONObject content = new JSONObject();
-      content.put("html", "Please paste text here.");  // TODO fix.
+      content.put("html", generateNewsletters(date, background_color, req.getServerName()));
       
       JSONObject json = new JSONObject();
       json.put("apikey", "bd323b0babe5a6615a7c5b0a1adab0fa-us10");
@@ -312,8 +355,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
 	  URL url = new URL("https://us10.api.mailchimp.com/2.0/campaigns/create");
 	  connection = (HttpURLConnection)url.openConnection();
 	  connection.setRequestMethod("POST");
-	  connection.setRequestProperty("Content-Type", "application/json");
-	  connection.setRequestProperty("Content-Length", Integer.toString(mailchimpRequest.length()));
+	  connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 	  connection.setDoOutput(true);
 	  connection.setUseCaches(false);
 	  
