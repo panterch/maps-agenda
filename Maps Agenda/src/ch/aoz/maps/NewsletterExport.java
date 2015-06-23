@@ -196,16 +196,18 @@ public class NewsletterExport {
   
   /** Renders an event row just in German. */
   private void renderEventSingleLanguage(Event eventDe) {
-    EventDescription desc = eventDe.getDescription();
-    out.append("<tr style='" + EVENT_CSS + "'><td style='" + EVENT_SINGLE_CSS + "'>");
-    renderEventDetails(
-        DATE_FORMATTER.format(eventDe.getDate()),
-        desc.getTitle(), false, // All false, german isn't RTL.
-        desc.getDesc(), false,
-        eventDe.getLocation(),
-        eventDe.getTransit(),
-        eventDe.getUrl());
-    out.append("</td></tr>");
+      if (eventDe != null) {
+	    EventDescription desc = eventDe.getDescription();
+	    if (desc != null) {
+		out.append("<tr style='" + EVENT_CSS + "'><td style='"
+			+ EVENT_SINGLE_CSS + "'>");
+		renderEventDetails(DATE_FORMATTER.format(eventDe.getDate()),
+			desc.getTitle(), false, // All false, german isn't RTL.
+			desc.getDesc(), false, eventDe.getLocation(),
+			eventDe.getTransit(), eventDe.getUrl());
+		out.append("</td></tr>");
+	    }
+	}
   }
   
   /** Renders an event row, in German plus the desired language. */ 
