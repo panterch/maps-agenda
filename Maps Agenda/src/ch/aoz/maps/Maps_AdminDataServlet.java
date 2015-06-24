@@ -297,6 +297,10 @@ public class Maps_AdminDataServlet extends HttpServlet {
 	Map<String, String> newsletters =
 		generateNewslettersList(date, color, serverName);
 	StringBuilder builder = new StringBuilder();
+	builder.append(
+		"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional" +
+	        "//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transition" +
+		"al.dtd\">\n");
 	builder.append("*|");
 	for (String code : newsletters.keySet()) {
 	    if (!code.equals("en")) {
