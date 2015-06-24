@@ -331,13 +331,13 @@ public class Maps_AdminDataServlet extends HttpServlet {
       }
       
       JSONObject options = new JSONObject();
-      options.put("list_id", "9357c08f67");  // TEST ONLY. // TODO fix.
+      options.put("list_id", "2da59c6f92");
       options.put("subject",
 	      "MAPS Agenda Newsletter "
       + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
       + " " + date.get(Calendar.YEAR));
-      options.put("from_name", "Pascal Gwosdek");  // TODO fix.
-      options.put("from_email", "pascalgwosdek@google.com");  // TODO fix.
+      options.put("from_name", JSONObject.stringToValue("MAPS Züri Agenda"));
+      options.put("from_email", "maps@aoz.ch");
       options.put("to_name", "*|NAME|*");
       options.put("generate_text", true);
       
@@ -349,10 +349,8 @@ public class Maps_AdminDataServlet extends HttpServlet {
       json.put("type", "regular");
       json.put("options", options);
       json.put("content", content);
+
       byte[] mailchimpRequest = json.toString().getBytes(StandardCharsets.UTF_8);
-      //String mailchimpRequest = json.toString();
-      //System.out.println(mailchimpRequest);
-      //return new String();
       StringBuilder response = new StringBuilder();
       HttpURLConnection connection = null;
       try {
