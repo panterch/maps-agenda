@@ -184,7 +184,18 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_
     $http({
       method : 'GET',
           url : '/admin/data?type=campaign&month=' + $scope.month_str + '&bgcolor=' + $scope.background_color
-        }).success(function(data){
+        }).success(function(data) {
+          if (data.status == "error") {
+            alert(
+              "Campaign creation failed! Reason: " + data.name + ": " +
+              data.error);
+          } else {
+            alert(
+              "Campaign \"" + data.title + "\" successfully created! " +
+              "To give you a chance to preview the email, it will not be " +
+              "sent automatically. Please head over to mailchimp.com, " +
+              "review the campaign, and click send if you are ok with it.");
+          }
           console.log(data)
         });
   }

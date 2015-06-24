@@ -385,9 +385,6 @@ public class Maps_AdminDataServlet extends HttpServlet {
 	      connection.disconnect();
 	  }
       }
-      if (response.toString().contains("error")) {
-	  System.out.println(mailchimpRequest);
-      }
       return response.toString();
     }
     
