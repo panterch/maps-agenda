@@ -144,7 +144,7 @@ adminApp.controller('LookNFeelCtrl', function ($scope, $http, background_thumbna
 });
 
 //Controller for the send newsletter page.
-adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_str, newsletters, background_color) {
+adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_str, background_color) {
   if (month_str == null || month_str == '') {
     $scope.month_str = monthToString(new Date())
     $scope.date = $scope.month_str + "-01";
@@ -176,10 +176,6 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_
       $location.search('month', $scope.month_str);    
     }
   }
-  $scope.updateLang = function() {
-    document.getElementById('ta').value =
-        $scope.text.replace(/{{background_color}}/g, $scope.background_color);
-  }
   $scope.createCampaign = function() {
     $http({
       method : 'GET',
@@ -199,22 +195,7 @@ adminApp.controller('NewsletterCtrl', function ($scope, $location, $http, month_
           console.log(data)
         });
   }
-  $scope.newsletters = newsletters;
-  $scope.all_text = '*|';
-  for (var lang in newsletters) {
-    if (lang != 'en') {
-      $scope.all_text += 'IF:LANGUAGE=' + lang + '|*';
-      $scope.all_text += newsletters[lang];
-      $scope.all_text += '*|ELSE';
-    }
-  }
-  $scope.all_text += ':|*';
-  $scope.all_text += newsletters['en'];
-  $scope.all_text += '*|END:IF|*';
-  $scope.newsletters['All languages'] = $scope.all_text;
-  $scope.text = $scope.newsletters['All languages'];
   $scope.background_color = background_color;
-  $scope.updateLang();  
 });
 
 adminApp.controller('UploadBackgroundCtrl', [ '$scope', '$upload', '$http', '$state', function($scope, $upload, $http, $state) {

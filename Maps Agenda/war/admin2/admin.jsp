@@ -41,7 +41,7 @@
         <div class="menu_item" id="events" ui-sref="events">Events</div>
         <div class="menu_item" id="generate" ui-sref="generate">Generate XML</div>
         <div class="menu_item" id="looknfeel" ui-sref="looknfeel">Look &amp; Feel</div>
-        <div class="menu_item" id="newsletter_hack" ui-sref="newsletter">Newsletter hack</div>
+        <div class="menu_item" id="newsletter" ui-sref="newsletter">Send Newsletter</div>
       </div>
       <div id="content">
         <section ui-view>

@@ -130,8 +130,8 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       controller: 'LookNFeelCtrl'
     })
     .state('newsletter', {
-      url: '/newsletter_hack?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
-      onEnter: function() { itemClick("newsletter_hack") },
+      url: '/newsletter?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
+      onEnter: function() { itemClick("newsletter") },
       templateUrl: 'newsletter.html',
       resolve: {
         background_color : function($http) {
@@ -148,17 +148,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
         },
         month_str: ['$stateParams', function($stateParams) {
           return $stateParams.month;
-        }],
-        newsletters: function(month_str, $http) {
-          month = "";
-          if (month_str) {
-            month = "&month=" + month_str;
-          }
-          return $http({method: 'GET', url: '/admin/data?type=newsletter' + month})
-            .then (function (data) {
-              return data.data.newsletters;
-            });         
-        }
+        }]
       },
       controller: 'NewsletterCtrl'
     })
