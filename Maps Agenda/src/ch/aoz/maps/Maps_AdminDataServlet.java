@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -304,7 +305,8 @@ public class Maps_AdminDataServlet extends HttpServlet {
 	    }
 	}
 	builder.append(":|*" + newsletters.get("en") + "*|END:IF|*");
-	return Utils.toUnicode(builder.toString());
+	return builder.toString();
+	//return Utils.toUnicode(builder.toString());
     }
     
     public String createCampaign(HttpServletRequest req) {
@@ -340,27 +342,32 @@ public class Maps_AdminDataServlet extends HttpServlet {
       options.put("generate_text", true);
       
       JSONObject content = new JSONObject();
-      content.put("html", generateNewsletters(date, background_color, req.getServerName()));
+      content.put("html", JSONObject.stringToValue(generateNewsletters(date, background_color, req.getServerName())));
       
       JSONObject json = new JSONObject();
       json.put("apikey", "bd323b0babe5a6615a7c5b0a1adab0fa-us10");
       json.put("type", "regular");
       json.put("options", options);
       json.put("content", content);
-      String mailchimpRequest = json.toString();
-      
+      byte[] mailchimpRequest = json.toString().getBytes(StandardCharsets.UTF_8);
+      //String mailchimpRequest = json.toString();
+      //System.out.println(mailchimpRequest);
+      //return new String();
       StringBuilder response = new StringBuilder();
       HttpURLConnection connection = null;
       try {
-	  URL url = new URL("https://us10.api.mailchimp.com/2.0/campaigns/create");
+	  URL url = new URL("https://us10.api.mailchimp.com/2.0/campaigns/create.json");
 	  connection = (HttpURLConnection)url.openConnection();
 	  connection.setRequestMethod("POST");
-	  connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+	  connection.setRequestProperty("Content-Type", "application/json");
+	  connection.setRequestProperty("charset", "utf-8");
+	  connection.setRequestProperty("Content-Length", Integer.toString(mailchimpRequest.length));
 	  connection.setDoOutput(true);
 	  connection.setUseCaches(false);
 	  
 	  DataOutputStream outStream = new DataOutputStream(connection.getOutputStream());
-	  outStream.writeBytes(mailchimpRequest);
+	  outStream.write(mailchimpRequest);
+	  outStream.flush();
 	  outStream.close();
 	  
 	  InputStreamReader inStream = new InputStreamReader(connection.getInputStream());
@@ -377,6 +384,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
 	  if (connection != null) {
 	      connection.disconnect();
 	  }
+      }
+      if (response.toString().contains("error")) {
+	  System.out.println(mailchimpRequest);
       }
       return response.toString();
     }
