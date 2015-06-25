@@ -126,9 +126,18 @@ public class Events implements java.io.Serializable {
     if (events.isEmpty()) return;
     EventDescriptions descriptions = EventDescriptions.getDescriptions(lang, this.calendar);
     for (Event e : events) {
+      EventDescription description = descriptions.getDescription(e.getKey());
       // getDescription returns null if no description is there, keeping the
       // assumption that an event has a null description in such a case.
-      e.setDescription(descriptions.getDescription(e.getKey()));
+      e.setDescription(description);
+      
+      // In case the description is empty, it would be weird to have transit and
+      // link meta data. Clear both.
+      if (description == null ||
+	  ((description.getTitle() == null || description.getTitle().isEmpty()) &&
+	   (description.getDesc() == null || description.getDesc().isEmpty()))) {
+        e.clearLocationTransitUrl();
+      }
     }
   }
 

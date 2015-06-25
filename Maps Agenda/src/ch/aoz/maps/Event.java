@@ -172,6 +172,12 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   public void setDescription(EventDescription description) {
     this.description = description;
   }
+  
+  public void clearLocationTransitUrl() {
+    this.location = new String();
+    this.transit = new String();
+    this.url = new String();
+  }
 
   public String getLocation() {
     return location;
