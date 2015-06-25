@@ -180,11 +180,11 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   }
 
   public String getLocation() {
-    return location;
+    return Utils.replaceDoubleQuotes(location);
   }
 
   public String getTransit() {
-    return transit;
+    return Utils.replaceDoubleQuotes(transit);
   }
 
   public String getUrl() {

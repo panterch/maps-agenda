@@ -38,6 +38,10 @@ public class Utils {
    * @return s with all alternative double quotes replaced with "
    */
   public static String replaceDoubleQuotes(String s) {
+    if (s == null || s.isEmpty()) {
+	return "";
+    }
+    
     /* In order:
      * U+00ab  <<
      * U+00bb  >>

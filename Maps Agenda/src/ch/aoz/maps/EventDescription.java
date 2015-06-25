@@ -27,7 +27,7 @@ public class EventDescription implements java.io.Serializable {
     if (desc == null || desc.isEmpty()) {
 	this.desc = "";
     } else {
-	this.desc = desc.trim();
+	this.desc = Utils.replaceDoubleQuotes(desc.trim());
     }
     
     isOk = (lang != null && !lang.isEmpty());
