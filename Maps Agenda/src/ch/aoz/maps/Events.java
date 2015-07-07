@@ -44,7 +44,7 @@ public class Events implements java.io.Serializable {
     this(c);
     for (Event e : events) {
       this.events.add(e);
-      if (e.hasKey() && e.getKey() > nextEventKey) {
+      if (e.hasKey() && e.getKey() >= nextEventKey) {
         nextEventKey = e.getKey() + 1;
       }
     }
@@ -57,7 +57,7 @@ public class Events implements java.io.Serializable {
       Event e = extractEvent(key, c, s);
       if (e != null) {
         events.add(e);
-        if (e.hasKey() && e.getKey() > nextEventKey) {
+        if (e.hasKey() && e.getKey() >= nextEventKey) {
           nextEventKey = e.getKey() + 1;
         }
       }
@@ -153,7 +153,7 @@ public class Events implements java.io.Serializable {
     if (!e.hasKey()) {
       e.setKey(events.nextEventKey++);
     }
-    
+
     if (events.events.contains(e)) {
       if (!events.events.remove(e)) {
         return false;

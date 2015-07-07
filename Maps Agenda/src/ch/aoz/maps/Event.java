@@ -37,26 +37,41 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   private boolean ok;
   private List<String> errors;
 
-  // First sort according to their date. Then to key. 
+  // First sort according to their date. Then to key. Note that this method
+  // should only return 0 if the two events have the same key.
   @Override
   public int compareTo(Event other) {
     int c = getDate().compareTo(other.getDate());
     if (c != 0) return c;
 
-    return Long.compare(this.key, other.key);
+    if (this.hasKey() && other.hasKey())
+      return Long.compare(this.key, other.key);
+    if (this.hasKey())
+      return -1;
+    if (other.hasKey())
+      return 1;
+    
+    // We now have to new events and two such events cannot be equal, so we need
+    // to do our best to find a way to consistently order them. 
+    c = this.location.compareTo(other.location);
+    if (c != 0) return c;
+    c = this.transit.compareTo(other.transit);
+    if (c != 0) return c;
+    c = this.url.compareTo(other.url);
+    if (c != 0) return c;
+    
+    return Integer.compare(this.hashCode(), other.hashCode());
   }
 
-  // Two events are equal iff they happen at the same date and they have the
-  // same key. Note that events they have no key assigned yet cannot be equal
-  // to another event.
+  // Two events are equal if they have the same key. Note that events they have 
+  // no key assigned yet cannot be equal to another event.
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Event)) {
+    if (o == null || !(o instanceof Event)) {
       return false;
     }
     Event e = (Event) o;
-    return this.calendar.equals(e.calendar) 
-        && this.hasKey && e.hasKey // Both must have a key assigned.
+    return this.hasKey && e.hasKey // Both must have a key assigned.
         && this.key == e.key;
   }
 
