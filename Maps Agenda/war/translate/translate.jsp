@@ -14,7 +14,11 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
-      
+
+public static String formatDate(Calendar c) {
+  return c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DATE);
+}
+
 public static String escapeHTML(String raw) {
   if (raw == null) {
     return null;
@@ -27,7 +31,7 @@ public static String escapeHTML(String raw) {
 }
 
 public static String formatTranslation(
-    EventDescription d, String cls, boolean rtl) {
+    EventDescription d, String cls, boolean rtl, String date) {
   String result = "";
   if (rtl) {
     cls = cls + " rtl";
@@ -36,7 +40,7 @@ public static String formatTranslation(
   if (d == null) {
     result += "<div class='no-translation'>No translation</div>";
   } else { // edit ==  false
-    result += "<div class='title'>&quot;" + d.getTitle() + "&quot;</div>";
+    result += "<div class='title'>" + date + ": &quot;" + d.getTitle() + "&quot;</div>";
     result += "<div class='desc'>" + d.getDesc() + "</div>";
   }
   result += "</div>";
@@ -230,8 +234,8 @@ if (user == null) {
           EventDescription local = local_descriptions.getDescription(event.getKey());
           out.print("<div class='event'>");
           out.print("<div class='collapsed' id='" + div_id + "'>");
-          out.print(formatTranslation(german, "original", false));
-          out.print(formatTranslation(local, "translated", language.isRightToLeft()));
+          out.print(formatTranslation(german, "original", false, formatDate(event.getCalendar())));
+          out.print(formatTranslation(local, "translated", language.isRightToLeft(), ""));
           out.print(formatTranslationForm(local, event_id, div_id, language.isRightToLeft()));
           out.print("<div class='actions'>");
           out.print("<span class='edit button' onclick='mode(\"" + div_id + "\", \"edit\");'>Edit</span>");
