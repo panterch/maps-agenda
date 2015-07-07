@@ -36,15 +36,6 @@
   	<url-pattern>/admin/background_images</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>Maps_Subscriber</servlet-name>
-    <servlet-class>ch.aoz.maps.Maps_SubscriberServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-     <servlet-name>Maps_Subscriber</servlet-name>
-     <url-pattern>/maps/subscribe</url-pattern>
-  </servlet-mapping>
-
   <security-constraint>
      <web-resource-collection>
        <url-pattern>/admin/*</url-pattern>
