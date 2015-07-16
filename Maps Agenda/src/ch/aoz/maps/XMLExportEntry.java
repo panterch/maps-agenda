@@ -192,8 +192,9 @@ public class XMLExportEntry {
 	    // problems. Please supplement this list with other failing
 	    // characters.
 	    content = content.replace("&", "&amp;");
-        content = content.replace("<", "&lt;");
-        content = content.replace(">", "&gt;");
+	    content = content.replace("<", "&lt;");
+	    content = content.replace(">", "&gt;");
+	    content = content.replace("\"", "&quot;");
 	}
 	return content;
     }
