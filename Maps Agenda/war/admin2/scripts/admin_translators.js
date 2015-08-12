@@ -1,15 +1,22 @@
 // Controller for the translators page.
-adminApp.controller('TranslatorCtrl', function ($scope, languages, 
-                                                translators) {
+adminApp.controller('TranslatorCtrl', function ($scope, $http, languages, translators) {
   $scope.languages = languages;
-  $scope.translators = translators;
-  for (var i = 0; i < $scope.translators.length; ++i) {
-    $scope.translators[i].is_modified = false; // different than the original entry
-    $scope.translators[i].is_new = false; // created using the "add a new translator button"
-    $scope.translators[i].is_deleted = false; // asked to be deleted
-    $scope.translators[i].is_added = true; // is present in $scope.translators
-    $scope.translators[i].backup = cloneObject($scope.translators[i]);
-  }  
+  
+  $scope.setTranslators = function(translators) {
+	  $scope.translators = [];
+	  for (var i = 0; i < translators.length; ++i) {
+	    var t = {
+	        is_modified: false, // is different than the original entry?
+	        is_new: false,      // has been created using the "add a new translator button"?
+	        is_deleted: false,  // asked to be deleted?
+	        is_added: true,     // is present in $scope.translators? This can be false if an is_new item has not yet been saved.
+	        value: cloneObject(translators[i]),
+	        backup: cloneObject(translators[i]) // Used for the unedit functionality.
+	    }
+	    $scope.translators.push(t);
+	  }  	  
+  } 
+  $scope.setTranslators(translators);
   
   $scope.getRowClass = function(t) {
     if (t.is_deleted)
@@ -25,17 +32,17 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
       $scope.lang_options.push($scope.languages[i]);
     }
     if (!email) { 
-      $scope.translator = {is_modified: false, is_new: true, is_added: false, is_deleted: false, langs: [] };
+      $scope.translator = {is_modified: false, is_new: true, is_added: false, is_deleted: false, value: {langs: []} };
     } else {
       for (var i = 0; i < $scope.translators.length; ++i) {
-        if ($scope.translators[i].email == email) {
+        if ($scope.translators[i].value.email == email) {
           $scope.translator = $scope.translators[i];
           // Make a copy of the object for the Cancel button.
           $scope.old_translator = cloneObject($scope.translator);
-          if ($scope.translator.langs) {
-            for (var j = 0; j < $scope.translator.langs.length; ++j) {
-              if (!$scope.getLang($scope.translator.langs[j])) {
-                $scope.lang_options.push({code: $scope.translator.langs[j], germanName:$scope.translator.langs[j] + " (unknown)"});                
+          if ($scope.translator.value.langs) {
+            for (var j = 0; j < $scope.translator.value.langs.length; ++j) {
+              if (!$scope.getLang($scope.translator.value.langs[j])) {
+                $scope.lang_options.push({code: $scope.translator.value.langs[j], germanName:$scope.translator.value.langs[j] + " (unknown)"});                
               }
             }
           }
@@ -53,28 +60,27 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
       return;
     }
     if (!$scope.translator.is_added) {
-      if ($scope.countEmails($scope.translator.email) > 0) {
-        $scope.translator.email = '';
+      if ($scope.countEmails($scope.translator.value.email) > 0) {
+        $scope.translator.value.email = '';
         return;
       }
       $scope.translators.push($scope.translator);
       $scope.translator.is_added = true;
       $scope.translator.is_modified = true;
       $scope.translator.is_deleted = false;
-    } else if ($scope.countEmails($scope.translator.email) > 1) {
-      $scope.translator.email = $scope.old_translator.email;
+    } else if ($scope.countEmails($scope.translator.value.email) > 1) {
+      $scope.translator.value.email = $scope.old_translator.value.email;
       return;
     } else {
-      $scope.translator.is_modified = !$scope.sameAsBackup() || $scope.old_translator.is_modified;
+      // Note that it is important to check is_modified first because new items don't have backups.
+      $scope.translator.is_modified = $scope.old_translator.is_modified || !$scope.sameAsBackup();
       $scope.translator.is_deleted = false;
     }
     $scope.hidePopup('edit-popup');
   }
   $scope.cancel = function() {
     $scope.hidePopup('edit-popup');
-    $scope.translator.email = $scope.old_translator.email;
-    $scope.translator.name = $scope.old_translator.name;
-    $scope.translator.langs = $scope.old_translator.langs;
+    $scope.translator.value = cloneObject($scope.old_translator.value);
     $scope.cancel_pressed = true;
   }
   $scope.noneModified = function() {
@@ -86,11 +92,35 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
     return true;
   }
   $scope.saveAll = function() {
-    alert("Save capabilities coming soon.");
+    json = {
+        save: [],
+        remove: []
+    }    
+    for (var i = 0; i < $scope.translators.length; ++i) {
+      if ($scope.translators[i].is_new) {
+        if (!$scope.translators[i].is_deleted) {
+          json.save.push($scope.translators[i].value);
+        }
+      } else if ($scope.translators[i].is_modified) {
+        json.save.push($scope.translators[i].value);
+      } else if ($scope.translators[i].is_deleted) {
+        json.remove.push($scope.translators[i].value);
+      }
+    }
+    $http({
+      method : 'POST',
+          url : '/admin/data?type=mtranslators&modifications=' + JSON.stringify(json)
+        }).success(function(data){
+          if (data.success) {
+        	  $scope.setTranslators(data.translators);
+          } else {
+        	  alert("Saving failed: " + data.error)
+          }
+        });
   }
   $scope.remove = function(email) {
     for (var i = 0; i < $scope.translators.length; ++i) {
-      if ($scope.translators[i].email == email) {
+      if ($scope.translators[i].value.email == email) {
         $scope.translators[i].is_deleted = !$scope.translators[i].is_deleted;
         break;
       }
@@ -98,11 +128,12 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   }
   $scope.unedit = function(email) {
     for (var i = 0; i < $scope.translators.length; ++i) {
-      if ($scope.translators[i].email == email) {
+      if ($scope.translators[i].value.email == email) {
         if (!$scope.translators[i].is_new) {
-          var b = $scope.translators[i].backup;
-          $scope.translators[i] = cloneObject(b);
-          $scope.translators[i].backup = b;
+          $scope.translators[i].value = cloneObject($scope.translators[i].backup);
+          $scope.translators[i].is_modified = false;
+          $scope.translators[i].is_deleted = false;
+          $scope.translators[i].is_added = true;
         }
         break;
       }
@@ -135,9 +166,9 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   $scope.t_filter = function(expr) {
     return function(t) {
       return !expr
-          || t.email.indexOf(expr) != -1 
-          || t.name.indexOf(expr) != -1
-          || $scope.toGermanNames(t.langs).join("\n").indexOf(expr) != -1;
+          || t.value.email.indexOf(expr) != -1 
+          || t.value.name.indexOf(expr) != -1
+          || $scope.toGermanNames(t.value.langs).join("\n").indexOf(expr) != -1;
     }
   }
   $scope.showPopup = function(elemId) {
@@ -147,12 +178,12 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
     document.getElementById(elemId).style.display = "none";
   }
   $scope.sameAsBackup = function() {
-    var same = $scope.translator.email == $scope.old_translator.email &&
-                $scope.translator.name == $scope.old_translator.name &&
-                $scope.translator.langs.length == $scope.old_translator.langs.length;
+    var same = $scope.translator.value.email == $scope.translator.backup.email &&
+                $scope.translator.value.name == $scope.translator.backup.name &&
+                $scope.translator.value.langs.length == $scope.translator.backup.langs.length;
     if (!same) return false;
-    for (var i = 0; i < $scope.translator.langs.length; ++i) {
-      if ($scope.translator.langs[i] != $scope.old_translator.langs[i])
+    for (var i = 0; i < $scope.translator.value.langs.length; ++i) {
+      if ($scope.translator.value.langs[i] != $scope.translator.backup.langs[i])
         return false;
     }
     return true;
@@ -160,7 +191,7 @@ adminApp.controller('TranslatorCtrl', function ($scope, languages,
   $scope.countEmails = function(email) {
     var count = 0;
     for (var i = 0; i < $scope.translators.length; ++i) {
-      if ($scope.translators[i].email == email)
+      if ($scope.translators[i].value.email == email)
         ++count;
     }
     return count;
