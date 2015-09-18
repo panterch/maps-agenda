@@ -94,7 +94,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
       this.calendar = null;
       addError("Date is not defined");
     } else {
-      this.calendar = (Calendar) calendar.clone();
+      this.calendar = toCalendar(calendar.getTime());
     }
   }
 
@@ -117,7 +117,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
       this.calendar = null;
       addError("Date is not defined");
     } else {
-      this.calendar = (Calendar) calendar.clone();
+      this.calendar = toCalendar(calendar.getTime());
     }
   }
 
