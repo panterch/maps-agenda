@@ -361,7 +361,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
     }
 
     JSONObject options = new JSONObject();
-    options.put("list_id", "2da59c6f92");
+    options.put("list_id", "a13fa5f2a6");
     options.put(
         "subject",
         "MAPS Agenda Newsletter "
@@ -377,7 +377,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
         background_color, req.getServerName())));
 
     JSONObject json = new JSONObject();
-    json.put("apikey", "bd323b0babe5a6615a7c5b0a1adab0fa-us10");
+    json.put("apikey", "b156333fb949d742f4fc7e667d25079d-us4");
     json.put("type", "regular");
     json.put("options", options);
     json.put("content", content);
@@ -387,7 +387,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
     HttpURLConnection connection = null;
     try {
       URL url = new URL(
-          "https://us10.api.mailchimp.com/2.0/campaigns/create.json");
+          "https://us4.api.mailchimp.com/2.0/campaigns/create.json");
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json");
