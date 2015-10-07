@@ -41,9 +41,26 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   // should only return 0 if the two events have the same key.
   @Override
   public int compareTo(Event other) {
-    int c = getDate().compareTo(other.getDate());
+    // If the events are from different months, they cannot be equal.
+    Calendar month1 = (Calendar)calendar.clone();
+    Calendar month2 = (Calendar)other.calendar.clone();
+    month1.set(Calendar.DATE, 1);
+    month2.set(Calendar.DATE, 1);
+    int c = month1.compareTo(month2);
     if (c != 0) return c;
-
+    
+    // Then check if they have the same key, in which case those are the same event.
+    if (this.hasKey() && other.hasKey() && this.key == other.key)
+      return 0;
+    
+    // At this point, we are confident that the two events are different. We only need to
+    // consistently order them. 
+    
+    // First order them by date.
+    c = getDate().compareTo(other.getDate());
+    if (c != 0) return c;
+    
+    // Then by key.
     if (this.hasKey() && other.hasKey())
       return Long.compare(this.key, other.key);
     if (this.hasKey())
@@ -51,8 +68,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     if (other.hasKey())
       return 1;
     
-    // We now have to new events and two such events cannot be equal, so we need
-    // to do our best to find a way to consistently order them. 
+    // We now have two new events. Check the other fields.
     c = this.location.compareTo(other.location);
     if (c != 0) return c;
     c = this.transit.compareTo(other.transit);
@@ -60,6 +76,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     c = this.url.compareTo(other.url);
     if (c != 0) return c;
     
+    // Those are two new, duplicate events...
     return Integer.compare(this.hashCode(), other.hashCode());
   }
 

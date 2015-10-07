@@ -7,7 +7,6 @@
 <%@ page import="ch.aoz.maps.Language" %>
 <%@ page import="ch.aoz.maps.Phrase" %>
 <%@ page import="ch.aoz.maps.Phrases" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%!
 public static String createLanguageForm(Map<String, Language> languages, String selected) {
