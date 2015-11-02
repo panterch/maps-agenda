@@ -20,7 +20,7 @@
       <td>{{t.value.name}}</td>
       <td>{{getLangStrings(t.value.langs)}}</td>
       <div ng-if="!canGoBack()" class="prev no-bg-image"></div>
-     <div ng-if="canGoBack()" ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
+      <div ng-if="canGoBack()" ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
       <td ng-if="t.is_modified && !t.is_new" ng-click="unedit(t.value.email); $event.stopPropagation()">
         <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
       </td>

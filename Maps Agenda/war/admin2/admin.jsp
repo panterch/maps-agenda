@@ -13,6 +13,7 @@
     <script src="scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
     <script src="scripts/angular-file-upload.min.js"></script> 
     <script src="scripts/admin.js"></script>
+    <script src="scripts/admin_languages.js"></script>
     <script src="scripts/admin_translators.js"></script>
     <script src="scripts/admin_controllers.js"></script>
     <script src="scripts/admin_config.js"></script>

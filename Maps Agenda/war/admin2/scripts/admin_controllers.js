@@ -1,12 +1,3 @@
-// Controller for the languages page.
-adminApp.controller('LanguageCtrl', function ($scope, languages) {
-  $scope.languages = languages;
-  $scope.edit = function(lang) {
-    alert("Editing capabilities coming soon.");
-    console.log("Language: " + lang);
-  }
-});
-
 //Controller for the phrases page.
 adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
                                             lang_phrases, lang, $location) {
