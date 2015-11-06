@@ -152,6 +152,27 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       },
       controller: 'NewsletterCtrl'
     })
+    .state('settings', {
+      parent: 'parent',
+      url: '/settings',
+          onEnter: function() { itemClick("settings") },
+      templateUrl: 'settings.html',
+      resolve: {
+        mailchimp_credentials : function($http) {
+          return $http({
+            method : 'GET',
+            url : '/admin/data?type=mailchimp_credentials'
+          }).then(function(data) {
+            if (data == null || data.data == null) {
+              return "{\"list_id\" : \"\", \"api_key\" : \"\"}";
+            } else {
+              return data.data; 
+            }
+          })
+        }
+      },
+      controller: 'SettingsCtrl'
+    })
     $urlRouterProvider.when(/\/translations\/?/, '/translations/de');
     // $urlRouterProvider.otherwise('/');
   }]

@@ -43,6 +43,7 @@
         <div class="menu_item" id="generate" ui-sref="generate">Generate XML</div>
         <div class="menu_item" id="looknfeel" ui-sref="looknfeel">Look &amp; Feel</div>
         <div class="menu_item" id="newsletter" ui-sref="newsletter">Send Newsletter</div>
+        <div class="menu_item" id="settings" ui-sref="settings">Settings</div>
       </div>
       <div id="content">
         <section ui-view>

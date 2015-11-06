@@ -53,6 +53,12 @@ public class Maps_AdminDataServlet extends HttpServlet {
     case "campaign":
       response = createCampaign(req);
       break;
+    case "mailchimp_credentials":
+      response = getMailChimpCredentials();
+      break;
+    case "save_mailchimp_credentials":
+      response = setMailChimpCredentials(req);
+      break;
     }
     if (response == null) {
 
@@ -359,9 +365,10 @@ public class Maps_AdminDataServlet extends HttpServlet {
     if (background_color == null) {
       background_color = BackgroundColor.fetchFromStore().getColor();
     }
-
+    
+    MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
     JSONObject options = new JSONObject();
-    options.put("list_id", "a13fa5f2a6");
+    options.put("list_id", credentials.getListId());
     options.put(
         "subject",
         "MAPS Agenda Newsletter "
@@ -377,7 +384,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
         background_color, req.getServerName())));
 
     JSONObject json = new JSONObject();
-    json.put("apikey", "b156333fb949d742f4fc7e667d25079d-us4");
+    json.put("apikey", credentials.getApiKey());
     json.put("type", "regular");
     json.put("options", options);
     json.put("content", content);
@@ -386,8 +393,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
     StringBuilder response = new StringBuilder();
     HttpURLConnection connection = null;
     try {
+      String[] apiKeyFields = credentials.getApiKey().split("-");
       URL url = new URL(
-          "https://us4.api.mailchimp.com/2.0/campaigns/create.json");
+          "https://" + apiKeyFields[1] + ".api.mailchimp.com/2.0/campaigns/create.json");
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json");
@@ -474,4 +482,32 @@ public class Maps_AdminDataServlet extends HttpServlet {
     }
     return response.toString();
   }
+
+  private String getMailChimpCredentials() {
+    MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
+    JSONObject response = new JSONObject();
+    response.put("list_id", credentials.getListId());
+    response.put("api_key", credentials.getApiKey());
+    return response.toString();
+  }
+
+  private String setMailChimpCredentials(HttpServletRequest req) {
+    String listId = req.getParameter("list_id");
+    String apiKey = req.getParameter("api_key");
+    if (listId == null || listId == "" || apiKey == null || apiKey == "") {
+      JSONObject response = new JSONObject();
+      response.put("error", "Empty arguments.");
+      return response.toString();    
+    }
+    
+    MailChimpCredentials credentials = new MailChimpCredentials(listId, apiKey);
+    if (!credentials.addToStore()) {
+      JSONObject response = new JSONObject();
+      response.put("error", "Failed to add data to the store.");
+      return response.toString();    
+    }
+
+    return new JSONObject().toString();
+  }
 }
+
