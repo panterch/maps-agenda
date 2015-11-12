@@ -139,7 +139,7 @@ public class XMLExportEntry {
 				+ "\" aid5:cellstyle=\"cs_titel_gross\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += frenchDoubleQuotes(escapeXML(description.getTitle()));
+		xml += escapeXML(frenchDoubleQuotes(description.getTitle()));
 		xml += "</title>";
 		xml += "</Tag_inside>";
 		return xml;
