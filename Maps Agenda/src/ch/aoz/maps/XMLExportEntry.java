@@ -85,7 +85,7 @@ public class XMLExportEntry {
 		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + width + "\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += escapeXML(description.getTitle());
+		xml += escapeXML(frenchDoubleQuotes(description.getTitle()));
 		xml += "</title>\n";
 		xml += "<Inhalttag aid:pstyle=\"inhalt"
 				+ language.getXMLFormatSupplement() + "\">";
