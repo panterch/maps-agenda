@@ -1,9 +1,13 @@
 package ch.aoz.maps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class encapsulating a language supported in the Maps Agenda.
@@ -55,8 +59,9 @@ public class Language implements Comparable<Language>, java.io.Serializable {
    */
   private final boolean ok;
 
-  public Language(String code, String name, String germanName, List<String> abbreviatedDays,
-          boolean rightToLeft, boolean inAgenda, boolean hasSpecificFormat) {
+  public Language(String code, String name, String germanName,
+      List<String> abbreviatedDays, boolean rightToLeft, boolean inAgenda,
+      boolean hasSpecificFormat) {
     this.code = code;
     this.name = name;
     this.germanName = germanName;
@@ -65,7 +70,22 @@ public class Language implements Comparable<Language>, java.io.Serializable {
     this.inAgenda = inAgenda;
     this.hasSpecificFormat = hasSpecificFormat;
     this.ok = (code != null) && (name != null) && (germanName != null)
-            && abbreviatedDays.size() == 7 && code.length() == 2;
+        && abbreviatedDays.size() == 7 && code.length() == 2;
+  }
+
+  public Language(JSONObject o) throws JSONException {
+    this.code = o.getString("code");
+    this.name = o.getString("name");
+    this.germanName = o.getString("germanName");
+    this.abbreviatedDays = new ArrayList<String>();
+    for (int i = 0; i < o.getJSONArray("days").length(); i++) {
+      this.abbreviatedDays.add(o.getJSONArray("days").getString(i));
+    }
+    this.rightToLeft = o.getBoolean("isRtl");
+    this.inAgenda = o.getBoolean("inAgenda");
+    this.hasSpecificFormat = o.getBoolean("specificFormat");
+    this.ok = (code != null) && (name != null) && (germanName != null)
+        && abbreviatedDays.size() == 7 && code.length() == 2;
   }
 
   public static Set<Language> getAllLanguages() {
@@ -85,13 +105,13 @@ public class Language implements Comparable<Language>, java.io.Serializable {
     }
     return m;
   }
-  
+
   public static boolean AddLanguage(Language lang) {
     if (!lang.isOk())
       return false;
     return Languages.addLanguage(lang);
   }
-  
+
   public static Language GetByCode(String key) {
     Languages languages = Languages.GetLanguages();
     if (languages == null)

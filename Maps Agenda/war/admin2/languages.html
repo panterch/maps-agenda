@@ -2,6 +2,7 @@
   <div class="title">List of languages</div>
   <div class="mb">
     <div class="left"><button ng-click="edit('')">Add a new language</button></div>
+    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
   </div>
   <table>
     <tr>
@@ -58,7 +59,8 @@
   <div class="popup-head">Edit language</div>
   <div class="popup-body">
     <form name="edit-form" ng-submit="save()">
-      <p>Code: {{language.value.code}}</p>
+      <p ng-if="!language.is_new">Code: {{language.value.code}}</p>
+      <p ng-if="language.is_new">Code: <input type="text" ng-model="language.value.code" required /></p>
       <p>Name: <input type="text" ng-model="language.value.name" required /></p>
       <p>German name: <input type="text" ng-model="language.value.germanName" required /></p>
       <table><tr>

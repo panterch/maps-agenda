@@ -15,7 +15,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class Languages implements java.io.Serializable {
   public static final String entityKind = "Languages";
-  public static final char RS = 0x1e;  // Record separator.
+  public static final char RS = 0x1e; // Record separator.
   private static final long serialVersionUID = 161720L;
 
   private SortedSet<Language> languages;
@@ -27,18 +27,18 @@ public class Languages implements java.io.Serializable {
     debug = "ok";
     isOk = true;
   }
-  
+
   public Languages(Collection<Language> languages) {
     this();
     for (Language l : languages) {
       this.languages.add(l);
     }
   }
-  
+
   private Languages(Entity entity) {
     this();
     for (String key : entity.getProperties().keySet()) {
-      String s = (String)entity.getProperty(key);
+      String s = (String) entity.getProperty(key);
       Language l = extractLanguage(key, s);
       if (l != null) {
         languages.add(l);
@@ -48,14 +48,15 @@ public class Languages implements java.io.Serializable {
     isOk = true;
     addToCache();
   }
-  
-  /** 
-   * Returns the Languages object. It contains all the languages defined in the application.
+
+  /**
+   * Returns the Languages object. It contains all the languages defined in the
+   * application.
    */
   public static Languages GetLanguages() {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
     if (syncCache.contains(entityKind)) {
-      return (Languages)syncCache.get(entityKind);
+      return (Languages) syncCache.get(entityKind);
     }
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     try {
@@ -67,10 +68,10 @@ public class Languages implements java.io.Serializable {
   }
 
   public static boolean addLanguage(Language l) {
-    if (l == null || !l.isOk()) 
+    if (l == null || !l.isOk())
       return false;
     Languages langs = GetLanguages();
-    if (langs == null) 
+    if (langs == null)
       return false;
     if (langs.languages.contains(l)) {
       if (!langs.languages.remove(l))
@@ -79,10 +80,23 @@ public class Languages implements java.io.Serializable {
     langs.languages.add(l);
     return langs.addToStore();
   }
-  
+
+  public static boolean removeLanguage(String code) {
+    if (code == null)
+      return false;
+    Languages langs = GetLanguages();
+    if (langs == null)
+      return false;
+    if (langs.languages.contains(code)) {
+      if (!langs.languages.remove(code))
+        return false;
+    }
+    return langs.addToStore();
+  }
+
   /**
    * Add this Languages to the datastore.
-   *
+   * 
    * @return true if this operation succeeded.
    */
   public boolean addToStore() {
@@ -98,12 +112,12 @@ public class Languages implements java.io.Serializable {
     addToCache();
     return true;
   }
-  
-  /** Utilities for storing and caching  */
-  
+
+  /** Utilities for storing and caching */
+
   /**
    * Returns the Entity representation of this Languages.
-   *
+   * 
    * @return an Entity with the properties of this Languages.
    */
   private Entity toEntity() {
@@ -114,25 +128,27 @@ public class Languages implements java.io.Serializable {
     return languages;
   }
 
-  /** 
+  /**
    * Extracts a Language from the packed representation in the database.
    * 
-   * @param packed string representation of a Language in the database.
+   * @param packed
+   *          string representation of a Language in the database.
    * @return a fully constructed Language
    */
   private static Language extractLanguage(String code, String packed) {
     String[] fields = packed.split("" + RS, 12);
-    if (fields.length != 12) return null;
-    return new Language(
-            code, fields[0], fields[1], 
-            Arrays.asList(fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8]),
-            fields[9].equals("Y"), fields[10].equals("Y"), fields[11].equals("Y"));
+    if (fields.length != 12)
+      return null;
+    return new Language(code, fields[0], fields[1], Arrays.asList(fields[2],
+        fields[3], fields[4], fields[5], fields[6], fields[7], fields[8]),
+        fields[9].equals("Y"), fields[10].equals("Y"), fields[11].equals("Y"));
   }
-  
+
   /**
    * Packs the provided Language into its database representation.
    * 
-   * @param l the language to pack in its database representation.
+   * @param l
+   *          the language to pack in its database representation.
    * @return the packed representation.
    */
   private static String packLanguage(Language l) {
@@ -150,14 +166,14 @@ public class Languages implements java.io.Serializable {
 
   private void addToCache() {
     MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-    syncCache.put(entityKind, this);    
+    syncCache.put(entityKind, this);
   }
-  
-  /** Only setters and getters below. */  
+
+  /** Only setters and getters below. */
   public SortedSet<Language> getSortedLanguages() {
     return languages;
   }
-  
+
   public Language getLanguage(String code) {
     for (Language l : languages) {
       if (l.getCode().equals(code))
@@ -165,10 +181,11 @@ public class Languages implements java.io.Serializable {
     }
     return null;
   }
-  
+
   public boolean isOk() {
     return isOk;
   }
+
   public String debug() {
     return debug;
   }

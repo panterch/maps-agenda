@@ -75,9 +75,15 @@ public class Maps_AdminDataServlet extends HttpServlet {
     case "mtranslators":
       response = modifyTranslators(req);
       break;
+    case "mlanguages":
+      response = modifyLanguages(req);
+      break;
     }
     if (response == null) {
-
+      JSONObject json = new JSONObject();
+      json.put("success", false);
+      json.put("error", "Unknown request type: " + req.getParameter("type"));
+      response = json.toString();
     }
     resp.setContentType("application/json");
     resp.getWriter().println(response);
@@ -365,7 +371,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
     if (background_color == null) {
       background_color = BackgroundColor.fetchFromStore().getColor();
     }
-    
+
     MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
     JSONObject options = new JSONObject();
     options.put("list_id", credentials.getListId());
@@ -394,8 +400,8 @@ public class Maps_AdminDataServlet extends HttpServlet {
     HttpURLConnection connection = null;
     try {
       String[] apiKeyFields = credentials.getApiKey().split("-");
-      URL url = new URL(
-          "https://" + apiKeyFields[1] + ".api.mailchimp.com/2.0/campaigns/create.json");
+      URL url = new URL("https://" + apiKeyFields[1]
+          + ".api.mailchimp.com/2.0/campaigns/create.json");
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json");
@@ -483,6 +489,53 @@ public class Maps_AdminDataServlet extends HttpServlet {
     return response.toString();
   }
 
+  public String modifyLanguages(HttpServletRequest req) {
+    JSONObject response = new JSONObject();
+    if (req.getParameter("modifications") == null
+        || req.getParameter("modifications").equals("")) {
+      response.put("success", false);
+      response.put("error", "No modifications");
+      return response.toString();
+    }
+
+    try {
+      JSONObject json = new JSONObject(req.getParameter("modifications"));
+      response.put("request", json);
+      for (int i = 0; i < json.getJSONArray("save").length(); ++i) {
+        JSONObject o = json.getJSONArray("save").getJSONObject(i);
+        Language l = new Language(o);
+        if (!l.isOk()) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to save language with code=" + o.getString("code"));
+          return response.toString();
+        } else if (!Languages.addLanguage(l)) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to save language with code=" + o.getString("code"));
+          return response.toString();
+        }
+      }
+      for (int i = 0; i < json.getJSONArray("remove").length(); ++i) {
+        JSONObject o = json.getJSONArray("remove").getJSONObject(i);
+        if (!Languages.removeLanguage(o.getString("code"))) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to remove language with code=" + o.getString("code"));
+          return response.toString();
+        }
+      }
+      JSONObject languages = new JSONObject(getLanguages());
+      response.put("success", true);
+      response.put("languages", languages.getJSONArray("languages"));
+    } catch (JSONException e) {
+      response.put("success", false);
+      response.put("error", e.getMessage());
+      response.put("request", req.getParameter("modifications"));
+    }
+    return response.toString();
+  }
+
   private String getMailChimpCredentials() {
     MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
     JSONObject response = new JSONObject();
@@ -497,17 +550,16 @@ public class Maps_AdminDataServlet extends HttpServlet {
     if (listId == null || listId == "" || apiKey == null || apiKey == "") {
       JSONObject response = new JSONObject();
       response.put("error", "Empty arguments.");
-      return response.toString();    
+      return response.toString();
     }
-    
+
     MailChimpCredentials credentials = new MailChimpCredentials(listId, apiKey);
     if (!credentials.addToStore()) {
       JSONObject response = new JSONObject();
       response.put("error", "Failed to add data to the store.");
-      return response.toString();    
+      return response.toString();
     }
 
     return new JSONObject().toString();
   }
 }
-

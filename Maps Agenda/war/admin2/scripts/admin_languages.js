@@ -1,5 +1,6 @@
 // Controller for the languages page.
-adminApp.controller('LanguageCtrl', function ($scope, languages) {
+adminApp.controller('LanguageCtrl', function ($scope, $http, languages) {
+  console.log(languages);
   $scope.setLanguages = function(languages) {
 	  $scope.languages = [];
 	  for (var i = 0; i < languages.length; ++i) {
@@ -26,7 +27,8 @@ adminApp.controller('LanguageCtrl', function ($scope, languages) {
   
   $scope.edit = function(code) {
     if (!code) { 
-      $scope.language = {is_modified: false, is_new: true, is_added: false, is_deleted: false, value: {} };
+      $scope.language = {is_modified: false, is_new: true, is_added: false, is_deleted: false, 
+    		             value: {days: [], isRtl: false, inAgenda: false, specificFormat: false}};
     } else {
       for (var i = 0; i < $scope.languages.length; ++i) {
         if ($scope.languages[i].value.code == code) {
@@ -72,6 +74,7 @@ adminApp.controller('LanguageCtrl', function ($scope, languages) {
   }
   $scope.noneModified = function() {
     for (var i = 0; i < $scope.languages.length; ++i) {
+      // TODO: Should not count the new events that are marked deleted. 
       if ($scope.languages[i].is_modified || $scope.languages[i].is_deleted) {
         return false;
       }
@@ -79,7 +82,32 @@ adminApp.controller('LanguageCtrl', function ($scope, languages) {
     return true;
   }
   $scope.saveAll = function() {
-	  alert('Not implemented');
+    json = {
+      save : [],
+      remove : []
+    }
+    for ( var i = 0; i < $scope.languages.length; ++i) {
+      if ($scope.languages[i].is_new) {
+        if (!$scope.languages[i].is_deleted) {
+          json.save.push($scope.languages[i].value);
+        }
+      } else if ($scope.languages[i].is_modified) {
+        json.save.push($scope.languages[i].value);
+      } else if ($scope.languages[i].is_deleted) {
+        json.remove.push($scope.languages[i].value);
+      }
+    }
+    $http({
+      method : 'POST',
+      url : '/admin/data?type=mlanguages&modifications=' + JSON.stringify(json)
+    }).success(function(data){
+      if (data.success) {
+        console.log(data);
+        $scope.setLanguages(data.languages);
+      } else {
+        alert("Saving failed: " + data.error)
+      }
+	});
   }  
   $scope.remove = function(code) {
     for (var i = 0; i < $scope.languages.length; ++i) {
