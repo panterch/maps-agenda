@@ -29,12 +29,8 @@
     <div id="main">
       <div id="menu">
         <div id="menu_selector"></div>
-        <div class="menu_item" id="translators">Translators</div>
-        <div class="menu_item" id="subscribers">Newsletter subscribers</div>
-        <div class="menu_item" id="languages">Supported languages</div>
         <div class="menu_item" id="phrases">Translations</div>
         <div class="menu_item" id="events">Events</div>
-        <div class="menu_item" id="send_newsletter">Send newsletter</div>
       </div>
       <div id="content">
         <iframe id="content-frame" name="content-frame" src="" frameBorder="0"></iframe>

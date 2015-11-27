@@ -64,6 +64,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
 
     }
     resp.setContentType("application/json");
+    resp.setCharacterEncoding("UTF-8");
     resp.getWriter().println(response);
   }
 
@@ -86,6 +87,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
       response = json.toString();
     }
     resp.setContentType("application/json");
+    resp.setCharacterEncoding("UTF-8");
     resp.getWriter().println(response);
   }
 
@@ -176,63 +178,19 @@ public class Maps_AdminDataServlet extends HttpServlet {
   }
 
   public String getLanguages() {
-    StringBuilder response = new StringBuilder();
-    response.append("{ \"languages\": [");
-
-    Set<Language> langs = Language.getAllLanguages();
-    for (Language l : langs) {
-      response.append("{\"code\":\"" + l.getCode() + "\",");
-      response.append("\"germanName\":\"")
-          .append(Utils.toUnicode(l.getGermanName())).append("\",");
-      response.append("\"name\":\"").append(Utils.toUnicode(l.getName()))
-          .append("\",");
-      response.append("\"days\":[");
-      for (String day : l.getDaysOfTheWeek()) {
-        response.append("\"").append(Utils.toUnicode(day)).append("\",");
-      }
-      if (response.charAt(response.length() - 1) == ',') {
-        response.deleteCharAt(response.length() - 1); // remove the last ,
-      }
-      response.append("],");
-      response.append("\"isRtl\":").append(l.isRightToLeft()).append(",");
-      response.append("\"inAgenda\":").append(l.isInAgenda()).append(",");
-      response.append("\"specificFormat\":").append(l.hasSpecificFormat())
-          .append("},");
+    JSONObject json = new JSONObject();
+    for (Language l : Language.getAllLanguages()) {
+      json.append("languages", l.toJSON());
     }
-    if (response.charAt(response.length() - 1) == ',') {
-      response.deleteCharAt(response.length() - 1); // remove the last ,
-    }
-
-    response.append("]}");
-    return response.toString();
+    return json.toString();
   }
 
   public String getTranslators() {
-    StringBuilder response = new StringBuilder();
-    response.append("{ \"translators\": [");
-
-    Map<String, Translator> translators = Translator.getAllTranslators();
-    for (String email : translators.keySet()) {
-      Translator t = translators.get(email);
-      response.append("{");
-      response.append("\"email\":\"").append(Utils.toUnicode(t.getEmail()))
-          .append("\",");
-      response.append("\"name\":\"").append(Utils.toUnicode(t.getName()))
-          .append("\",");
-      response.append("\"langs\":[");
-      for (String l : t.getLanguages()) {
-        response.append("\"").append(Utils.toUnicode(l)).append("\",");
-      }
-      if (response.charAt(response.length() - 1) == ',') {
-        response.deleteCharAt(response.length() - 1); // remove the last ,
-      }
-      response.append("]},");
+    JSONObject json = new JSONObject();
+    for (Translator t : Translator.getAllTranslators().values()) {
+      json.append("translators", t.toJSON());
     }
-    if (response.charAt(response.length() - 1) == ',') {
-      response.deleteCharAt(response.length() - 1); // remove the last ,
-    }
-    response.append("]}");
-    return response.toString();
+    return json.toString();
   }
 
   public String getSubscribers() {
