@@ -1,10 +1,27 @@
 //Controller for the phrases page.
 adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
                                             lang_phrases, lang, $location) {
+  $scope.getLangIndex = function(code) {
+    for (var i = 0; i < $scope.languages.length; ++i) {
+      if ($scope.languages[i].code == code)
+        return i;
+    }
+    return -1;
+  }
+  $scope.getLang = function(code) {
+    for (var i = 0; i < $scope.languages.length; ++i) {
+      if ($scope.languages[i].code == code)
+        return $scope.languages[i];
+    }
+    return {};
+  }
+
   $scope.languages = languages;
   $scope.lang = lang;
+  $scope.langIndex = $scope.getLangIndex(lang);
   $scope.de_phrases = de_phrases;
   $scope.lang_phrases = lang_phrases;
+
   $scope.edit = function(key) {
     alert("Editing capabilities coming soon.");
     console.log("Key: " + key);
@@ -30,6 +47,7 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
     }
   }
   $scope.updateLang = function() {
+    $scope.lang = $scope.languages[$scope.langIndex].code;
     $location.path("/translations/" + $scope.lang);
   }
   $scope.edit = function(email) {

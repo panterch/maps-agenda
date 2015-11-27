@@ -3,7 +3,7 @@
   <div class="mb">
     <div class="left"><button ng-click="edit('')">Add a new phrase</button></div>
     <div class="left">
-      <select ng-model="lang" ng-change="updateLang()"
+      <select ng-model="langIndex" ng-change="updateLang()"
               ng-options="code as language.name for (code, language) in languages">
       </select>
     </div>
@@ -14,8 +14,8 @@
     <tr>
       <th>Key</th>
       <th>Group</th>
-      <th>{{languages['de'].germanName}}</th>
-      <th ng-if="lang != 'de'">{{languages[lang].germanName}}</th>
+      <th>{{getLang('de').germanName}}</th>
+      <th ng-if="lang != 'de'">{{getLang(lang).germanName}}</th>
       <th>is tag?</th>
       <th><img src="icons/trash.svg" width=16 height=16 title='Delete'"></th>
     </tr>
