@@ -1,6 +1,5 @@
 // Controller for the languages page.
 adminApp.controller('LanguageCtrl', function ($scope, $http, languages) {
-  console.log(languages);
   $scope.setLanguages = function(languages) {
 	  $scope.languages = [];
 	  for (var i = 0; i < languages.length; ++i) {
@@ -102,7 +101,6 @@ adminApp.controller('LanguageCtrl', function ($scope, $http, languages) {
       url : '/admin/data?type=mlanguages&modifications=' + JSON.stringify(json)
     }).success(function(data){
       if (data.success) {
-        console.log(data);
         $scope.setLanguages(data.languages);
       } else {
         alert("Saving failed: " + data.error)
