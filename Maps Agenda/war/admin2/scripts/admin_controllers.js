@@ -1,13 +1,17 @@
 //Controller for the phrases page.
 adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
                                             lang_phrases, lang, $location) {
-  $scope.getLangIndex = function(code) {
-    for (var i = 0; i < $scope.languages.length; ++i) {
-      if ($scope.languages[i].code == code)
-        return i;
-    }
-    return -1;
+  $scope.de_phrases = de_phrases;
+  $scope.lang_phrases = lang_phrases;
+  $scope.languages = languages;
+  $scope.lang = lang;
+  // Assign $scope.lang by reference so that the lang drop-down is correctly
+  // prepopulated.
+  for (var i = 0; i < $scope.languages.length; ++i) {
+    if ($scope.languages[i].code == lang)
+      $scope.lang = $scope.languages[i];
   }
+  
   $scope.getLang = function(code) {
     for (var i = 0; i < $scope.languages.length; ++i) {
       if ($scope.languages[i].code == code)
@@ -15,13 +19,6 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
     }
     return {};
   }
-
-  $scope.languages = languages;
-  $scope.lang = lang;
-  $scope.langIndex = $scope.getLangIndex(lang);
-  $scope.de_phrases = de_phrases;
-  $scope.lang_phrases = lang_phrases;
-
   $scope.edit = function(key) {
     alert("Editing capabilities coming soon.");
     console.log("Key: " + key);
@@ -47,16 +44,15 @@ adminApp.controller('PhraseCtrl', function ($scope, languages, de_phrases,
     }
   }
   $scope.updateLang = function() {
-    $scope.lang = $scope.languages[$scope.langIndex].code;
-    $location.path("/translations/" + $scope.lang);
+    $location.path("/translations/" + $scope.lang.code);
   }
-  $scope.edit = function(email) {
+  $scope.edit = function(key) {
     alert("Editing capabilities coming soon.");
-    console.log("Email: " + email);
+    console.log("Key: " + key);
   }
-  $scope.remove = function(email) {
+  $scope.remove = function(key) {
     alert("Deletion capabilities coming soon.");
-    console.log("Delete email: " + email);
+    console.log("Delete key: " + key);
   }
 });
 
