@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -36,13 +35,11 @@ public class Maps_AdminDataServlet extends HttpServlet {
       response = getLanguages();
       break;
     case "events":
-      response = getEvents(req);
+      response = getEvents(req.getParameter("lang"),
+          stringToMonth(req.getParameter("month")));
       break;
     case "phrases":
-      response = getPhrases(req);
-      break;
-    case "subscribers":
-      response = getSubscribers();
+      response = getPhrases(req.getParameter("lang"));
       break;
     case "translators":
       response = getTranslators();
@@ -61,7 +58,10 @@ public class Maps_AdminDataServlet extends HttpServlet {
       break;
     }
     if (response == null) {
-
+      JSONObject json = new JSONObject();
+      json.put("success", false);
+      json.put("error", "Unknown request type: " + req.getParameter("type"));
+      response = json.toString();
     }
     resp.setContentType("application/json");
     resp.setCharacterEncoding("UTF-8");
@@ -79,6 +79,12 @@ public class Maps_AdminDataServlet extends HttpServlet {
     case "mlanguages":
       response = modifyLanguages(req);
       break;
+    case "mphrases":
+      response = modifyPhrases(req);
+      break;
+    case "mevents":
+      response = modifyEvents(req);
+      break;
     }
     if (response == null) {
       JSONObject json = new JSONObject();
@@ -91,90 +97,36 @@ public class Maps_AdminDataServlet extends HttpServlet {
     resp.getWriter().println(response);
   }
 
-  private String getPhrases(HttpServletRequest req) {
-    String lang = req.getParameter("lang");
-    Phrases phrases = Phrases.GetPhrasesForLanguage(lang);
-    StringBuilder response = new StringBuilder();
-    response.append("{ \"phrases\": [");
-    for (Phrase p : phrases.getPhrases()) {
-      response.append("{\"key\":\"" + p.getKey() + "\",");
-      response.append("\"group\":\"" + Utils.toUnicode(p.getGroup()) + "\",");
-      response.append("\"phrase\":\"" + Utils.toUnicode(p.getPhrase()) + "\",");
-      response.append("\"isTag\":" + p.isTag() + "},");
+  private String getPhrases(String lang) {
+    JSONObject json = new JSONObject();
+    for (Phrase p : Phrases.GetPhrasesForLanguage(lang).getPhrases()) {
+      json.append("phrases", p.toJSON());
     }
-    if (phrases.getPhrases().size() > 0) {
-      // Remove the last comma.
-      response.deleteCharAt(response.length() - 1);
-    }
-    response.append("]}");
-    return response.toString();
+    return json.toString();
   }
 
-  private String getEvents(HttpServletRequest req) {
-    Language lang = Language.GetByCode(req.getParameter("lang"));
+  private String getEvents(String language, Calendar month) {
+    Language lang = Language.GetByCode(language);
     if (lang == null) {
       lang = Language.GetByCode("de");
     }
 
-    Calendar date = Calendar.getInstance();
-    String requested_date = req.getParameter("month");
-    if (requested_date != null) {
-      try {
-        date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
-      } catch (Exception e) {
-      }
-    }
     // Set the time at midnight, so that the below query stays the same.
-    date.set(Calendar.MILLISECOND, 0);
-    date.set(Calendar.SECOND, 0);
-    date.set(Calendar.MINUTE, 0);
-    date.set(Calendar.HOUR_OF_DAY, 0);
-    date.set(Calendar.DATE, 1);
+    month.set(Calendar.MILLISECOND, 0);
+    month.set(Calendar.SECOND, 0);
+    month.set(Calendar.MINUTE, 0);
+    month.set(Calendar.HOUR_OF_DAY, 0);
+    month.set(Calendar.DATE, 1);
 
-    Events events = Events.getEvents(date, lang.getCode());
+    Events events = Events.getEvents(month, lang.getCode());
 
-    StringBuilder response = new StringBuilder();
-    response.append("{ \"events\": [");
+    JSONObject json = new JSONObject();
     for (Event e : events.getSortedEvents()) {
-      EventDescription d = e.getDescription();
-      if (d != null) {
-        response.append("{");
-        response.append("\"date\":\"").append(dateToString(e.getDate()))
-            .append("\",");
-        response.append("\"title\":\"").append(Utils.toUnicode(d.getTitle()))
-            .append("\",");
-        response.append("\"description\":\"")
-            .append(Utils.toUnicode(d.getDesc())).append("\",");
-        response.append("\"location\":\"")
-            .append(Utils.toUnicode(e.getLocation())).append("\",");
-        response.append("\"transit\":\"")
-            .append(Utils.toUnicode(e.getTransit())).append("\",");
-        response.append("\"url\":\"").append(Utils.toUnicode(e.getUrl()))
-            .append("\",");
-        response.append("\"tags\": [");
-        for (String tag : e.getTags()) {
-          response.append("\"").append(Utils.toUnicode(tag)).append("\",");
-        }
-        if (response.charAt(response.length() - 1) == ',') {
-          response.deleteCharAt(response.length() - 1); // remove the last ,
-        }
-        response.append("]},");
+      if (e.getDescription() != null) {
+        json.append("events", e.toJSON());
       }
     }
-    if (response.charAt(response.length() - 1) == ',') {
-      response.deleteCharAt(response.length() - 1); // remove the last ,
-    }
-
-    response.append("]}");
-    return response.toString();
-  }
-
-  public String dateToString(Date d) {
-    Calendar c = Calendar.getInstance();
-    c.setTime(d);
-    return new StringBuilder().append(c.get(Calendar.YEAR)).append('-')
-        .append(c.get(Calendar.MONTH) + 1).append('-')
-        .append(c.get(Calendar.DAY_OF_MONTH)).toString();
+    return json.toString();
   }
 
   public String getLanguages() {
@@ -191,30 +143,6 @@ public class Maps_AdminDataServlet extends HttpServlet {
       json.append("translators", t.toJSON());
     }
     return json.toString();
-  }
-
-  public String getSubscribers() {
-    StringBuilder response = new StringBuilder();
-    response.append("{ \"subscribers\": [");
-
-    Map<String, Subscriber> subscribers = Subscriber.getAllSubscribers();
-    for (String email : subscribers.keySet()) {
-      Subscriber s = subscribers.get(email);
-      response.append("{");
-      response.append("\"email\":\"").append(Utils.toUnicode(s.getEmail()))
-          .append("\",");
-      response.append("\"name\":\"").append(Utils.toUnicode(s.getName()))
-          .append("\",");
-      response.append("\"lang\":\"").append(Utils.toUnicode(s.getLanguage()))
-          .append("\",");
-      response.append("\"hash\":\"").append(Utils.toUnicode(s.getHash()))
-          .append("\"},");
-    }
-    if (response.charAt(response.length() - 1) == ',') {
-      response.deleteCharAt(response.length() - 1); // remove the last ,
-    }
-    response.append("]}");
-    return response.toString();
   }
 
   // TODO (pascalgwosdek) remove this function and the whole getter hierarchy.
@@ -494,6 +422,99 @@ public class Maps_AdminDataServlet extends HttpServlet {
     return response.toString();
   }
 
+  public String modifyPhrases(HttpServletRequest req) {
+    JSONObject response = new JSONObject();
+    if (req.getParameter("modifications") == null
+        || req.getParameter("modifications").equals("")) {
+      response.put("success", false);
+      response.put("error", "No modifications");
+      return response.toString();
+    }
+
+    try {
+      JSONObject json = new JSONObject(req.getParameter("modifications"));
+      response.put("request", json);
+      for (int i = 0; i < json.getJSONArray("save").length(); ++i) {
+        JSONObject o = json.getJSONArray("save").getJSONObject(i);
+        Phrase p = new Phrase(o);
+        if (!p.isOk()) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to save phrase with key=" + o.getString("key"));
+          return response.toString();
+        } else if (!p.addToStore()) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to save phrase with key=" + o.getString("key"));
+          return response.toString();
+        }
+      }
+      for (int i = 0; i < json.getJSONArray("remove").length(); ++i) {
+        JSONObject o = json.getJSONArray("remove").getJSONObject(i);
+        if (!Phrases.deleteKey(o.getString("key"))) {
+          response.put("success", false);
+          response.put("error",
+              "Failed to remove phrase with key=" + o.getString("key"));
+          return response.toString();
+        }
+      }
+      JSONObject phrases = new JSONObject(getPhrases(json.getString("lang")));
+      response.put("success", true);
+      response.put("phrases", phrases.getJSONArray("phrases"));
+    } catch (JSONException e) {
+      response.put("success", false);
+      response.put("error", e.getMessage());
+      response.put("request", req.getParameter("modifications"));
+    }
+    return response.toString();
+  }
+
+  public String modifyEvents(HttpServletRequest req) {
+    JSONObject response = new JSONObject();
+    if (req.getParameter("modifications") == null
+        || req.getParameter("modifications").equals("")) {
+      response.put("success", false);
+      response.put("error", "No modifications");
+      return response.toString();
+    }
+
+    try {
+      JSONObject json = new JSONObject(req.getParameter("modifications"));
+      response.put("request", json);
+      for (int i = 0; i < json.getJSONArray("save").length(); ++i) {
+        JSONObject o = json.getJSONArray("save").getJSONObject(i);
+        Event e = new Event(o);
+        if (!e.isOk()) {
+          response.put("success", false);
+          response.put("error", "Failed to save event: " + e);
+          return response.toString();
+        } else if (!Events.addEvent(e)) {
+          response.put("success", false);
+          response.put("error", "Failed to save event: " + e);
+          return response.toString();
+        }
+      }
+      for (int i = 0; i < json.getJSONArray("remove").length(); ++i) {
+        JSONObject o = json.getJSONArray("remove").getJSONObject(i);
+        Event e = new Event(o);
+        if (!Events.removeEvent(e.getKey(), e.getCalendar())) {
+          response.put("success", false);
+          response.put("error", "Failed to remove event: " + e);
+          return response.toString();
+        }
+      }
+      JSONObject events = new JSONObject(getEvents(json.getString("lang"),
+          stringToMonth(json.getString("month"))));
+      response.put("success", true);
+      response.put("events", events.getJSONArray("events"));
+    } catch (JSONException e) {
+      response.put("success", false);
+      response.put("error", e.getMessage());
+      response.put("request", req.getParameter("modifications"));
+    }
+    return response.toString();
+  }
+
   private String getMailChimpCredentials() {
     MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
     JSONObject response = new JSONObject();
@@ -519,5 +540,17 @@ public class Maps_AdminDataServlet extends HttpServlet {
     }
 
     return new JSONObject().toString();
+  }
+
+  private Calendar stringToMonth(String s) {
+    Calendar month = Calendar.getInstance();
+    if (s == null)
+      return month;
+
+    try {
+      month.setTime(new SimpleDateFormat("yyyy-MM").parse(s));
+    } catch (Exception e) {
+    }
+    return month;
   }
 }

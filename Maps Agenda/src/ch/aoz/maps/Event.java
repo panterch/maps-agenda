@@ -1,11 +1,16 @@
 package ch.aoz.maps;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A MAPS event.
@@ -27,7 +32,8 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   // New: description for this event (title and description in a given lang).
   private EventDescription description;
 
-  // New: Stuff that is always the same for all the translations of the same event.
+  // New: Stuff that is always the same for all the translations of the same
+  // event.
   private String location;
   private String transit;
   private String url;
@@ -42,24 +48,28 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   @Override
   public int compareTo(Event other) {
     // If the events are from different months, they cannot be equal.
-    Calendar month1 = (Calendar)calendar.clone();
-    Calendar month2 = (Calendar)other.calendar.clone();
+    Calendar month1 = (Calendar) calendar.clone();
+    Calendar month2 = (Calendar) other.calendar.clone();
     month1.set(Calendar.DATE, 1);
     month2.set(Calendar.DATE, 1);
     int c = month1.compareTo(month2);
-    if (c != 0) return c;
-    
-    // Then check if they have the same key, in which case those are the same event.
+    if (c != 0)
+      return c;
+
+    // Then check if they have the same key, in which case those are the same
+    // event.
     if (this.hasKey() && other.hasKey() && this.key == other.key)
       return 0;
-    
-    // At this point, we are confident that the two events are different. We only need to
-    // consistently order them. 
-    
+
+    // At this point, we are confident that the two events are different. We
+    // only need to
+    // consistently order them.
+
     // First order them by date.
     c = getDate().compareTo(other.getDate());
-    if (c != 0) return c;
-    
+    if (c != 0)
+      return c;
+
     // Then by key.
     if (this.hasKey() && other.hasKey())
       return Long.compare(this.key, other.key);
@@ -67,20 +77,23 @@ public class Event implements Comparable<Event>, java.io.Serializable {
       return -1;
     if (other.hasKey())
       return 1;
-    
+
     // We now have two new events. Check the other fields.
     c = this.location.compareTo(other.location);
-    if (c != 0) return c;
+    if (c != 0)
+      return c;
     c = this.transit.compareTo(other.transit);
-    if (c != 0) return c;
+    if (c != 0)
+      return c;
     c = this.url.compareTo(other.url);
-    if (c != 0) return c;
-    
+    if (c != 0)
+      return c;
+
     // Those are two new, duplicate events...
     return Integer.compare(this.hashCode(), other.hashCode());
   }
 
-  // Two events are equal if they have the same key. Note that events they have 
+  // Two events are equal if they have the same key. Note that events they have
   // no key assigned yet cannot be equal to another event.
   @Override
   public boolean equals(Object o) {
@@ -96,7 +109,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
    * Create a new Event with all the info required for the Events object.
    */
   public Event(Calendar calendar, long key, String location, String transit,
-               String url, Set<String> tags) {
+      String url, Set<String> tags) {
     this.key = key;
     this.hasKey = true;
     this.location = (location != null ? location.trim() : "");
@@ -118,8 +131,8 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   /**
    * Create a new Event without key.
    */
-  public Event(Calendar calendar, String location, String transit,
-               String url, Set<String> tags, EventDescription d) {
+  public Event(Calendar calendar, String location, String transit, String url,
+      Set<String> tags, EventDescription d) {
     this.key = 0;
     this.hasKey = false;
     this.location = (location != null ? location.trim() : "");
@@ -138,6 +151,25 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     }
   }
 
+  public Event(JSONObject o) throws JSONException {
+    key = o.getLong("key");
+    hasKey = (key != 0);
+    calendar = stringToDate(o.getString("date"));
+    location = o.getString("location");
+    transit = o.getString("transit");
+    url = o.getString("url");
+    tags = new HashSet<String>();
+    JSONArray json_tags = o.getJSONArray("tags");
+    for (int i = 0; i < json_tags.length(); ++i) {
+      tags.add(json_tags.getString(i));
+    }
+    if (o.has("lang")) {
+      description = new EventDescription(o.getString("lang"),
+          o.has("title") ? o.getString("title") : "",
+          o.has("description") ? o.getString("description") : "");
+    }
+  }
+
   @Override
   public Event clone() {
     Event e = new Event(calendar, key, location, transit, url, tags);
@@ -145,16 +177,17 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     e.description = description;
     e.ok = ok;
     if (errors != null)
-      e.errors.addAll(errors);    
+      e.errors.addAll(errors);
     return e;
   }
-    
+
   /**
    * @return the date
    */
   public Date getDate() {
     return calendar.getTime();
   }
+
   public Calendar getCalendar() {
     return calendar;
   }
@@ -204,7 +237,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
   public void setDescription(EventDescription description) {
     this.description = description;
   }
-  
+
   public void clearLocationTransitUrl() {
     this.location = new String();
     this.transit = new String();
@@ -225,6 +258,47 @@ public class Event implements Comparable<Event>, java.io.Serializable {
 
   public Set<String> getTags() {
     return tags;
+  }
+
+  public JSONObject toJSON() {
+    JSONObject json = new JSONObject();
+    json.put("key", key);
+    json.put("date", dateString());
+    if (description != null) {
+      json.put("title", description.getTitle());
+      json.put("description", description.getDesc());
+      json.put("lang", description.getLang());
+    }
+    json.put("location", location);
+    json.put("transit", transit);
+    json.put("url", url);
+    for (String tag : getTags()) {
+      json.append("tags", tag);
+    }
+    return json;
+  }
+
+  @Override
+  public String toString() {
+    return toJSON().toString();
+  }
+
+  private String dateString() {
+    return new StringBuilder().append(calendar.get(Calendar.YEAR)).append('-')
+        .append(calendar.get(Calendar.MONTH) + 1).append('-')
+        .append(calendar.get(Calendar.DAY_OF_MONTH)).toString();
+  }
+
+  private Calendar stringToDate(String s) {
+    Calendar month = Calendar.getInstance();
+    if (s == null)
+      return toCalendar(month.getTime());
+
+    try {
+      month.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(s));
+    } catch (Exception e) {
+    }
+    return toCalendar(month.getTime());
   }
 
   /**
