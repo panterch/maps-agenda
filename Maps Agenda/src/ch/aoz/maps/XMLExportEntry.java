@@ -85,7 +85,7 @@ public class XMLExportEntry {
 		xml += "<Tag_inside aid:table=\"cell\" aid:crows=\"1\" aid:ccols=\"1\" aid:ccolwidth=\"" + width + "\" aid5:cellstyle=\"cs_desc\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += escapeXML(frenchDoubleQuotes(description.getTitle()));
+		xml += escapeXML(description.getTitle());
 		xml += "</title>\n";
 		xml += "<Inhalttag aid:pstyle=\"inhalt"
 				+ language.getXMLFormatSupplement() + "\">";
@@ -139,7 +139,7 @@ public class XMLExportEntry {
 				+ "\" aid5:cellstyle=\"cs_titel_gross\">";
 		xml += "<title aid:pstyle=\"titel" + language.getXMLFormatSupplement()
 				+ "\">";
-		xml += escapeXML(frenchDoubleQuotes(description.getTitle()));
+		xml += escapeXML(description.getTitle());
 		xml += "</title>";
 		xml += "</Tag_inside>";
 		return xml;
@@ -197,18 +197,5 @@ public class XMLExportEntry {
 	    content = content.replace("\"", "&quot;");
 	}
 	return content;
-    }
-    
-    /** 
-     * Replaces all occurrences of " in a string with the respective « » ones.
-     * 
-     * @param content
-     * @return replaced string
-     */
-    public static String frenchDoubleQuotes(String content) {
-      if (content.charAt(0) == '"') {
-        content = "«" + content.substring(1);
-      }
-      return content.replaceAll(" \"", " «").replaceAll("\"", "»");
-    }
+    }    
 }
