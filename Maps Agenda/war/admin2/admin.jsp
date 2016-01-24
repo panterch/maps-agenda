@@ -15,6 +15,8 @@
     <script src="scripts/admin.js"></script>
     <script src="scripts/admin_languages.js"></script>
     <script src="scripts/admin_translators.js"></script>
+    <script src="scripts/admin_phrases.js"></script>
+    <script src="scripts/admin_events.js"></script>
     <script src="scripts/admin_controllers.js"></script>
     <script src="scripts/admin_config.js"></script>
     <title>Maps Agenda Admin Console</title>
