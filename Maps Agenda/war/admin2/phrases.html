@@ -18,10 +18,11 @@
       <th>{{getLang('de').germanName}}</th>
       <th ng-if="lang.code != 'de'">{{lang.germanName}}</th>
       <th>is tag?</th>
+      <th><img src="icons/undo.svg" width=16 height=16 title='Undo changes'></th>
       <th><img src="icons/trash.svg" width=16 height=16 title='Delete'"></th>
     </tr>
-    <tr class="hover" ng-repeat="p in de_phrases | filter: p_filter(search) | orderBy: 'value.group'" 
-                      ng-click="edit(p.value.key)">
+    <tr ng-repeat="p in de_phrases | filter: p_filter(search) | orderBy: 'value.group'" 
+        ng-click="edit(p.value.key)" ng-class="getRowClass(p)">
       <td>{{p.value.key}}</td>
       <td>{{p.value.group}}</td>
       <td>{{p.value.phrase}}</td>
@@ -30,7 +31,11 @@
         <span ng-switch-when=true>&#10003;</span>
         <span ng-switch-when=false>&#10007;</span>
       </td>
-      <td class="red-hover" ng-click="remove(p.key); $event.stopPropagation()">
+      <td ng-if="p.is_modified && !p.is_new" ng-click="unedit(p.value.key); $event.stopPropagation()">
+        <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
+      </td>
+      <td ng-if="!p.is_modified || p.is_new"></td>
+      <td class="red-hover" ng-click="remove(p.value.key); $event.stopPropagation()">
         <img src="icons/trash.svg" width=16 height=16 title='Delete'>
       </td>
     </tr>
