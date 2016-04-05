@@ -9,7 +9,7 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
     return {};
   }
   $scope.preparePhrases = function(phrases, lang) {
-    if (phrases == null) return null;
+    if (phrases == null || angular.isUndefined(phrases)) return [];
     local_phrases = [];
     for (var i = 0; i < phrases.length; ++i) {
       phrases[i].lang = lang.code;

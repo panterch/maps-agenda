@@ -13,9 +13,13 @@ adminApp.controller('LanguageCtrl', function ($scope, $http, languages) {
 	    }
 	    $scope.languages.push(l);
 	  }  	  
-  } 
-  $scope.setLanguages(languages);
-
+  }
+  if (angular.isUndefined(languages)){
+	  $scope.setLanguages([]);
+  } else {
+	  $scope.setLanguages(languages);	  
+  }
+ 
   $scope.getRowClass = function(l) {
     if (l.is_deleted)
       return "red-hover deleted";

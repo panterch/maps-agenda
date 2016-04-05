@@ -9,6 +9,7 @@ public class Maps_LanguageServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {        
+    	System.out.println("I was here");
         StringBuilder response = new StringBuilder();
         response.append("/* version 0.5 */\n");
         response.append("function LanguageMenuCtrl($scope) {\n");

@@ -16,7 +16,11 @@ adminApp.controller('TranslatorCtrl', function ($scope, $http, languages, transl
 	    $scope.translators.push(t);
 	  }  	  
   } 
-  $scope.setTranslators(translators);
+  if(angular.isUndefined(translators)){
+	  $scope.setTranslators([]);
+  } else {
+	  $scope.setTranslators(translators);
+  }
   
   $scope.getRowClass = function(t) {
     if (t.is_deleted)
