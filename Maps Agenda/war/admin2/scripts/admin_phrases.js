@@ -180,7 +180,11 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
       url : '/admin/data?type=mphrases&modifications=' + JSON.stringify(json)
     }).success(function(data){
       if (data.success) {
-        alert("Please reload to see the changes... Automatic update still under construction.");
+        if ($scope.lang_phrases == null) {
+          $scope.de_phrases = $scope.preparePhrases(data.phrases, $scope.getLang("de"));
+        } else {
+          alert("Please reload to see the changes... Automatic update still under construction.");
+        }
       } else {
         alert("Saving failed: " + data.error)
       }
