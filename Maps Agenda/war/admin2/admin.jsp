@@ -7,18 +7,7 @@
 <html ng-app="adminApp">
   <head>
     <meta charset="utf-8">
-    <link href="css/admin.css" rel="stylesheet" type="text/css"></link>
-    <script src="scripts/angular.min.js"></script>
-    <script src="scripts/angular-ui-router.min.js"></script>
-    <script src="scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
-    <script src="scripts/angular-file-upload.min.js"></script> 
-    <script src="scripts/admin.js"></script>
-    <script src="scripts/admin_languages.js"></script>
-    <script src="scripts/admin_translators.js"></script>
-    <script src="scripts/admin_phrases.js"></script>
-    <script src="scripts/admin_events.js"></script>
-    <script src="scripts/admin_controllers.js"></script>
-    <script src="scripts/admin_config.js"></script>
+    <link href="/style/admin.css" rel="stylesheet" type="text/css"></link>
     <title>Maps Agenda Admin Console</title>
   </head>
   <body>
@@ -53,5 +42,18 @@
         </section>
       </div>
     </div>
+    
+    <script src="/scripts/angular.min.js"></script>
+    <script src="/scripts/angular-ui-router.min.js"></script>
+    <script src="/scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+    <script src="/scripts/angular-file-upload.min.js"></script> 
+    <script src="scripts/admin.js"></script>
+    <script src="languages/admin_languages.js"></script>
+    <script src="translators/admin_translators.js"></script>
+    <script src="phrases/admin_phrases.js"></script>
+    <script src="scripts/admin_events.js"></script>
+    <script src="scripts/admin_controllers.js"></script>
+    <script src="scripts/admin_config.js"></script>
+    
   </body>
 </html>

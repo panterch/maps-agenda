@@ -238,7 +238,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
   	  .state('main', {
         'abstract': true,
         'url': '/{lang:[a-z][a-z]}',
-        'templateUrl': 'main.html',
+        'templateUrl': 'main/main.html',
         'resolve': {
           'lang': ['$stateParams', function($stateParams) {
             return $stateParams.lang;
@@ -270,7 +270,7 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
       })
       .state('main.events', {
         'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}&back',
-        'templateUrl': 'events.html',
+        'templateUrl': 'events/events.html',
         'resolve': {
           'date': ['$stateParams', function($stateParams) {
             return $stateParams.date;
@@ -309,11 +309,11 @@ mapsApp.config(['$stateProvider', '$urlRouterProvider',
       })
       .state('main.contact', {
         url: '/contact',
-        templateUrl: 'contact.html'        
+        templateUrl: 'contact/contact.html'        
       })
       .state('main.impressum', {
         url: '/impressum',
-        templateUrl: 'impressum.html'        
+        templateUrl: 'impressum/impressum.html'        
       });
     $urlRouterProvider.when(/^\/[a-z][a-z]/, ['$match', function ($match) {
       return $match + '/events';

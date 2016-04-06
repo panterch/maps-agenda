@@ -7,7 +7,7 @@
   </servlet>
   <servlet-mapping>
      <servlet-name>Servlet_CSS</servlet-name>
-     <url-pattern>/maps/css/look_and_feel.css</url-pattern>
+     <url-pattern>/style/look_and_feel.css</url-pattern>
   </servlet-mapping>
 
   <servlet>

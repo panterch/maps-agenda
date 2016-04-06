@@ -9,7 +9,7 @@
 <html>
   <head>
     <title>Maps Agenda Admin Console</title>
-    <link href="admin.css" rel="stylesheet" type="text/css"></link>
+    <link href="/style/admin.css" rel="stylesheet" type="text/css"></link>
     <script src="admin.js"></script>
   </head>
   <body onLoad="onLoadAdmin()">
