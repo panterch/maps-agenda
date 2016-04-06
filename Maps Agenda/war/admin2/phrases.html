@@ -19,7 +19,7 @@
       <th ng-if="lang.code != 'de'">{{lang.germanName}}</th>
       <th>is tag?</th>
       <th><img src="icons/undo.svg" width=16 height=16 title='Undo changes'></th>
-      <th><img src="icons/trash.svg" width=16 height=16 title='Delete'"></th>
+      <th ng-if="lang.code == 'de'"><img src="icons/trash.svg" width=16 height=16 title='Delete'"></th>
     </tr>
     <tr ng-repeat="p in de_phrases | filter: p_filter(search) | orderBy: 'value.group'" 
         ng-click="edit(p.value.key)" ng-class="getRowClass(p)">
@@ -35,7 +35,7 @@
         <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
       </td>
       <td ng-if="!p.is_modified || p.is_new"></td>
-      <td class="red-hover" ng-click="remove(p.value.key); $event.stopPropagation()">
+      <td class="red-hover" ng-click="remove(p.value.key); $event.stopPropagation()" ng-if="lang.code == 'de'">
         <img src="icons/trash.svg" width=16 height=16 title='Delete'>
       </td>
     </tr>
