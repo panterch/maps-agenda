@@ -7,7 +7,7 @@
 <html ng-app="adminApp">
   <head>
     <meta charset="utf-8">
-    <link href="/style/admin.css" rel="stylesheet" type="text/css"></link>
+    <link href="/style/admin2.css" rel="stylesheet" type="text/css"></link>
     <title>Maps Agenda Admin Console</title>
   </head>
   <body>
