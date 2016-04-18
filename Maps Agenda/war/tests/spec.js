@@ -6,7 +6,8 @@ describe('general tests main app', function() {
   });
   it('should have a language', function() {
 	    browser.get('http://localhost:8888/maps/');
+	    var lang = element(by.binding("l.name_br"));
 
-	    expect(browser.getTitle()).toEqual('Maps Agenda');
+	    expect(lang.getText()).toEqual('DEUTSCH');
 	  });
 });

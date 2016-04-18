@@ -1,7 +1,5 @@
 languages:
-  Ruby: true
+  Java: true
   JavaScript: true
-  PHP: true
-  Python: true
 exclude_paths:
 - "Maps Agenda/war/scripts/"

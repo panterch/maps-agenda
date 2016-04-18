@@ -17,7 +17,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       parent: 'parent',
       url: '/translators',
       onEnter: function() { itemClick("translators") },
-      templateUrl: 'translators.html',
+      templateUrl: '/admin2/translators/translators.html',
       resolve: {
         translators: function($http) {
           return $http({method: 'GET', url: '/admin/data?type=translators'})
@@ -46,14 +46,14 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       parent: 'parent',
       url: '/languages',
           onEnter: function() { itemClick("languages") },
-      templateUrl: 'languages.html',
+      templateUrl: '/admin2/languages/languages.html',
       controller: 'LanguageCtrl'
     })
     .state('phrases', {
       parent: 'parent',
       url: '/translations/{lang:[a-z][a-z]}',
       onEnter: function() { itemClick("phrases") },
-      templateUrl: 'phrases.html',
+      templateUrl: '/admin2/phrases/phrases.html',
       resolve: {
         lang: ['$stateParams', function($stateParams) {
           return $stateParams.lang;
@@ -77,7 +77,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     .state('events', {
       url: '/events?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
       onEnter: function() { itemClick("events") },
-      templateUrl: 'events.html',
+      templateUrl: '/admin2/events/events.html',
       resolve: {
         month_str: ['$stateParams', function($stateParams) {
           return $stateParams.month;
@@ -98,13 +98,13 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     .state('generate', {
       url: '/generate_xml',
       onEnter: function() { itemClick("generate") },
-      templateUrl: 'generate.html',
+      templateUrl: '/admin2/generate.html',
       controller: 'GenerateCtrl'
     })
     .state('looknfeel', {
       url: '/looknfeel',
       onEnter: function() { itemClick("looknfeel") },
-      templateUrl: 'looknfeel.html',
+      templateUrl: '/admin2/looknfeel.html',
     resolve : {
     background_color : function($http) {
       return $http({
@@ -132,7 +132,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     .state('newsletter', {
       url: '/newsletter?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
       onEnter: function() { itemClick("newsletter") },
-      templateUrl: 'newsletter.html',
+      templateUrl: '/admin2/newsletter.html',
       resolve: {
         background_color : function($http) {
           return $http({
@@ -156,7 +156,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       parent: 'parent',
       url: '/settings',
           onEnter: function() { itemClick("settings") },
-      templateUrl: 'settings.html',
+      templateUrl: '/admin2/settings.html',
       resolve: {
         mailchimp_credentials : function($http) {
           return $http({
