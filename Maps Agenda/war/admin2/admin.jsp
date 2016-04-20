@@ -48,12 +48,15 @@
     <script src="/scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
     <script src="/scripts/angular-file-upload.min.js"></script> 
     <script src="scripts/admin.js"></script>
-    <script src="languages/admin_languages.js"></script>
-    <script src="translators/admin_translators.js"></script>
+    <script src="languages/languages.js"></script>
+    <script src="translators/translators.js"></script>
     <script src="phrases/admin_phrases.js"></script>
-    <script src="scripts/admin_events.js"></script>
+    <script src="events/events.js"></script>
     <script src="scripts/admin_controllers.js"></script>
     <script src="scripts/admin_config.js"></script>
+    <script src="looknfeel/looknfeel.js"></script>
+    <script src="settings/settings.js"></script>
+    <script src="newsletter/newsletter.js"></script>
     
   </body>
 </html>

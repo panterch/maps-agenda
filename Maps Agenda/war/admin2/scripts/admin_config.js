@@ -98,13 +98,13 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     .state('generate', {
       url: '/generate_xml',
       onEnter: function() { itemClick("generate") },
-      templateUrl: '/admin2/generate.html',
+      templateUrl: '/admin2/generate/generate.html',
       controller: 'GenerateCtrl'
     })
     .state('looknfeel', {
       url: '/looknfeel',
       onEnter: function() { itemClick("looknfeel") },
-      templateUrl: '/admin2/looknfeel.html',
+      templateUrl: '/admin2/looknfeel/looknfeel.html',
     resolve : {
     background_color : function($http) {
       return $http({
@@ -132,7 +132,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
     .state('newsletter', {
       url: '/newsletter?{month:[0-9][0-9][0-9][0-9]-[0-9][0-9]}',
       onEnter: function() { itemClick("newsletter") },
-      templateUrl: '/admin2/newsletter.html',
+      templateUrl: '/admin2/newsletter/newsletter.html',
       resolve: {
         background_color : function($http) {
           return $http({
@@ -156,7 +156,7 @@ adminApp.config(['$stateProvider', '$urlRouterProvider',
       parent: 'parent',
       url: '/settings',
           onEnter: function() { itemClick("settings") },
-      templateUrl: '/admin2/settings.html',
+      templateUrl: '/admin2/settings/settings.html',
       resolve: {
         mailchimp_credentials : function($http) {
           return $http({
