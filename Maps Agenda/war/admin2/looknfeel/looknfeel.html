@@ -1,0 +1,28 @@
+<div class="left">
+  <div class="title">Look &amp; Feel</div>
+  <div class="subtitle">Background Image</div>
+  Select the background image you want to serve, or click on X to delete images from the store. The currently served image cannot be deleted.<br><br>
+  <div ng-repeat="thumbnail in background_thumbnails" style="display: inline-block;">
+    <div class="thumbnail-container">
+      <div class="ie_thumbnail_wrapper"><img src="{{thumbnail.url}}=s200" style="background-color: #{{background_color}}; margin-bottom: -4px;"></div>
+      <div ng-show="thumbnail.served == 'false'" class="image-overlay-container">
+        <a href="" title="Serve" ng-click="serve_background(thumbnail.key);" class="image-overlay bg-green">&#x2713</a>
+        <a href="" title="Delete" ng-click="delete_background(thumbnail.key);" class="image-overlay bg-red">&#x2717</a>
+      </div>
+      <div ng-show="thumbnail.served == 'true'" class="image-overlay-container">
+        <span class="image-overlay bg-green">Served</span>
+      </div>
+    </div>
+  </div><br><br>
+  Upload new images to the store. The upload will start automatically as you select a file. Please wait for the image to appear in the list above.<br>
+  New uploads will not be pushed live before you click the green button in the list view.<br><br>
+  <div ng-controller="UploadBackgroundCtrl">
+    <input type="file" ng-file-select="onFileSelect($files)" multiple>
+  </div>
+  <div class="subtitle">Main Color</div>
+  Select the main color for the page, and click Apply to push the changes to the page:<br><br>
+  <form>
+    <input type="text" name="color" value="{{background_color}}" style="width: 80px" ng-model="background_color"><input type="submit" value="Apply" style="width: 80px" ng-click="apply_bg_color()"><br>
+    <div style="height: 160px; width: 160px; background-color: #{{background_color}}"></div>
+  </form>
+</div>
