@@ -266,7 +266,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
         "MAPS Agenda Newsletter "
             + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
             + " " + date.get(Calendar.YEAR));
-    options.put("from_name", JSONObject.stringToValue("MAPS Züri Agenda"));
+    options.put("from_name", JSONObject.stringToValue(Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase()));
     options.put("from_email", "maps@aoz.ch");
     options.put("to_name", "*|NAME|*");
     options.put("generate_text", true);
