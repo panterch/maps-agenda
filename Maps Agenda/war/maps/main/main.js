@@ -34,6 +34,7 @@ var dateToString = function(date) {
 // date remains the same and does not jump back to the current day.
 angular.module('mapsApp')
 	   .service('dateKeeper', dateKeeper);
+     
 function dateKeeper(){
   this.date = new Date();
   this.getDate = function() { return this.date; }

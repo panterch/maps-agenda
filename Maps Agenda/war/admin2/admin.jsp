@@ -7,7 +7,7 @@
 <html ng-app="adminApp">
   <head>
     <meta charset="utf-8">
-    <link href="/style/admin2.css" rel="stylesheet" type="text/css"></link>
+    <link href="/content/style/admin2.css" rel="stylesheet" type="text/css"></link>
     <title>Maps Agenda Admin Console</title>
   </head>
   <body>
@@ -43,10 +43,10 @@
       </div>
     </div>
     
-    <script src="/scripts/angular.min.js"></script>
-    <script src="/scripts/angular-ui-router.min.js"></script>
-    <script src="/scripts/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
-    <script src="/scripts/angular-file-upload.min.js"></script> 
+    <script src="/vendor/angular.min.js"></script>
+    <script src="/vendor/angular-ui-router.min.js"></script>
+    <script src="/vendor/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+    <script src="/vendor/angular-file-upload.min.js"></script> 
     <script src="scripts/admin.js"></script>
     <script src="languages/languages.js"></script>
     <script src="translators/translators.js"></script>

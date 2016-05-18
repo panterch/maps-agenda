@@ -121,8 +121,8 @@ public class NewsletterExport {
   
   /** Header HTML = Colored AOZ banner. */
   private void renderHeader() {
-    String logoUrl = urlRoot + "/static/themes/transparent_header.png";
-    String aozHeaderUrl = urlRoot + "/static/aoz-stadtzuerich.gif";
+    String logoUrl = urlRoot + "/content/static/themes/transparent_header.png";
+    String aozHeaderUrl = urlRoot + "/content/static/aoz-stadtzuerich.gif";
     
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
