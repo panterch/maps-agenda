@@ -9,7 +9,7 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
     return {};
   }
   $scope.preparePhrases = function(phrases, lang) {
-    if (phrases == null || angular.isUndefined(phrases)) return [];
+    if (phrases == null) return null;
     local_phrases = [];
     for (var i = 0; i < phrases.length; ++i) {
       phrases[i].lang = lang.code;
@@ -24,7 +24,24 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
       local_phrases.push(p);
     }
     return local_phrases;
-  } 
+  }
+  $scope.fillInLangPhrases = function() {
+    if ($scope.lang_phrases) {
+      for (var i = 0; i < $scope.de_phrases.length; ++i) {
+        var p_de = $scope.de_phrases[i];
+        var p_lang = $scope.getPhraseForKey(p_de.value.key, $scope.lang_phrases);
+        if (!p_lang) {
+          p_lang = cloneObject(p_de);
+          p_lang.value.phrase = "";
+          p_lang.backup.phrase = "";
+          p_lang.value.lang = $scope.lang.code;
+          p_lang.backup.lang = $scope.lang.code;
+          $scope.lang_phrases.push(p_lang);
+        }
+      }
+    }    
+  }
+  
   $scope.getPhraseForKey = function(key, phrases) {
     if (phrases == null) return null;
     for (var i = 0; i < phrases.length; ++i) {
@@ -39,20 +56,7 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
   $scope.lang = $scope.getLang(lang);
   $scope.de_phrases = $scope.preparePhrases(de_phrases, $scope.getLang("de"));
   $scope.lang_phrases = $scope.preparePhrases(lang_phrases, $scope.lang);
-  if ($scope.lang_phrases) {
-    for (var i = 0; i < $scope.de_phrases.length; ++i) {
-      var p_de = $scope.de_phrases[i];
-      var p_lang = $scope.getPhraseForKey(p_de.value.key, $scope.lang_phrases);
-      if (!p_lang) {
-        p_lang = cloneObject(p_de);
-        p_lang.value.phrase = "";
-        p_lang.backup.phrase = "";
-        p_lang.value.lang = $scope.lang.code;
-        p_lang.backup.lang = $scope.lang.code;
-        $scope.lang_phrases.push(p_lang);
-      }
-    }
-  }
+  $scope.fillInLangPhrases();
   
   $scope.getLangPhraseForKey = function(key) {
     if ($scope.lang_phrases == null) return "";
@@ -180,7 +184,15 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
       url : '/admin/data?type=mphrases&modifications=' + JSON.stringify(json)
     }).success(function(data){
       if (data.success) {
-        alert("Please reload to see the changes... Automatic update still under construction.");
+        if ($scope.lang_phrases == null) {
+          $scope.de_phrases = $scope.preparePhrases(data.phrases, $scope.getLang("de"));
+        } else {
+          for (var i = 0; i < $scope.de_phrases.length; ++i) {
+            $scope.de_phrases[i].is_modified = false;
+          }
+          $scope.lang_phrases = $scope.preparePhrases(data.phrases, $scope.lang);
+          $scope.fillInLangPhrases();
+        }
       } else {
         alert("Saving failed: " + data.error)
       }
