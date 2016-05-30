@@ -1,0 +1,12 @@
+before_install:
+- openssl aes-256-cbc -K $encrypted_7e2bed8d5997_key -iv $encrypted_7e2bed8d5997_iv
+  -in maps-agenda-test-bd67c9371e20.json.enc -out maps-agenda-test-bd67c9371e20.json
+  -d
+
+language: java
+
+deploy:
+  provider: gae
+  keyfile: "maps-agenda-test-bd67c9371e20.json"
+  project: "maps-agenda-test"
+  on: experimental

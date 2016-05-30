@@ -1,7 +1,7 @@
 exports.config = {
   framework: 'jasmine',
   seleniumAddress: 'http://localhost:4444/wd/hub',
-  specs: ['spec.js'],
+  specs: ['*_spec.js'],
 
   onPrepare: function() {
     browser.driver.get('http://localhost:8888/admin/');

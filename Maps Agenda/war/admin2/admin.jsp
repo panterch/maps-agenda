@@ -50,7 +50,7 @@
     <script src="scripts/admin.js"></script>
     <script src="languages/languages.js"></script>
     <script src="translators/translators.js"></script>
-    <script src="phrases/admin_phrases.js"></script>
+    <script src="phrases/phrases.js"></script>
     <script src="events/events.js"></script>
     <script src="scripts/admin_controllers.js"></script>
     <script src="scripts/admin_config.js"></script>
