@@ -5,6 +5,8 @@ before_install:
 
 language: java
 
+intsall: true
+
 deploy:
   provider: gae
   keyfile: "maps-agenda-test-bd67c9371e20.json"
