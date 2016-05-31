@@ -144,6 +144,8 @@ adminApp.controller('PhraseCtrl', function ($scope, $http, languages, de_phrases
     $scope.cancel_pressed = true;
   }
   $scope.noneModified = function() {
+	if ($scope.de_phrases == null) 
+	  return true;
     for (var i = 0; i < $scope.de_phrases.length; ++i) {
       // TODO: Should not count the new events that are marked deleted. 
       if ($scope.de_phrases[i].is_modified || $scope.de_phrases[i].is_deleted) {

@@ -2,6 +2,8 @@
 adminApp.controller('LanguageCtrl', function ($scope, $http, languages) {
   $scope.setLanguages = function(languages) {
 	  $scope.languages = [];
+	  if (languages == null)
+		  return;
 	  for (var i = 0; i < languages.length; ++i) {
 	    var l = {
 	        is_modified: false, // is different than the original entry?

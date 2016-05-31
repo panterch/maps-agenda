@@ -4,6 +4,8 @@ adminApp.controller('TranslatorCtrl', function ($scope, $http, languages, transl
   
   $scope.setTranslators = function(translators) {
 	  $scope.translators = [];
+	  if (translators == null)
+		  return
 	  for (var i = 0; i < translators.length; ++i) {
 	    var t = {
 	        is_modified: false, // is different than the original entry?
