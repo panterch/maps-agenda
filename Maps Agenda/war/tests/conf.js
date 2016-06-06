@@ -4,7 +4,7 @@ exports.config = {
   specs: ['*_spec.js'],
 
   onPrepare: function() {
-    browser.driver.get('http://localhost:8888/admin/');
+    browser.driver.get('http://localhost:8888/admin2/');
     var email = browser.driver.findElement(by.id('email'));
     
     if (email){
@@ -18,7 +18,7 @@ exports.config = {
     // index.html.
     return browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function(url) {
-        return /admin/.test(url);
+        return /admin2/.test(url);
       });
     }, 10000);	
   }

@@ -1,8 +1,8 @@
 <div class='left'>
   <div class="title">List of the translations</div>
   <div class="mb">
-    <div class="left"><button ng-click="edit('')" ng-disabled="lang_phrases != null">Add a new phrase</button></div>
-    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
+    <div class="left"><button id="edit-phrases" ng-click="edit('')" ng-disabled="lang_phrases != null">Add a new phrase</button></div>
+    <div class="left"><button id="save-phrases" ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
     <div class="left">
       <select ng-model="lang" ng-change="updateLang()"
               ng-options="l as l.germanName for l in languages">

@@ -262,7 +262,7 @@ public class Event implements Comparable<Event>, java.io.Serializable {
 
   public JSONObject toJSON() {
     JSONObject json = new JSONObject();
-    json.put("key", key);
+	json.put("key", key);
     json.put("date", dateString());
     if (description != null) {
       json.put("title", description.getTitle());
@@ -275,7 +275,9 @@ public class Event implements Comparable<Event>, java.io.Serializable {
     for (String tag : getTags()) {
       json.append("tags", tag);
     }
+
     return json;
+
   }
 
   @Override
