@@ -5,7 +5,9 @@ before_install:
 
 language: java
 
-install: true
+script:
+  - cd Maps\ Agenda/
+  - ant compile
 
 deploy:
   provider: gae
