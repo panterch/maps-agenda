@@ -6,7 +6,7 @@ before_install:
 language: java
 
 script:
-  - cd Maps\ Agenda/
+  - cd Maps\ Agenda
   - ant build
 
 deploy:
