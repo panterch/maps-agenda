@@ -14,7 +14,7 @@
     }
     $scope.preparePhrases = function(phrases, lang) {
       if (phrases == null) return null;
-      local_phrases = [];
+      var local_phrases = [];
       for (var i = 0; i < phrases.length; ++i) {
         phrases[i].lang = lang.code;
         var p = {
@@ -166,7 +166,7 @@
     }
     
     $scope.saveAll = function() {
-      json = {
+      var json = {
           save : [],
           remove : [],
           lang: $scope.lang.code
@@ -204,7 +204,7 @@
     }
     
     $scope.remove = function(key) {
-      p = $scope.getPhraseForKey(key, $scope.de_phrases);
+      var p = $scope.getPhraseForKey(key, $scope.de_phrases);
       p.is_deleted = !p.is_deleted;
       p = $scope.getPhraseForKey(key, $scope.lang_phrases);
       if (p) {
@@ -212,7 +212,7 @@
       }
     }
     $scope.unedit = function(key) {
-      p = $scope.getPhraseForKey(key, $scope.de_phrases);
+      var p = $scope.getPhraseForKey(key, $scope.de_phrases);
       if (!p.is_new) {
         p.value = cloneObject(p.backup);
         p.is_modified = false;

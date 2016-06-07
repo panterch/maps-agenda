@@ -101,7 +101,7 @@
       return true;
     }
     $scope.saveAll = function() {
-      json = {
+      var json = {
           save: [],
           remove: []
       }    
