@@ -1,19 +1,16 @@
 before_install:
 - openssl aes-256-cbc -K $encrypted_7e2bed8d5997_key -iv $encrypted_7e2bed8d5997_iv
-  -in maps-agenda-test-bd67c9371e20.json.enc -out maps-agenda-test-bd67c9371e20.json
+  -in maps-agenda-test-faff9f1eab84.json.enc -out maps-agenda-test-faff9f1eab84.json
   -d
-
 language: java
-
 script:
-  - cd ..
-  - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.38.zip
-  - unzip appengine-java-sdk-1.9.38.zip
-  - cd maps-agenda/Maps\ Agenda
-  - ant build
-
+- cd ..
+- wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.38.zip
+- unzip appengine-java-sdk-1.9.38.zip >/dev/null
+- cd maps-agenda/Maps\ Agenda
+- ant build
 deploy:
   provider: gae
-  keyfile: "maps-agenda-test-bd67c9371e20.json"
-  project: "maps-agenda-test"
+  keyfile: maps-agenda-test-faff9f1eab84.json
+  project: maps-agenda-test
   on: experimental
