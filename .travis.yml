@@ -6,7 +6,10 @@ before_install:
 language: java
 
 script:
-  - cd Maps\ Agenda
+  - cd ..
+  - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.38.zip
+  - unzip appengine-java-sdk-1.9.38.zip
+  - cd maps-agenda/Maps\ Agenda
   - ant build
 
 deploy:
