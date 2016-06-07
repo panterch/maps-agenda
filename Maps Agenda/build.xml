@@ -1,5 +1,5 @@
 <project>
-  <property name="sdk.dir" location="../../appengine-java-sdk" />
+  <property name="sdk.dir" location="war/WEB-INF/lib" />
   <import file="ant-macros.xml" />
 <path id="project.classpath">
 	<pathelement path="war/WEB-INF/classes" />
