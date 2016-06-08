@@ -15,3 +15,4 @@ deploy:
   keyfile: maps-agenda-test-faff9f1eab84.json
   project: maps-agenda-test
   on: experimental
+  config: Maps\ Agenda/war/WEB-INF/appengine-web.xml
