@@ -1,23 +1,31 @@
 <project>
   <property name="sdk.dir" location="../../appengine-java-sdk-1.9.38" />
-<path id="project.classpath">
-	<pathelement path="war/WEB-INF/classes" />
-	<fileset dir="war/WEB-INF/lib">
-		<include name="**/*.jar" />
-	</fileset>
-	<fileset dir="${sdk.dir}/lib">
-		<include name="shared/**/*.jar" />
-	</fileset>
-</path>
-
-<target name="copyjars" description="Copies the App Engine JARs to the WAR.">
-    <copy todir="war/WEB-INF/lib" flatten="true">
+  <import file="${sdk.dir}/config/user/ant-macros.xml" />
+  <path id="project.classpath">
+    <pathelement path="war/WEB-INF/classes" />
+    <fileset dir="war/WEB-INF/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${sdk.dir}/lib">
+      <include name="shared/**/*.jar" />
+    </fileset>
+  </path>
+  <target name="copyjars"
+      description="Copies the App Engine JARs to the WAR.">
+    <mkdir dir="war/WEB-INF/lib" />
+    <copy
+        todir="war/WEB-INF/lib"
+        flatten="true">
       <fileset dir="${sdk.dir}/lib/user">
-        <include name="**/*.jar" />
+        <include name="**/appengine-api-1.0-sdk*.jar" />
+      </fileset>
+      <fileset dir="${sdk.dir}/lib/opt/user">
+        <include name="appengine-api-labs/v1/*.jar" />
+        <include name="jsr107/v1/*.jar" />
+        <include name="datanucleus/v2/*.jar" />
       </fileset>
     </copy>
-</target>
-
+  </target>
  <target name="compile" depends="copyjars"
       description="Compiles Java source and copies other source files to the WAR.">
     <mkdir dir="war/WEB-INF/classes" />
@@ -33,16 +41,17 @@
         debug="on" />
   </target>
   <target name="datanucleusenhance" depends="compile"
-      description="Performs JDO enhancement on compiled data classes.">
-    <enhance_war war="war" />
+      description="Performs enhancement on compiled data classes.">
+      <enhance_war war="war">
+              <args>
+              <arg value="-enhancerVersion"/>
+              <arg value="v2"/>
+          </args>
+      </enhance_war>
   </target>
   <target name="runserver" depends="datanucleusenhance"
       description="Starts the development server.">
-    <dev_appserver war="war" port="8888" >
-      <options>
-        <arg value="--jvm_flag=-Ddatastore.default_high_rep_job_policy_unapplied_job_pct=20"/>
-      </options>
-    </dev_appserver>
+    <dev_appserver war="war" port="8888" />
   </target>
 
   <target name="build"

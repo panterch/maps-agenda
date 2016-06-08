@@ -37,7 +37,7 @@
               );          
             }
           },
-    		  'controller': "MainCtrl"
+    		  controller: 'MainCtrl'
         })
         .state('main.events', {
           'url': '/events?{date:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]}&back',

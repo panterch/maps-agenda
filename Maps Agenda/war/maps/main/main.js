@@ -1,37 +1,6 @@
-var MONTHS = [
-  'mojanuar', 'mofebruar', 'momaerz', 'moapril',
-  'momai', 'mojuni', 'mojuli', 'moaugust',
-  'moseptember', 'mooktober', 'monovember', 'modezember'
-];
-
-var MONTHS_SHORT = [
-  'moabjanuar', 'moabfebruar', 'moabmaerz', 'moabapril',
-  'moabmai', 'moabjuni', 'moabjuli', 'moabaugust',
-  'moabseptember', 'moaboktober', 'moabnovember', 'moabdezember'
-];
-
-var DAYS_OF_WEEK_SHORT = [
-  'wtabmontag', 'woabdienstag', 'wtabmittwoch', 'wtabdonnerstag',
-  'wtabfreitag', 'wtabsamstag', 'wtabsonntag'
-];
-
-var DAYS_OF_WEEK_LONG = [
-  'wtsonntag', 'Wochentage', 'wtdienstag', 'wtmittwoch',
-  'wtdonnerstag', 'wtfreitag', 'wtsamstag' 
-];
-
-var dateToString = function(date) {
-  var dd = date.getDate();
-  var mm = date.getMonth() + 1;  // January is 0.
-  var yyyy = date.getFullYear();
-  if(dd < 10) { dd = '0' + dd; }
-  if(mm < 10) { mm = '0' + mm; } 
-  return yyyy + '-' + mm + '-' + dd;    
-}
-
-
 (function() {
     'use strict';
+
   // Small service to keep the date between state transitions. For example,
   // when coming back to the events after looking at the contacts, the selected
   // date remains the same and does not jump back to the current day.
@@ -43,10 +12,6 @@ var dateToString = function(date) {
     this.getDate = function() { return this.date; }
     this.setDate = function(new_date) { this.date = new Date(new_date); }
   };
-})();
-
-(function() {
-    'use strict';
 
   angular.module('mapsApp')
   	   .controller('MainCtrl', MainCtrl);
@@ -86,5 +51,3 @@ var dateToString = function(date) {
     if (!found) $scope.updateLang('de');
   };
 })();
-
-
