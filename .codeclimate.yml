@@ -2,4 +2,4 @@ languages:
   Java: true
   JavaScript: true
 exclude_paths:
-- "Maps Agenda/war/scripts/"
+- "Maps Agenda/war/vendor"
