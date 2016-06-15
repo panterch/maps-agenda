@@ -1,8 +1,10 @@
 (function() {
     'use strict';
-  angular.module('mapsApp')
+  angular.module('app.maps')
   	   .config(configMain);
   	    
+//  configMain.$inject = ['$stateProvider', '$urlRouterProvider'];
+        
   function configMain($stateProvider, $urlRouterProvider) {
   	$stateProvider
     	  // Parent state that loads the languages and phrases for the entire site. 

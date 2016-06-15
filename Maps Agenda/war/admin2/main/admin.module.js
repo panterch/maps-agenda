@@ -1,11 +1,3 @@
-
-function monthToString(month) {
-  var mm = month.getMonth() + 1;  // January is 0.
-  var yyyy = month.getFullYear();
-  if(mm < 10) { mm = '0' + mm; } 
-  return yyyy + '-' + mm;    
-}
-
 // An item of the menu has been clicked.
 function itemClick(item_id) {
   // Move the selector.
@@ -22,15 +14,11 @@ function itemClick(item_id) {
   return true;
 }
 
-function cloneObject(object) {
-  return JSON.parse(JSON.stringify(object));
-}
-
 (function() {
     'use strict';
-  var adminApp = angular.module('adminApp', ['ui.router', 'angularFileUpload']);
+  angular.module('app.admin', []);
 
-  adminApp.run(['$rootScope', '$state', '$stateParams',
+  angular.module('app.admin').run(['$rootScope', '$state', '$stateParams',
     function ($rootScope,   $state,   $stateParams) {
       // It's very handy to add references to $state and $stateParams to the $rootScope
       // so that you can access them from any scope within your applications. For example,

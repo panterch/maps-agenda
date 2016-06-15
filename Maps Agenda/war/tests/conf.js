@@ -1,7 +1,15 @@
 exports.config = {
   framework: 'jasmine',
+  //sauceUser: "P1nkSheep",
+  //sauceKey: "da965573-6cb5-495c-8d00-49d15ef65866",
   seleniumAddress: 'http://localhost:4444/wd/hub',
   specs: ['*_spec.js'],
+  plugins : [{
+      path: '/usr/local/lib/node_modules/protractor-istanbul-plugin',
+      outputPath: '/home/oli/studium/Semesterarbeit/maps-agenda/Maps Agenda/war/tests',
+      logAssertions: true,
+      failAssertions: true
+    }],
 
   onPrepare: function() {
     browser.driver.get('http://localhost:8888/admin2/');

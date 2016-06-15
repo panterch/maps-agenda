@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="mapsApp" id="ng-app" class="background-color">
+<html lang="en" ng-app="app" id="ng-app" class="background-color">
 <head>
   <meta http-equiv="x-ua-compatible" content="IE=Edge" />
   <meta content-type="text/html" charset="utf-8">
@@ -16,15 +16,27 @@
   <script src="/vendor/angular.min.js"></script>
   <script src="/vendor/angular-sanitize.min.js"></script>
   <script src="/vendor/angular-ui-router.min.js"></script>
+  <script src="/vendor/angular-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+  <script src="/vendor/angular-file-upload.min.js"></script> 
   
+
+  <!--  app js scripts -->
+  <script src="app.module.js"></script>
+
+  <!--  core js scripts -->
+  <script src="/core/core.module.js"></script>
+  <script src="/core/dataservice.js"></script>
+  <script src="/core/datehelper.js"></script>
+  <script src="/core/objectcloner.js"></script>
+
   <!--  main js scripts -->
   <script src="main/main.module.js"></script>
-  <script src="main/main.js"></script>
   <script src="main/main.config.js"></script>
+  <script src="main/main.js"></script>
   
   <!--  event js scripts -->
   <script src="events/events.js"></script>
-  
+
   <!--[if lt IE 9]>
       <script type="text/javascript" src="/vendor/html5shiv.min.js"></script>
       <script type="text/javascript" src="/vendor/json3.min.js"></script>

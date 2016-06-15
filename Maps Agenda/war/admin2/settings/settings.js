@@ -1,7 +1,7 @@
 (function() {
     'use strict';
   //Controller for the settings page.
-  angular.module('adminApp')
+  angular.module('app.admin')
         .controller('SettingsCtrl', SettingsCtrl); 
         
   function SettingsCtrl($scope, $http, mailchimp_credentials) {

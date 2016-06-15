@@ -1,24 +1,12 @@
 (function() {
     'use strict';
 
-  // Small service to keep the date between state transitions. For example,
-  // when coming back to the events after looking at the contacts, the selected
-  // date remains the same and does not jump back to the current day.
-  angular.module('mapsApp')
-  	   .service('dateKeeper', dateKeeper);
-       
-  function dateKeeper(){
-    this.date = new Date();
-    this.getDate = function() { return this.date; }
-    this.setDate = function(new_date) { this.date = new Date(new_date); }
-  };
-
-  angular.module('mapsApp')
+  angular.module('app.maps')
   	   .controller('MainCtrl', MainCtrl);
 
-  MainCtrl.$inject = ['$scope', '$location', '$http', 'lang', 'languages', 'phrases', 'tags'];
+  MainCtrl.$inject = ['$scope', '$location', 'lang', 'languages', 'phrases', 'tags'];
 
-  function MainCtrl ($scope, $location, $http, lang, languages, phrases, tags){
+  function MainCtrl ($scope, $location, lang, languages, phrases, tags){
     $scope.lang = lang;
     $scope.newsletter_lang = lang;
   	$scope.languages = languages;	

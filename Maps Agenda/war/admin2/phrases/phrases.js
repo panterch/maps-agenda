@@ -1,10 +1,10 @@
 (function() {
     'use strict';
   //Controller for the phrases page.
-  angular.module('adminApp')
+  angular.module('app.admin')
   		.controller('PhraseCtrl', PhraseCtrl);
 
-  function PhraseCtrl($scope, $http, languages, de_phrases, lang_phrases, lang, $location){
+  function PhraseCtrl($scope, $http, languages, de_phrases, lang_phrases, lang, $location, objectcloner){
     $scope.getLang = function(code) {
       for (var i = 0; i < $scope.languages.length; ++i) {
         if ($scope.languages[i].code == code)
@@ -22,8 +22,8 @@
             is_new: false,      // has been created using the "add a new phrase button"?
             is_deleted: false,  // asked to be deleted?
             is_added: true,     // is present in $scope.phrases? This can be false if an is_new item has not yet been saved.
-            value: cloneObject(phrases[i]),
-            backup: cloneObject(phrases[i]) // Used for the unedit functionality.
+            value: objectcloner.cloneObject(phrases[i]),
+            backup: objectcloner.cloneObject(phrases[i]) // Used for the unedit functionality.
         }
         local_phrases.push(p);
       }
@@ -35,7 +35,7 @@
           var p_de = $scope.de_phrases[i];
           var p_lang = $scope.getPhraseForKey(p_de.value.key, $scope.lang_phrases);
           if (!p_lang) {
-            p_lang = cloneObject(p_de);
+            p_lang = objectcloner.cloneObject(p_de);
             p_lang.value.phrase = "";
             p_lang.backup.phrase = "";
             p_lang.value.lang = $scope.lang.code;
@@ -102,8 +102,8 @@
         $scope.de_phrase = $scope.getPhraseForKey(key, $scope.de_phrases);
         $scope.lang_phrase = $scope.getPhraseForKey(key, $scope.lang_phrases);
         // Make copies of the object for the Cancel button.
-        $scope.old_de = cloneObject($scope.de_phrase);
-        $scope.old_lang = cloneObject($scope.lang_phrase);
+        $scope.old_de = objectcloner.cloneObject($scope.de_phrase);
+        $scope.old_lang = objectcloner.cloneObject($scope.lang_phrase);
       }    
       $scope.showPopup('edit-popup');
     }
@@ -141,9 +141,9 @@
     }
     $scope.cancel = function() {
       $scope.hidePopup('edit-popup');
-      $scope.de_phrase.value = cloneObject($scope.old_de.value);
+      $scope.de_phrase.value = objectcloner.cloneObject($scope.old_de.value);
       if ($scope.lang_phrase) {
-        $scope.lang_phrase.value = cloneObject($scope.old_lang.value);
+        $scope.lang_phrase.value = objectcloner.cloneObject($scope.old_lang.value);
       }
       $scope.cancel_pressed = true;
     }
@@ -214,13 +214,13 @@
     $scope.unedit = function(key) {
       var p = $scope.getPhraseForKey(key, $scope.de_phrases);
       if (!p.is_new) {
-        p.value = cloneObject(p.backup);
+        p.value = objectcloner.cloneObject(p.backup);
         p.is_modified = false;
         p.is_deleted = false;
         p.is_added = true;
         p = $scope.getPhraseForKey(key, $scope.lang_phrases);
         if (p) {
-          p.value = cloneObject(p.backup);
+          p.value = objectcloner.cloneObject(p.backup);
           p.is_modified = false;
           p.is_deleted = false;
           p.is_added = true;

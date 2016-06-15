@@ -1,10 +1,10 @@
 (function() {
     'use strict';
   // Controller for the events page.
-  angular.module('adminApp')
+  angular.module('app.admin')
   		.controller('EventCtrl', EventCtrl);
 
-  function EventCtrl ($scope, $location, month_str, events) {
+  function EventCtrl ($scope, $location, month_str, events, datehelper) {
     if (month_str == null || month_str == '') {
       $scope.month_str = monthToString(new Date())
       $scope.date = $scope.month_str + "-01";

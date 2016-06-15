@@ -1,7 +1,7 @@
 (function() {
     'use strict';
   //Controller for the look & feel page.
-  angular.module('adminApp')
+  angular.module('app.admin')
   		.controller('LookNFeelCtrl', LookNFeelCtrl);
 
   function LookNFeelCtrl($scope, $http, background_thumbnails, background_color){

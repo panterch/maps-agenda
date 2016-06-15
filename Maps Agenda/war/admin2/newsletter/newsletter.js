@@ -1,10 +1,10 @@
 (function() {
     'use strict';
   //Controller for the send newsletter page.
-  angular.module('adminApp')
+  angular.module('app.admin')
   		.controller('NewsletterCtrl', NewsletterCtrl);
 
-  function NewsletterCtrl($scope, $location, $http, month_str, background_color){
+  function NewsletterCtrl($scope, $location, $http, month_str, background_color, datekeeper){
     if (month_str == null || month_str == '') {
       $scope.month_str = monthToString(new Date())
       $scope.date = $scope.month_str + "-01";

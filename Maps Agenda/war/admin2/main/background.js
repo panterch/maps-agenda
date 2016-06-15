@@ -1,7 +1,7 @@
 (function() {
     'use strict';
     
-  angular.module('adminApp')
+  angular.module('app.admin')
   .controller('UploadBackgroundCtrl', UploadBackgroundCtrl); 
 
   function UploadBackgroundCtrl($scope, $upload, $http, $state) {

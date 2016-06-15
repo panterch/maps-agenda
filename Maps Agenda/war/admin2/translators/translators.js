@@ -1,10 +1,10 @@
 (function() {
     'use strict';
   // Controller for the translators page.
-  angular.module('adminApp')
+  angular.module('app.admin')
         .controller('TranslatorCtrl', TranslatorCtrl);
 
-  function TranslatorCtrl($scope, $http, languages, translators) {
+  function TranslatorCtrl($scope, $http, languages, translators, objectcloner) {
     $scope.languages = languages;
     
     $scope.setTranslators = function(translators) {
@@ -15,8 +15,8 @@
   	        is_new: false,      // has been created using the "add a new translator button"?
   	        is_deleted: false,  // asked to be deleted?
   	        is_added: true,     // is present in $scope.translators? This can be false if an is_new item has not yet been saved.
-  	        value: cloneObject(translators[i]),
-  	        backup: cloneObject(translators[i]) // Used for the unedit functionality.
+  	        value: objectcloner.cloneObject(translators[i]),
+  	        backup: objectcloner.cloneObject(translators[i]) // Used for the unedit functionality.
   	    }
   	    $scope.translators.push(t);
   	  }  	  
@@ -47,7 +47,7 @@
           if ($scope.translators[i].value.email == email) {
             $scope.translator = $scope.translators[i];
             // Make a copy of the object for the Cancel button.
-            $scope.old_translator = cloneObject($scope.translator);
+            $scope.old_translator = objectcloner.cloneObject($scope.translator);
             if ($scope.translator.value.langs) {
               for (var j = 0; j < $scope.translator.value.langs.length; ++j) {
                 if (!$scope.getLang($scope.translator.value.langs[j])) {
@@ -89,7 +89,7 @@
     }
     $scope.cancel = function() {
       $scope.hidePopup('edit-popup');
-      $scope.translator.value = cloneObject($scope.old_translator.value);
+      $scope.translator.value = objectcloner.cloneObject($scope.old_translator.value);
       $scope.cancel_pressed = true;
     }
     $scope.noneModified = function() {
@@ -139,7 +139,7 @@
       for (var i = 0; i < $scope.translators.length; ++i) {
         if ($scope.translators[i].value.email == email) {
           if (!$scope.translators[i].is_new) {
-            $scope.translators[i].value = cloneObject($scope.translators[i].backup);
+            $scope.translators[i].value = objectcloner.cloneObject($scope.translators[i].backup);
             $scope.translators[i].is_modified = false;
             $scope.translators[i].is_deleted = false;
             $scope.translators[i].is_added = true;

@@ -1,10 +1,10 @@
 (function() {
     'use strict';
   // Controller for the languages page.
-  angular.module('adminApp')
+  angular.module('app.admin')
   		.controller('LanguageCtrl', LanguageCtrl);
 
-  function LanguageCtrl($scope, $http, languages){
+  function LanguageCtrl($scope, $http, languages, objectcloner){
     $scope.setLanguages = function(languages) {
   	  $scope.languages = [];
   	  for (var i = 0; i < languages.length; ++i) {
@@ -13,8 +13,8 @@
   	        is_new: false,      // has been created using the "add a new language button"?
   	        is_deleted: false,  // asked to be deleted?
   	        is_added: true,     // is present in $scope.languages? This can be false if an is_new item has not yet been saved.
-  	        value: cloneObject(languages[i]),
-  	        backup: cloneObject(languages[i]) // Used for the unedit functionality.
+  	        value: objectcloner.cloneObject(languages[i]),
+  	        backup: objectcloner.cloneObject(languages[i]) // Used for the unedit functionality.
   	    }
   	    $scope.languages.push(l);
   	  }  	  
@@ -42,7 +42,7 @@
           if ($scope.languages[i].value.code == code) {
             $scope.language = $scope.languages[i];
             // Make a copy of the object for the Cancel button.
-            $scope.old_language = cloneObject($scope.language);
+            $scope.old_language = objectcloner.cloneObject($scope.language);
             break;
           }
         }
@@ -77,7 +77,7 @@
     }
     $scope.cancel = function() {
       $scope.hidePopup('edit-popup');
-      $scope.language.value = cloneObject($scope.old_language.value);
+      $scope.language.value = objectcloner.cloneObject($scope.old_language.value);
       $scope.cancel_pressed = true;
     }
     $scope.noneModified = function() {
@@ -128,7 +128,7 @@
       for (var i = 0; i < $scope.languages.length; ++i) {
         if ($scope.languages[i].value.code == code) {
           if (!$scope.languages[i].is_new) {
-            $scope.languages[i].value = cloneObject($scope.languages[i].backup);
+            $scope.languages[i].value = objectcloner.cloneObject($scope.languages[i].backup);
             $scope.languages[i].is_modified = false;
             $scope.languages[i].is_deleted = false;
             $scope.languages[i].is_added = true;
