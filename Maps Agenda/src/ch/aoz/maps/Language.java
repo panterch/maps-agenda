@@ -209,7 +209,7 @@ public class Language implements Comparable<Language>, java.io.Serializable {
 
   public JSONObject toJSON() {
     JSONObject lang = new JSONObject();
-	lang.put("code", code);
+    lang.put("code", code);
     lang.put("germanName", germanName);
     lang.put("name", name);
     for (String day : abbreviatedDays) {
@@ -218,7 +218,6 @@ public class Language implements Comparable<Language>, java.io.Serializable {
     lang.put("isRtl", rightToLeft);
     lang.put("inAgenda", inAgenda);
     lang.put("specificFormat", hasSpecificFormat);
-
     return lang;
   }
 
