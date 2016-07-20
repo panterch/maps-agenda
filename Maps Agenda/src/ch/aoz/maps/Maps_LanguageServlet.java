@@ -8,7 +8,7 @@ import javax.servlet.http.*;
 public class Maps_LanguageServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {       
+            throws IOException {      
         StringBuilder response = new StringBuilder();
         response.append("/* version 0.5 */\n");
         response.append("function LanguageMenuCtrl($scope) {\n");
