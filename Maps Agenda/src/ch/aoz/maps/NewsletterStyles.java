@@ -142,11 +142,4 @@ public class NewsletterStyles {
     return result.toString();
   }
   
-  // NOTE - as specified by AOZ.
-  public static final String DISCLAIMER_TEXT = 
-      "Die MAPS Züri Agenda ist ein Veranstaltungskalender, der jeden Monat über günstige " +
-      "Kultur- und Freizeitangebote in der Stadt Zürich informiert. Das Angebot richtet " +  
-      "sich an zugewanderte Personen mit beschränkten finanziellen Mitteln und geringen " + 
-      "Deutschkenntnissen. Das Projekt MAPS Züri Agenda ist eine Integrationsleistung der " +
-      "AOZ im Auftrag der Stadt Zürich.";
 }

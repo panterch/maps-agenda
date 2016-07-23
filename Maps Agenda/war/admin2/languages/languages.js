@@ -7,6 +7,8 @@
   function LanguageCtrl($scope, $http, languages, objectcloner){
     $scope.setLanguages = function(languages) {
   	  $scope.languages = [];
+      if (languages == null)
+        return;
   	  for (var i = 0; i < languages.length; ++i) {
   	    var l = {
   	        is_modified: false, // is different than the original entry?

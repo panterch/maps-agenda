@@ -30,6 +30,8 @@
       return local_phrases;
     }
     $scope.fillInLangPhrases = function() {
+      if (!$scope.lang_phrases && $scope.lang != "de")
+        $scope.lang_phrases = [];
       if ($scope.lang_phrases) {
         for (var i = 0; i < $scope.de_phrases.length; ++i) {
           var p_de = $scope.de_phrases[i];
@@ -119,6 +121,8 @@
           $scope.de_phrase.value.key = '';
           return;
         }
+        if ($scope.de_phrases == null)
+          $scope.de_phrases = [];
         $scope.de_phrases.push($scope.de_phrase);
         $scope.de_phrase.is_added = true;
         $scope.de_phrase.is_modified = true;
@@ -148,6 +152,8 @@
       $scope.cancel_pressed = true;
     }
     $scope.noneModified = function() {
+      if ($scope.de_phrases == null) 
+        return true;
       for (var i = 0; i < $scope.de_phrases.length; ++i) {
         // TODO: Should not count the new events that are marked deleted. 
         if ($scope.de_phrases[i].is_modified || $scope.de_phrases[i].is_deleted) {
@@ -239,15 +245,19 @@
                $scope.de_phrase.value.group == $scope.de_phrase.backup.group &&
                $scope.de_phrase.value.phrase == $scope.de_phrase.backup.phrase &&
                $scope.de_phrase.value.isTag == $scope.de_phrase.backup.isTag;
-      } else {
+      } else if ($scope.lang_phrase != null) {
         return $scope.lang_phrase.value.phrase == $scope.lang_phrase.backup.phrase;
+      } else {
+        return false;
       }
     }
     $scope.countKeys = function(key) {
       var count = 0;
-      for (var i = 0; i < $scope.de_phrases.length; ++i) {
-        if ($scope.de_phrases[i].value.key == key)
-          ++count;
+      if ($scope.de_phrases != null) {
+        for (var i = 0; i < $scope.de_phrases.length; ++i) {
+          if ($scope.de_phrases[i].value.key == key)
+            ++count;
+        }
       }
       return count;
     }

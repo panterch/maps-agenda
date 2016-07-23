@@ -8,23 +8,25 @@
     $scope.languages = languages;
     
     $scope.setTranslators = function(translators) {
-  	  $scope.translators = [];
-  	  for (var i = 0; i < translators.length; ++i) {
-  	    var t = {
-  	        is_modified: false, // is different than the original entry?
-  	        is_new: false,      // has been created using the "add a new translator button"?
-  	        is_deleted: false,  // asked to be deleted?
-  	        is_added: true,     // is present in $scope.translators? This can be false if an is_new item has not yet been saved.
-  	        value: objectcloner.cloneObject(translators[i]),
-  	        backup: objectcloner.cloneObject(translators[i]) // Used for the unedit functionality.
-  	    }
-  	    $scope.translators.push(t);
-  	  }  	  
+      $scope.translators = [];
+      if (translators == null)
+        return;
+      for (var i = 0; i < translators.length; ++i) {
+        var t = {
+            is_modified: false, // is different than the original entry?
+            is_new: false,      // has been created using the "add a new translator button"?
+            is_deleted: false,  // asked to be deleted?
+            is_added: true,     // is present in $scope.translators? This can be false if an is_new item has not yet been saved.
+            value: objectcloner.cloneObject(translators[i]),
+            backup: objectcloner.cloneObject(translators[i]) // Used for the unedit functionality.
+        }
+        $scope.translators.push(t);
+      }     
     } 
     if(angular.isUndefined(translators)){
-  	  $scope.setTranslators([]);
+      $scope.setTranslators([]);
     } else {
-  	  $scope.setTranslators(translators);
+      $scope.setTranslators(translators);
     }
     
     $scope.getRowClass = function(t) {
@@ -121,9 +123,9 @@
             url : '/admin/data?type=mtranslators&modifications=' + JSON.stringify(json)
           }).success(function(data){
             if (data.success) {
-          	  $scope.setTranslators(data.translators);
+              $scope.setTranslators(data.translators);
             } else {
-          	  alert("Saving failed: " + data.error)
+              alert("Saving failed: " + data.error)
             }
           });
     }
