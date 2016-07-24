@@ -30,8 +30,6 @@
       return local_phrases;
     }
     $scope.fillInLangPhrases = function() {
-      if (!$scope.lang_phrases && $scope.lang != "de")
-        $scope.lang_phrases = [];
       if ($scope.lang_phrases) {
         for (var i = 0; i < $scope.de_phrases.length; ++i) {
           var p_de = $scope.de_phrases[i];

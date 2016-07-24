@@ -1,5 +1,5 @@
 <project>
-  <property name="sdk.dir" location="../../appengine-java-sdk-1.9.38" />
+  <property name="sdk.dir" location="../../appengine-java-sdk" />
   <import file="${sdk.dir}/config/user/ant-macros.xml" />
   <path id="project.classpath">
     <pathelement path="war/WEB-INF/classes" />
@@ -23,6 +23,7 @@
         <include name="appengine-api-labs/v1/*.jar" />
         <include name="jsr107/v1/*.jar" />
         <include name="datanucleus/v2/*.jar" />
+        <include name="appengine-endpoints/v1/*.jar" />
       </fileset>
     </copy>
   </target>
