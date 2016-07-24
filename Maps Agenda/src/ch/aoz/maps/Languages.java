@@ -81,7 +81,7 @@ public class Languages implements java.io.Serializable {
     return langs.addToStore();
   }
 
-  public static boolean removeLanguage(String code) {
+  public static boolean removeLanguage(Language code) {
     if (code == null)
       return false;
     Languages langs = GetLanguages();

@@ -1,8 +1,8 @@
 <div class='left'>
   <div class="title">List of the translators</div>
   <div class="mb">
-    <div class="left"><button ng-click="edit('')">Add a new translator</button></div>
-    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save translators</button></div>
+    <div class="left"><button id="edit-translators" ng-click="edit('')">Add a new translator</button></div>
+    <div class="left"><button id="save-translators" ng-click="saveAll()" ng-disabled="noneModified()">Save translators</button></div>
     <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
                                                   placeholder="Filter" /></div>
   </div>
@@ -11,8 +11,8 @@
       <th>Email address</th>
       <th>Name</th>
       <th>Languages</th>
-      <th><img src="/static/icons/undo.svg" width=16 height=16 title='Undo changes'></th>
-      <th><img src="/static/icons/trash.svg" width=16 height=16 title='Delete'></th>
+      <th><img src="/content/static/icons/undo.svg" width=16 height=16 title='Undo changes'></th>
+      <th><img src="/content/static/icons/trash.svg" width=16 height=16 title='Delete'></th>
     </tr>
     <tr ng-repeat="t in translators | filter: t_filter(search)"
         ng-click="edit(t.value.email)" ng-class="getRowClass(t)">
@@ -22,11 +22,11 @@
       <div ng-if="!canGoBack()" class="prev no-bg-image"></div>
       <div ng-if="canGoBack()" ng-click="showPreviousEvents()" class="prev">{{phrases.Frueher}}</div>
       <td ng-if="t.is_modified && !t.is_new" ng-click="unedit(t.value.email); $event.stopPropagation()">
-        <img src="/static/icons/undo.svg" width=16 height=16 title='Undo changes'>
+        <img src="/content/static/icons/undo.svg" width=16 height=16 title='Undo changes'>
       </td>
       <td ng-if="!t.is_modified || t.is_new"></td>
       <td class="red-hover" ng-click="remove(t.value.email); $event.stopPropagation()">
-        <img src="/static/icons/trash.svg" width=16 height=16 title='Delete'>
+        <img src="/content/static/icons/trash.svg" width=16 height=16 title='Delete'>
       </td>
     </tr>
   </table>

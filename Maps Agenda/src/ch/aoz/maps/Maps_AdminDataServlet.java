@@ -266,7 +266,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
         "MAPS Agenda Newsletter "
             + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
             + " " + date.get(Calendar.YEAR));
-    options.put("from_name", JSONObject.stringToValue("MAPS Züri Agenda"));
+    options.put("from_name", JSONObject.stringToValue(Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase()));
     options.put("from_email", "maps@aoz.ch");
     options.put("to_name", "*|NAME|*");
     options.put("generate_text", true);
@@ -404,7 +404,8 @@ public class Maps_AdminDataServlet extends HttpServlet {
       }
       for (int i = 0; i < json.getJSONArray("remove").length(); ++i) {
         JSONObject o = json.getJSONArray("remove").getJSONObject(i);
-        if (!Languages.removeLanguage(o.getString("code"))) {
+        Language l = new Language(o);
+        if (!Languages.removeLanguage(l)) {
           response.put("success", false);
           response.put("error",
               "Failed to remove language with code=" + o.getString("code"));

@@ -1,10 +1,18 @@
 exports.config = {
   framework: 'jasmine',
+  //sauceUser: "P1nkSheep",
+  //sauceKey: "da965573-6cb5-495c-8d00-49d15ef65866",
   seleniumAddress: 'http://localhost:4444/wd/hub',
-  specs: ['spec.js'],
+  specs: ['*_spec.js'],
+  plugins : [{
+      path: '/usr/local/lib/node_modules/protractor-istanbul-plugin',
+      outputPath: '/home/oli/studium/Semesterarbeit/maps-agenda/Maps Agenda/war/tests',
+      logAssertions: true,
+      failAssertions: true
+    }],
 
   onPrepare: function() {
-    browser.driver.get('http://localhost:8888/admin/');
+    browser.driver.get('http://localhost:8888/admin2/');
     var email = browser.driver.findElement(by.id('email'));
     
     if (email){
@@ -18,7 +26,7 @@ exports.config = {
     // index.html.
     return browser.driver.wait(function() {
       return browser.driver.getCurrentUrl().then(function(url) {
-        return /admin/.test(url);
+        return /admin2/.test(url);
       });
     }, 10000);	
   }

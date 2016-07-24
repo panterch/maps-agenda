@@ -1,8 +1,8 @@
 <div class='left'>
   <div class="title">List of languages</div>
   <div class="mb">
-    <div class="left"><button ng-click="edit('')">Add a new language</button></div>
-    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
+    <div class="left"><button id="edit-languages" ng-click="edit('')">Add a new language</button></div>
+    <div class="left"><button id="save-languages" ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
   </div>
   <table>
     <tr>
@@ -19,8 +19,8 @@
       <th>RTL?</th>
       <th>In Agenda?</th>
       <th>Spec format?</th>
-      <th><img src="/static/icons/undo.svg" width=16 height=16 title='Undo changes'></th>
-      <th><img src="/static/icons/trash.svg" width=16 height=16 title='Delete'></th>
+      <th><img src="/content/static/icons/undo.svg" width=16 height=16 title='Undo changes'></th>
+      <th><img src="/content/static/icons/trash.svg" width=16 height=16 title='Delete'></th>
     </tr>
     <tr class="hover" ng-repeat="l in languages" ng-click="edit(l.value.code)" ng-class="getRowClass(l)">
       <td>{{l.value.code}}</td>
@@ -46,11 +46,11 @@
         <span ng-switch-when=false>&#10007;</span>
       </td>
       <td ng-if="l.is_modified && !l.is_new" ng-click="unedit(l.value.code); $event.stopPropagation()">
-        <img src="/static/icons/undo.svg" width=16 height=16 title='Undo changes'>
+        <img src="/content/static/icons/undo.svg" width=16 height=16 title='Undo changes'>
       </td>
       <td ng-if="!l.is_modified || l.is_new"></td>
       <td class="red-hover" ng-click="remove(l.value.code); $event.stopPropagation()">
-        <img src="/static/icons/trash.svg" width=16 height=16 title='Delete'>
+        <img src="/content/static/icons/trash.svg" width=16 height=16 title='Delete'>
       </td>
     </tr>
   </table>

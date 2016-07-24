@@ -5,7 +5,6 @@ import static ch.aoz.maps.NewsletterStyles.DATE_CSS;
 import static ch.aoz.maps.NewsletterStyles.DATE_FORMATTER;
 import static ch.aoz.maps.NewsletterStyles.DESC_CSS;
 import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_CSS;
-import static ch.aoz.maps.NewsletterStyles.DISCLAIMER_TEXT;
 import static ch.aoz.maps.NewsletterStyles.ESCAPE_ATTRIBUTE;
 import static ch.aoz.maps.NewsletterStyles.ESCAPE_TEXT;
 import static ch.aoz.maps.NewsletterStyles.EVENT_CSS;
@@ -100,14 +99,15 @@ public class NewsletterExport {
     startTable(PREHEADER_CSS);
     out.append("<tr>");
     
+    Map<String, Phrase> phrases = Phrases.getMergedPhrases("de");
     out.append("<td valign='top'>");
-    out.append("<div>MAPS Züri Agenda: Günstige Kultur- und Freizeitangebote</div>");
+    out.append("<div>" + phrases.get("headLeft").getPhrase() + "</div>");
     out.append("</td>");
     
     out.append("<td valign='top'>");
     out.append("<div>");
-    out.append("Wird dieses E-Mail nicht korrekt angezeigt?<br>");
-    addLink(monthPermalink(), "Öffnen Sie es im Browser.");
+    out.append(phrases.get("headRight").getPhrase() + "<br>");
+    addLink(monthPermalink(), phrases.get("headRightLink").getPhrase());
     out.append("</div>");
     out.append("</td>");
     
@@ -121,8 +121,8 @@ public class NewsletterExport {
   
   /** Header HTML = Colored AOZ banner. */
   private void renderHeader() {
-    String logoUrl = urlRoot + "/static/themes/transparent_header.png";
-    String aozHeaderUrl = urlRoot + "/static/aoz-stadtzuerich.gif";
+    String logoUrl = urlRoot + "/content/static/themes/transparent_header.png";
+    String aozHeaderUrl = urlRoot + "/content/static/aoz-stadtzuerich.gif";
     
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
@@ -136,7 +136,7 @@ public class NewsletterExport {
       out.append("<tr><td style='background-color: #{{background_color}};" +
                  HEADER_IMG_CSS + "'>");
       out.append("<img src='" + ESCAPE_ATTRIBUTE(logoUrl) +
-                 "' alt='MAPS Züri Agenda'></div>");
+                 "' alt='" + Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase() + "'></div>");
       out.append("</td>");
       out.append("</tr>");
     endTable();
@@ -148,20 +148,20 @@ public class NewsletterExport {
   /** Event list, one row for each event. */
   private void renderEvents() {
     Map<String, Phrase> phrases = Phrases.getMergedPhrases(language.getCode());
+    Phrase wasLauftDe = Phrases.getMergedPhrases("de").get("headNL");
     Phrase wasLauft = phrases.get("headNL");
     out.append("<tr>");
     out.append("<td align='center' valign='top'>");
     
     startTable(null);
-      final String wasLauftGerman = "Was läuft in Zürich?";
       if (wasLauft == null || language.getCode().equals("de")) {
         out.append("<tr>" +
                    "<td style='" + EVENT_SINGLE_CSS + ";" + WHATS_UP_CSS +
-                   "'>" + wasLauftGerman + "</td></tr>");
+                      "'>" + wasLauftDe.getPhrase() + "</td></tr>");
       } else {
         out.append("<tr>" +
             "<td style='" + EVENT_LEFT_CSS + ";" + WHATS_UP_CSS + "'>" +
-            wasLauftGerman + "</td><td style='" +
+            wasLauftDe.getPhrase() + "</td><td style='" +
             rightAlignCss(EVENT_RIGHT_CSS, language.isRightToLeft()) + ";" +
             WHATS_UP_CSS + "'>" + wasLauft.getPhrase() + "</td></tr>");
       }
@@ -281,7 +281,7 @@ public class NewsletterExport {
       out.append("<tr>");
       out.append("<td>");
       out.append("<span style='" + DISCLAIMER_CSS + "'>");
-      out.append(DISCLAIMER_TEXT);
+      out.append(Phrases.getMergedPhrases("de").get("footNL").getPhrase());
       out.append("</span>");
       out.append("</td>");
       out.append("</tr>");
@@ -290,8 +290,6 @@ public class NewsletterExport {
         out.append("<tr>");
         out.append("<td colspan='2' valign='middle' id='utility'>");
         out.append("<div style='text-align:center'>");
-        // addLink(shareLink(), "Weiterleiten");
-        //out.append(" | ");
         addLink(unsubscribeLink(), "MAPS-Newsletter abbestellen");
         out.append(" | ");
         addLink(changeLanguageLink(), "Einstellungen");
