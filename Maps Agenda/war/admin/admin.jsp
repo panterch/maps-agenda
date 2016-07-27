@@ -29,7 +29,6 @@
     <div id="main">
       <div id="menu">
         <div id="menu_selector"></div>
-        <div class="menu_item" id="phrases">Translations</div>
         <div class="menu_item" id="events">Events</div>
       </div>
       <div id="content">

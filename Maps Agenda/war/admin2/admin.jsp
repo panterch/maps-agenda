@@ -54,17 +54,18 @@
     <script src="/core/dataservice.js"></script>
     <script src="/core/datehelper.js"></script>
     <script src="/core/objectcloner.js"></script>
-  
+      <!--  features js scripts -->
     <script src="main/admin.module.js"></script>
+    <script src="main/admin.config.js"></script>
+    <script src="main/background.js"></script>
     <script src="languages/languages.js"></script>
     <script src="translators/translators.js"></script>
     <script src="phrases/phrases.js"></script>
     <script src="events/events.js"></script>
-    <script src="main/background.js"></script>
-    <script src="main/admin.config.js"></script>
     <script src="looknfeel/looknfeel.js"></script>
     <script src="settings/settings.js"></script>
     <script src="newsletter/newsletter.js"></script>
+    <script src="generateXml/generateXml.js"></script>
     
   </body>
 </html>

@@ -66,7 +66,7 @@ public class Maps_AdminBackgroundImagesServlet extends HttpServlet {
     		BackgroundImage image = new BackgroundImage(blobKeys.get(0).getKeyString(), imagesService.getServingUrl(options));
     		image.addToStore();
     	}
-  		resp.sendRedirect("/admin2/looknfeel.html");
+  		resp.sendRedirect("/admin2/looknfeel/looknfeel.html");
     }
 
     private void serveBackground(String blobKey) {
