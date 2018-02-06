@@ -11,8 +11,6 @@
 <%@page import="com.google.appengine.api.users.UserService" %>
 <%@page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@page import="java.util.Calendar" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
 <%!
 
 public static String formatDate(Calendar c) {

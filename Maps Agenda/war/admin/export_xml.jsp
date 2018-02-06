@@ -22,7 +22,7 @@
 %><%@ page import="com.google.appengine.api.datastore.Query.FilterPredicate"
 %><%@ page import="com.google.appengine.api.datastore.Query.FilterOperator"
 %><%@ page import="com.google.appengine.api.datastore.Query.SortDirection"
-%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%
+%><%
 
 	    // Read POST arguments.
       int year = Integer.parseInt(request.getParameter("year"));

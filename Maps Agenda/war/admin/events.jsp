@@ -11,7 +11,6 @@
 <%@ page import="ch.aoz.maps.EventDescriptions"%>
 <%@ page import="ch.aoz.maps.Events"%>
 <%@ page import="ch.aoz.maps.Strings"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%!
   public static String createEventDiv(Event e) {
