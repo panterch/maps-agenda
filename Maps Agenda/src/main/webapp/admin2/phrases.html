@@ -1,0 +1,60 @@
+<div class='left'>
+  <div class="title">List of the translations</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')" ng-disabled="lang_phrases != null">Add a new phrase</button></div>
+    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save phrases</button></div>
+    <div class="left">
+      <select ng-model="lang" ng-change="updateLang()"
+              ng-options="l as l.germanName for l in languages">
+      </select>
+    </div>
+    <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
+                                                  placeholder="Filter" /></div>
+  </div>
+  <table id="table">
+    <tr>
+      <th>Key</th>
+      <th>Group</th>
+      <th>{{getLang('de').germanName}}</th>
+      <th ng-if="lang.code != 'de'">{{lang.germanName}}</th>
+      <th>is tag?</th>
+      <th><img src="icons/undo.svg" width=16 height=16 title='Undo changes'></th>
+      <th ng-if="lang.code == 'de'"><img src="icons/trash.svg" width=16 height=16 title='Delete'></th>
+    </tr>
+    <tr ng-repeat="p in de_phrases | filter: p_filter(search) | orderBy: 'value.group'" 
+        ng-click="edit(p.value.key)" ng-class="getRowClass(p)">
+      <td>{{p.value.key}}</td>
+      <td>{{p.value.group}}</td>
+      <td>{{p.value.phrase}}</td>
+      <td ng-if="lang.code != 'de'">{{getLangPhraseForKey(p.value.key)}}</td>
+      <td ng-switch="p.value.isTag">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-if="p.is_modified && !p.is_new" ng-click="unedit(p.value.key); $event.stopPropagation()">
+        <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
+      </td>
+      <td ng-if="!p.is_modified || p.is_new"></td>
+      <td class="red-hover" ng-click="remove(p.value.key); $event.stopPropagation()" ng-if="lang.code == 'de'">
+        <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+      </td>
+    </tr>
+  </table>
+</div>
+<div id="edit-popup" class="popup-screen">
+  <div class="popup-head">Edit phrase</div>
+  <div class="popup-body">
+    <form name="edit-form" ng-submit="save()">
+      <p ng-if="!de_phrase.is_new">Key: {{de_phrase.value.key}}</p>
+      <p ng-if="de_phrase.is_new">Key: <input type="text" ng-model="de_phrase.value.key" required /></p>
+      <p ng-if="lang.code == 'de'">Group: <input type="text" ng-model="de_phrase.value.group" required /></p>
+      <p ng-if="lang.code != 'de'">Group: {{de_phrase.value.group}}</p>
+      <p ng-if="lang.code == 'de'">Phrase: <input type="text" ng-model="de_phrase.value.phrase" required /></p>
+      <p ng-if="lang.code != 'de'">Phrase: {{de_phrase.value.phrase}}</p>
+      <p ng-if="lang.code != 'de'">Phrase: <input type="text" ng-model="lang_phrase.value.phrase" required /></p>
+      <p ng-if="lang.code == 'de'"><input type="checkbox" ng-model="de_phrase.value.isTag" />Is tag?</p>
+      <button ng-click="cancel()">Cancel</button>
+      <input type="submit" ng-disabled="edit-form.$invalid" value="Save" />
+    </form>
+  </div>
+</div>

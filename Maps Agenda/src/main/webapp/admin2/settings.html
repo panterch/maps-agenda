@@ -1,0 +1,13 @@
+<div class="left">
+  <div class="title">Settings</div>
+  <div class="subtitle">MailChimp Credentials</div>
+  Please make sure the boxes on this page show the parameters necessary to send
+  MAPS Newsletters through MailChimp:<br><br>
+  <form>
+    List ID:&nbsp;&nbsp;<input type="text" name="list_id" style="width: 100px" ng-model="list_id"><br><br>
+    <div style='width: 400px; font-style: italic;'>You find this ID after logging in to MailChimp. Select "Lists" in the grey bar on top, and navigate to the list you want to use. Select "List Name and Defaults" from the "Settings" menu, and copy the red alphanumeric string on this page.</div><br><br>
+    API Key:&nbsp;&nbsp;<input type="text" name="api_key" style="width: 300px" ng-model="api_key"><br><br>
+    <div style='width: 400px; font-style: italic;'>You can see your API key (or generate a new one) by logging on to MailChimp. Use the drop-down menu in the top right corner that is labelled with your Mailchimp account name, and select Accounts. Navigate to Extras, API keys.</div><br><br>
+    <button ng-click="update()">Save MailChimp Credentials</button>
+  </form>
+</div>

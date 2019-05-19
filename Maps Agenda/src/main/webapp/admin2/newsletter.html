@@ -1,0 +1,19 @@
+<div class='left top'>
+  <div class="title">Newsletters</div>
+  <div class="mb">
+    <div class="left">
+      <button ng-click="previousMonth()">&lt;&lt;</button>
+      <input type="text" ng-model="month_str" ng-change="updateMonth()" ng-pattern="month_regex" />
+      <button ng-click="nextMonth()">&gt;&gt;</button>
+    </div>
+    <div class="left">
+      <button ng-click="createCampaign()">Create Campaign</button>
+    </div>
+  </div>
+  <div class="mb">
+    <form>
+      Choose color for the header: <input type="text" name="color" value="{{background_color}}" style="width: 80px" ng-model="background_color" ng-change="updateLang()"><br>
+      <img style="background-color: #{{background_color}}" src="/static/themes/transparent_header.png">
+    </form>
+  </div>
+</div>

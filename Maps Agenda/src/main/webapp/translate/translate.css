@@ -1,0 +1,91 @@
+#title {
+  font-size: x-large;
+  background-color: #b0c4de;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  height: 30px;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.event {
+  float: left;
+  width: 100%;
+  postion: fixed;
+  border: 1px solid grey;
+}
+
+.actions {
+  clear: both;
+  text-align: center;
+  padding: 6px;
+}
+
+.translation {
+  width: 50%;
+  float: left;
+}
+
+.edit .actions, .edit .translated {
+  display: none;
+}
+
+.form div {
+  white-space: nowrap;  
+}
+
+.form input, .form textarea {
+  margin: 4px 2%;
+  width: 96%;
+}
+
+.form textarea {
+  height: 200px;
+}
+
+#event-date {
+  margin-bottom: 20px;
+}
+
+#event-date p {
+  margin: 0px;
+}
+
+.collapsed .desc, .collapsed .less, .collapsed .form, .collapsed .location, .collapsed .url {
+  display: none;
+}
+
+.expanded .more, .expanded .form {
+  display: none;
+}
+
+.form-actions {
+  padding: 6px;
+  direction: ltr;
+}
+
+.button {
+  padding: 4px;
+  border: 1px solid grey;
+  margin: 4px;
+  cursor: hand;
+}
+
+.error {
+  border: 2px solid red;
+}
+
+.translated .location, .translated .url {
+  display: none;
+}
+
+.rtl {
+  direction: rtl;
+}

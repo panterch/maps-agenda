@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+  <servlet>
+    <servlet-name>Servlet_CSS</servlet-name>
+    <servlet-class>ch.aoz.maps.Servlet_CSS</servlet-class>
+  </servlet>
+  <servlet-mapping>
+     <servlet-name>Servlet_CSS</servlet-name>
+     <url-pattern>/maps/css/look_and_feel.css</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Servlet_Data</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_DataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Servlet_Data</servlet-name>
+    <url-pattern>/maps/data</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Maps_AdminData</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_AdminDataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Maps_AdminData</servlet-name>
+    <url-pattern>/admin/data</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Maps_AdminBackgroundImages</servlet-name>
+    <servlet-class>ch.aoz.maps.Maps_AdminBackgroundImagesServlet</servlet-class>
+  </servlet><servlet-mapping>
+    <servlet-name>Maps_AdminBackgroundImages</servlet-name>
+    <url-pattern>/admin/background_images</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+     <web-resource-collection>
+       <web-resource-name>Protected Area</web-resource-name>
+       <url-pattern>/admin/*</url-pattern>
+       <url-pattern>/admin2/*</url-pattern>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>admin</role-name>
+     </auth-constraint>
+  </security-constraint>
+    
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>admin.jsp</welcome-file>
+    <welcome-file>translate.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

@@ -1,0 +1,30 @@
+<div class='left'>
+  <div class="title">Events</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')">Add a new event</button></div>
+    <div class="left">
+      <button ng-click="previousMonth()">&lt;&lt;</button>
+      <input type="text" ng-model="month_str" ng-change="updateMonth()" ng-pattern="month_regex" />
+      <button ng-click="nextMonth()">&gt;&gt;</button>
+    </div>
+    <div class="right">Filter: <input type="text" ng-model="search" class="search-query" 
+                                                  placeholder="Filter" /></div>
+  </div>
+  <div class='event' ng-repeat="e in events | filter: search" ng-click="edit($index)">
+    <div class='left date overflow'>{{e.date}}</div>
+    <div class='overflow'>
+	    <div class='right' ng-click="remove($index); $event.stopPropagation()">
+	      <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+	    </div>
+	    <h2>{{e.title}}</h2>
+	    <hr>
+	    <p>{{e.description}}</p>
+	    <hr>
+	    <p><b>date: </b>{{e.date}}</p>
+	    <p><b>@ </b>{{e.location}}</p>
+	    <p><b>&#x21F9; </b>{{e.transit}}</p>
+	    <p><b>&#x21D2; </b>{{e.utl}}</p>
+	    <p><b>tags: </b>{{e.tags.join(", ")}}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div class='left'>
+  <div class="title">List of languages</div>
+  <div class="mb">
+    <div class="left"><button ng-click="edit('')">Add a new language</button></div>
+    <div class="left"><button ng-click="saveAll()" ng-disabled="noneModified()">Save languages</button></div>
+  </div>
+  <table>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>German name</th>
+      <th>Su</th>
+      <th>Mo</th>
+      <th>Tu</th>
+      <th>We</th>
+      <th>Th</th>
+      <th>Fr</th>
+      <th>Sa</th>
+      <th>RTL?</th>
+      <th>In Agenda?</th>
+      <th>Spec format?</th>
+      <th><img src="icons/undo.svg" width=16 height=16 title='Undo changes'></th>
+      <th><img src="icons/trash.svg" width=16 height=16 title='Delete'></th>
+    </tr>
+    <tr class="hover" ng-repeat="l in languages" ng-click="edit(l.value.code)" ng-class="getRowClass(l)">
+      <td>{{l.value.code}}</td>
+      <td>{{l.value.name}}</td>
+      <td>{{l.value.germanName}}</td>
+      <td>{{l.value.days[0]}}</td>
+      <td>{{l.value.days[1]}}</td>
+      <td>{{l.value.days[2]}}</td>
+      <td>{{l.value.days[3]}}</td>
+      <td>{{l.value.days[4]}}</td>
+      <td>{{l.value.days[5]}}</td>
+      <td>{{l.value.days[6]}}</td>
+      <td ng-switch="l.value.isRtl">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-switch="l.value.inAgenda">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-switch="l.value.specificFormat">
+        <span ng-switch-when=true>&#10003;</span>
+        <span ng-switch-when=false>&#10007;</span>
+      </td>
+      <td ng-if="l.is_modified && !l.is_new" ng-click="unedit(l.value.code); $event.stopPropagation()">
+        <img src="icons/undo.svg" width=16 height=16 title='Undo changes'>
+      </td>
+      <td ng-if="!l.is_modified || l.is_new"></td>
+      <td class="red-hover" ng-click="remove(l.value.code); $event.stopPropagation()">
+        <img src="icons/trash.svg" width=16 height=16 title='Delete'>
+      </td>
+    </tr>
+  </table>
+</div>
+<div id="edit-popup" class="popup-screen">
+  <div class="popup-head">Edit language</div>
+  <div class="popup-body">
+    <form name="edit-form" ng-submit="save()">
+      <p ng-if="!language.is_new">Code: {{language.value.code}}</p>
+      <p ng-if="language.is_new">Code: <input type="text" ng-model="language.value.code" required /></p>
+      <p>Name: <input type="text" ng-model="language.value.name" required /></p>
+      <p>German name: <input type="text" ng-model="language.value.germanName" required /></p>
+      <table><tr>
+        <th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>
+      </tr><tr>
+        <td><input type="text" ng-model="language.value.days[0]" required /></td>
+        <td><input type="text" ng-model="language.value.days[1]" required /></td>
+        <td><input type="text" ng-model="language.value.days[2]" required /></td>
+        <td><input type="text" ng-model="language.value.days[3]" required /></td>
+        <td><input type="text" ng-model="language.value.days[4]" required /></td>
+        <td><input type="text" ng-model="language.value.days[5]" required /></td>
+        <td><input type="text" ng-model="language.value.days[6]" required /></td>
+      </tr></table>
+      <p><input type="checkbox" ng-model="language.value.isRtl" />Is right to left?</p>
+      <p><input type="checkbox" ng-model="language.value.inAgenda" />Is in Agenda?</p>
+      <p><input type="checkbox" ng-model="language.value.specificFormat" />Requires specific format?</p>
+      <button ng-click="cancel()">Cancel</button>
+      <input type="submit" ng-disabled="edit-form.$invalid" value="Save" />
+    </form>
+  </div>
+</div>

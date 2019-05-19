@@ -1,0 +1,64 @@
+<div class="background-screen"></div>
+
+<div class="sidebar" >
+  <a href="http://www.aoz.ch"><img src = "images/aoz.png" title="aoz" id="aoz"></a>
+  <ul>
+    <li ng-repeat="l in languages">
+      <a href="" ng-click="updateLang(l.code)" ng-bind-html="l.name_br"></a>
+    </li>
+  </ul>
+</div><!-- sidebar -->
+
+<div class="container">
+  <div class="content">
+    <h1 class="background-color">
+      <span>M</span>
+      <span>A</span>
+      <span>P</span>
+      <span class="last-letter">S</span>
+      <span class="title">ZÜRI<br>AGENDA</span>
+    </h1>
+    <div class="section">
+      <form action="." id="language" method="post" name="language">
+        <label for="lang">Language</label> 
+        <select ng-model="lang" ng-change="updateLang(null)"
+                ng-options="l.code as l.name for l in languages"></select>
+      </form>
+    </div>
+    <h2 class="subhead">Günstige Kultur- und Freizeitangebote</h2>
+    <div class="section-div"></div>
+    <div ui-view></div>
+  </div><!-- content -->
+</div><!-- container -->
+
+<div class="sidebar nav">
+  <ul>
+    <li><a ui-sref="main.about">{{phrases.UeberMAPS}}</a></li>
+    <li><a ui-sref="main.contact">{{phrases.Kontakt}}</a></li>
+    <li><a ui-sref="main.impressum">{{phrases.Impressum}}</a></li>
+  </ul>
+  
+  <form name="newsletter-form" action="http://maps-agenda.us4.list-manage.com/subscribe/post" class="newsletter">
+	  <h3>{{phrases.Newsletter}}</h3>
+	  <div class="section-div"></div>
+	  <div class="newsletter-text">
+	    <span>{{phrases.AnmeldungNewsletter}}</span>
+      <select ng-model="newsletter_lang" 
+              ng-options="l.code as l.name for l in languages" name="LANGUAGE_TEMP"></select>
+      <input type="hidden" name="LANGUAGE" value="{{newsletter_lang}}">
+      <input type="hidden" name="u" value="c017eb335933c3c13217325dd">
+      <input type="hidden" name="id" value="a13fa5f2a6">
+      <input ng-model="name" type="text" name="NAME" placeholder="Name" required>
+      <input ng-model="email" type="email" name="EMAIL" placeholder="Email address" required>
+	  </div>
+	  <div class="section-div"></div>
+	  <div>
+	    <input type="submit" ng-disabled="newsletter-form.$invalid" value="{{phrases.Anmelden}}" />
+	  </div>
+	</form>
+  
+  <!-- For now, tags are not supported
+  <ul class="tags">
+    <li ng-repeat="tag in tags"><a href="">{{phrases[tag]}}</a></li>
+  </ul>  -->
+</div><!-- sidebar -->
