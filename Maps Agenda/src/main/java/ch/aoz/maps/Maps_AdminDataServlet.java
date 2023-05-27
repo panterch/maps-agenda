@@ -3,12 +3,14 @@ package ch.aoz.maps;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -237,63 +239,21 @@ public class Maps_AdminDataServlet extends HttpServlet {
     // return Utils.toUnicode(builder.toString());
   }
 
-  public String createCampaign(HttpServletRequest req) {
-    Calendar date = Calendar.getInstance();
-    String requested_date = req.getParameter("month");
-    if (requested_date != null) {
-      try {
-        date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
-      } catch (Exception e) {
-      }
-    }
-    // Set the time at midnight, so that the below query stays the same.
-    date.set(Calendar.MILLISECOND, 0);
-    date.set(Calendar.SECOND, 0);
-    date.set(Calendar.MINUTE, 0);
-    date.set(Calendar.HOUR_OF_DAY, 0);
-    date.set(Calendar.DATE, 1);
-
-    String background_color = req.getParameter("bgcolor");
-    if (background_color == null) {
-      background_color = BackgroundColor.fetchFromStore().getColor();
-    }
-
-    MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
-    JSONObject options = new JSONObject();
-    options.put("list_id", credentials.getListId());
-    options.put(
-        "subject",
-        "MAPS Agenda Newsletter "
-            + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
-            + " " + date.get(Calendar.YEAR));
-    options.put("from_name", JSONObject.stringToValue(Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase()));
-    options.put("from_email", "maps@aoz.ch");
-    options.put("to_name", "*|NAME|*");
-    options.put("generate_text", true);
-
-    JSONObject content = new JSONObject();
-    content.put("html", JSONObject.stringToValue(generateNewsletters(date,
-        background_color, req.getServerName())));
-
-    JSONObject json = new JSONObject();
-    json.put("apikey", credentials.getApiKey());
-    json.put("type", "regular");
-    json.put("options", options);
-    json.put("content", content);
-
-    byte[] mailchimpRequest = json.toString().getBytes(StandardCharsets.UTF_8);
+  public JSONObject mailchimpPost(String url, String apiKey, JSONObject request) {
+    byte[] mailchimpRequest = request.toString().getBytes(StandardCharsets.UTF_8);
     StringBuilder response = new StringBuilder();
     HttpURLConnection connection = null;
     try {
-      String[] apiKeyFields = credentials.getApiKey().split("-");
-      URL url = new URL("https://" + apiKeyFields[1]
-          + ".api.mailchimp.com/2.0/campaigns/create.json");
-      connection = (HttpURLConnection) url.openConnection();
+      String auth = "anystring:" + apiKey;
+      String basicAuth = "Basic " + new String(Base64.getEncoder().encode(auth.getBytes()));
+      URL urlObj = new URL(url);
+      connection = (HttpURLConnection) urlObj.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/json");
       connection.setRequestProperty("charset", "utf-8");
       connection.setRequestProperty("Content-Length",
           Integer.toString(mailchimpRequest.length));
+      connection.setRequestProperty ("Authorization", basicAuth);
       connection.setDoOutput(true);
       connection.setUseCaches(false);
 
@@ -303,8 +263,13 @@ public class Maps_AdminDataServlet extends HttpServlet {
       outStream.flush();
       outStream.close();
 
-      InputStreamReader inStream = new InputStreamReader(
-          connection.getInputStream());
+      connection.getResponseCode();
+      InputStream stream = connection.getErrorStream();
+      if (stream == null) {
+        stream = connection.getInputStream();
+      }
+
+      InputStreamReader inStream = new InputStreamReader(stream);
       BufferedReader reader = new BufferedReader(inStream);
       String line;
       while ((line = reader.readLine()) != null) {
@@ -313,13 +278,114 @@ public class Maps_AdminDataServlet extends HttpServlet {
       }
       reader.close();
     } catch (Exception e) {
-      return "Error while sending request to MailChimp: " + e.toString();
+      JSONObject error = new JSONObject();
+      error.put("status", 500);
+      error.put("detail", "Error while sending request to MailChimp: " + e.toString());
+      return error;
     } finally {
       if (connection != null) {
         connection.disconnect();
       }
     }
-    return response.toString();
+    return new JSONObject(response.toString());
+  }
+
+  public boolean isError(JSONObject json) {
+    try {
+      if (json.getString("type") != "https://mailchimp.com/developer/marketing/docs/errors/") {
+        return false;
+      }
+      if (json.getInt("status") != 200) {
+        return true;
+      }
+    } catch (Exception e) {}
+    return false;
+  }
+
+  public JSONObject initCampaign(MailChimpCredentials credentials, Calendar date) {
+    // See https://mailchimp.com/developer/marketing/api/campaigns/add-campaign/.
+    String url = "https://" + credentials.getApiKey().split("-")[1]
+        + ".api.mailchimp.com/3.0/campaigns";
+
+    // Outer request object.
+    JSONObject request = new JSONObject();
+    request.put("type", "regular");
+    request.put("content_type", "template");
+
+    // Request's recipients sub-object.
+    JSONObject recipients = new JSONObject();
+    recipients.put("list_id", credentials.getListId());
+    request.put("recipients", recipients);
+
+    // Request's settings sub-object.
+    JSONObject settings = new JSONObject();
+    String title = "MAPS Agenda Newsletter "
+        + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
+        + " " + date.get(Calendar.YEAR);
+    settings.put("title", title);
+    settings.put("subject_line", title);
+    settings.put("from_name", JSONObject.stringToValue(Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase()));
+    settings.put("reply_to", "maps@aoz.ch");
+    settings.put("to_name", "*|NAME|*");
+    request.put("settings", settings);
+
+    // POST to /campaigns.
+    return mailchimpPost(url, credentials.getApiKey(), request);
+  }
+
+  // !!! TODO !!! This does not work. The server refuses a content update following a
+  // new capaign generation. We'll probably have to create a new template first,
+  // and use that template's ID in settings.template_id of the /campaigns method.
+  public JSONObject populateContent(MailChimpCredentials credentials, Calendar date, String color, String campaignID, String serverName) {
+    // See https://mailchimp.com/developer/marketing/api/campaign-content/set-campaign-content/.
+    String url = "https://" + credentials.getApiKey().split("-")[1]
+        + ".api.mailchimp.com/3.0/campaigns/" + campaignID + "/content";
+
+    JSONObject content = new JSONObject();
+    content.put("html", generateNewsletters(date, color, serverName));
+    return mailchimpPost(url, credentials.getApiKey(), content);
+  }
+
+  public String createCampaign(HttpServletRequest req) {
+    // Parse the requested date for the newsletter.
+    Calendar date = Calendar.getInstance();
+    String requested_date = req.getParameter("month");
+    if (requested_date != null) {
+      try {
+        date.setTime(new SimpleDateFormat("yyyy-MM").parse(requested_date));
+      } catch (Exception e) {
+      }
+    }
+    // Morph the time to midnight, so that the query stays the same.
+    date.set(Calendar.MILLISECOND, 0);
+    date.set(Calendar.SECOND, 0);
+    date.set(Calendar.MINUTE, 0);
+    date.set(Calendar.HOUR_OF_DAY, 0);
+    date.set(Calendar.DATE, 1);
+
+    // Determine the color for this newsletter.
+    String bgColor = req.getParameter("bgcolor");
+    if (bgColor == null) {
+      bgColor = BackgroundColor.fetchFromStore().getColor();
+    }
+
+    // Create a new capmaign.
+    MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
+    JSONObject createResponse = initCampaign(credentials, date);
+    if (isError(createResponse)) {
+      return createResponse.toString();
+    }
+
+    // Populate the created campaign with the newsletter content.
+    String campaignID = createResponse.getString("id");
+    JSONObject contentResponse = populateContent(credentials, date, bgColor, campaignID, req.getServerName());
+
+    // Return the more meaningful createResponse in case of a successful population,
+    // and the erroneous contentResponse, else.
+    if (isError(contentResponse)) {
+      return contentResponse.toString();
+    }
+    return createResponse.toString();
   }
 
   public String modifyTranslators(HttpServletRequest req) {
