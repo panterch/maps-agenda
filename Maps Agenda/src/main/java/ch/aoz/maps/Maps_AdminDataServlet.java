@@ -278,7 +278,9 @@ public class Maps_AdminDataServlet extends HttpServlet {
       }
       reader.close();
     } catch (Exception e) {
+      // Emulate a Mailchimp error, for consistent error handling below.
       JSONObject error = new JSONObject();
+      error.put("type", "https://mailchimp.com/developer/marketing/docs/errors/");
       error.put("status", 500);
       error.put("detail", "Error while sending request to MailChimp: " + e.toString());
       return error;
@@ -302,7 +304,7 @@ public class Maps_AdminDataServlet extends HttpServlet {
     return false;
   }
 
-  public JSONObject initCampaign(MailChimpCredentials credentials, Calendar date) {
+  public JSONObject initCampaign(MailChimpCredentials credentials, String title, int templateID) {
     // See https://mailchimp.com/developer/marketing/api/campaigns/add-campaign/.
     String url = "https://" + credentials.getApiKey().split("-")[1]
         + ".api.mailchimp.com/3.0/campaigns";
@@ -319,31 +321,27 @@ public class Maps_AdminDataServlet extends HttpServlet {
 
     // Request's settings sub-object.
     JSONObject settings = new JSONObject();
-    String title = "MAPS Agenda Newsletter "
-        + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
-        + " " + date.get(Calendar.YEAR);
     settings.put("title", title);
     settings.put("subject_line", title);
     settings.put("from_name", JSONObject.stringToValue(Phrases.getMergedPhrases("de").get("zuriAgenda").getPhrase()));
     settings.put("reply_to", "maps@aoz.ch");
     settings.put("to_name", "*|NAME|*");
+    settings.put("template_id", templateID);
     request.put("settings", settings);
 
     // POST to /campaigns.
     return mailchimpPost(url, credentials.getApiKey(), request);
   }
 
-  // !!! TODO !!! This does not work. The server refuses a content update following a
-  // new capaign generation. We'll probably have to create a new template first,
-  // and use that template's ID in settings.template_id of the /campaigns method.
-  public JSONObject populateContent(MailChimpCredentials credentials, Calendar date, String color, String campaignID, String serverName) {
+  public JSONObject createTemplate(MailChimpCredentials credentials, String title, Calendar date, String color, String serverName) {
     // See https://mailchimp.com/developer/marketing/api/campaign-content/set-campaign-content/.
     String url = "https://" + credentials.getApiKey().split("-")[1]
-        + ".api.mailchimp.com/3.0/campaigns/" + campaignID + "/content";
+        + ".api.mailchimp.com/3.0/templates";
 
-    JSONObject content = new JSONObject();
-    content.put("html", generateNewsletters(date, color, serverName));
-    return mailchimpPost(url, credentials.getApiKey(), content);
+    JSONObject template = new JSONObject();
+    template.put("name", title);
+    template.put("html", generateNewsletters(date, color, serverName));
+    return mailchimpPost(url, credentials.getApiKey(), template);
   }
 
   public String createCampaign(HttpServletRequest req) {
@@ -363,29 +361,26 @@ public class Maps_AdminDataServlet extends HttpServlet {
     date.set(Calendar.HOUR_OF_DAY, 0);
     date.set(Calendar.DATE, 1);
 
+    // Title for the template and for the campaign.
+    String title = "MAPS Agenda Newsletter "
+        + date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.GERMAN)
+        + " " + date.get(Calendar.YEAR);
+
     // Determine the color for this newsletter.
     String bgColor = req.getParameter("bgcolor");
     if (bgColor == null) {
       bgColor = BackgroundColor.fetchFromStore().getColor();
     }
 
-    // Create a new capmaign.
+    // Create a new template with the contents for the campaign.
     MailChimpCredentials credentials = MailChimpCredentials.fetchFromStore();
-    JSONObject createResponse = initCampaign(credentials, date);
-    if (isError(createResponse)) {
-      return createResponse.toString();
+    JSONObject templateResponse = createTemplate(credentials, title, date, bgColor, req.getServerName());
+    if (isError(templateResponse)) {
+      return templateResponse.toString();
     }
 
-    // Populate the created campaign with the newsletter content.
-    String campaignID = createResponse.getString("id");
-    JSONObject contentResponse = populateContent(credentials, date, bgColor, campaignID, req.getServerName());
-
-    // Return the more meaningful createResponse in case of a successful population,
-    // and the erroneous contentResponse, else.
-    if (isError(contentResponse)) {
-      return contentResponse.toString();
-    }
-    return createResponse.toString();
+    // Create a new capmaign.
+    return initCampaign(credentials, title, templateResponse.getInt("id")).toString();
   }
 
   public String modifyTranslators(HttpServletRequest req) {
